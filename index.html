@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Naismith — NBA Fantasy Intelligence</title>
+  <meta name="description" content="Real-time NBA injury alerts and fantasy pickup suggestions. Know who's out and who to grab — before your league does.">
+  <meta property="og:title" content="Naismith — NBA Fantasy Intelligence">
+  <meta property="og:description" content="Real-time NBA injury alerts and fantasy pickup suggestions. Know who's out and who to grab — before your league does.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0D1117;
+      --bg-surface: #161B22;
+      --bg-card: #1C2129;
+      --text-primary: #E6EDF3;
+      --text-secondary: #8B949E;
+      --text-muted: #484F58;
+      --accent-purple: #6C3CE1;
+      --accent-blue: #2E75B6;
+      --accent-green: #3FB950;
+      --accent-red: #F85149;
+      --accent-amber: #D29922;
+      --gradient: linear-gradient(135deg, #6C3CE1 0%, #2E75B6 100%);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── Nav ─────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(139, 148, 158, 0.1);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .nav-logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--gradient);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: white;
+    }
+
+    .nav-logo-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text-primary); }
+
+    .nav-cta {
+      background: var(--gradient) !important;
+      color: white !important;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600 !important;
+      transition: opacity 0.2s !important;
+    }
+
+    .nav-cta:hover { opacity: 0.9; }
+
+    /* ── Hero ────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(ellipse, rgba(108, 60, 225, 0.15) 0%, rgba(46, 117, 182, 0.05) 50%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(108, 60, 225, 0.15);
+      border: 1px solid rgba(108, 60, 225, 0.3);
+      padding: 0.4rem 1rem;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      color: #A78BFA;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .hero-badge-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      max-width: 800px;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .hero h1 .gradient-text {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 560px;
+      line-height: 1.6;
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      position: relative;
+    }
+
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+      padding: 0.85rem 2rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: opacity 0.2s, transform 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      padding: 0.85rem 2rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid rgba(139, 148, 158, 0.2);
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover { border-color: rgba(139, 148, 158, 0.4); transform: translateY(-1px); }
+
+    /* ── Alert Demo ──────────────────────────── */
+    .demo-section {
+      padding: 2rem 2rem 6rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .demo-phone {
+      width: 320px;
+      background: var(--bg-surface);
+      border-radius: 24px;
+      border: 1px solid rgba(139, 148, 158, 0.15);
+      overflow: hidden;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .demo-statusbar {
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+    }
+
+    .demo-header {
+      padding: 0 1.25rem 0.75rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .demo-alert {
+      margin: 0.5rem 1rem;
+      padding: 1rem;
+      background: var(--bg-card);
+      border-radius: 14px;
+      border-left: 3px solid var(--accent-red);
+      animation: fade-in-up 0.6s ease-out both;
+    }
+
+    .demo-alert:nth-child(2) { animation-delay: 0.2s; }
+    .demo-alert:nth-child(3) { animation-delay: 0.4s; border-left-color: var(--accent-amber); }
+    .demo-alert:last-child { margin-bottom: 1.5rem; }
+
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .demo-alert-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.4rem;
+    }
+
+    .demo-alert-player {
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .demo-alert-badge {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .badge-critical { background: rgba(248, 81, 73, 0.2); color: var(--accent-red); }
+    .badge-high { background: rgba(210, 153, 34, 0.2); color: var(--accent-amber); }
+
+    .demo-alert-detail {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .demo-alert-pickup {
+      font-size: 0.75rem;
+      color: var(--accent-green);
+      font-weight: 500;
+    }
+
+    /* ── Features ─────────────────────────────── */
+    .features {
+      padding: 6rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .features-header h2 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .features-header p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: var(--bg-surface);
+      border: 1px solid rgba(139, 148, 158, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: border-color 0.3s, transform 0.2s;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(108, 60, 225, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ── How it Works ─────────────────────────── */
+    .how-it-works {
+      padding: 6rem 2rem;
+      background: var(--bg-surface);
+    }
+
+    .how-it-works-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .how-it-works h2 {
+      text-align: center;
+      font-size: 2.25rem;
+      font-weight: 800;
+      margin-bottom: 4rem;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    .step-number {
+      flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      background: var(--gradient);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: white;
+    }
+
+    .step-content h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .step-content p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* ── X/Twitter Section ────────────────────── */
+    .twitter-section {
+      padding: 6rem 2rem;
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .twitter-section h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .twitter-section p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .twitter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: #000;
+      color: white;
+      padding: 0.85rem 2rem;
+      border-radius: 100px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid rgba(139, 148, 158, 0.3);
+      transition: background 0.2s;
+    }
+
+    .twitter-btn:hover { background: #1a1a1a; }
+
+    .twitter-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: white;
+    }
+
+    /* ── CTA ──────────────────────────────────── */
+    .cta {
+      padding: 8rem 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .cta::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(ellipse, rgba(46, 117, 182, 0.1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .cta h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .cta p {
+      color: var(--text-secondary);
+      font-size: 1.15rem;
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+
+    .cta .btn-primary { position: relative; }
+
+    /* ── Footer ───────────────────────────────── */
+    footer {
+      padding: 3rem 2rem;
+      border-top: 1px solid rgba(139, 148, 158, 0.1);
+      text-align: center;
+    }
+
+    footer p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+
+    footer a:hover { color: var(--text-primary); }
+
+    /* ── Responsive ───────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 0.75rem 1rem; }
+      .nav-links { display: none; }
+      .hero { padding: 7rem 1.5rem 3rem; }
+      .hero-buttons { flex-direction: column; width: 100%; max-width: 320px; }
+      .btn-primary, .btn-secondary { justify-content: center; }
+      .features-grid { grid-template-columns: 1fr; }
+      .step { flex-direction: column; gap: 1rem; }
+      .demo-phone { width: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">N</div>
+      <span class="nav-logo-text">Naismith</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="https://x.com/NaismithAIApp" target="_blank">@Naismith</a>
+      <a href="#download" class="nav-cta">Get the App</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Tracking live NBA injury feeds
+    </div>
+    <h1>Know who's out.<br><span class="gradient-text">Know who to grab.</span></h1>
+    <p>Real-time NBA injury alerts with AI-powered waiver wire suggestions. Get notified before your league does.</p>
+    <div class="hero-buttons">
+      <a href="#download" class="btn-primary">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        Download for iOS
+      </a>
+      <a href="https://x.com/NaismithAIApp" target="_blank" class="btn-secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Follow on X
+      </a>
+    </div>
+  </section>
+
+  <!-- Demo Phone -->
+  <section class="demo-section">
+    <div class="demo-phone">
+      <div class="demo-statusbar">
+        <span>9:41</span>
+        <span>Naismith</span>
+      </div>
+      <div class="demo-header">Alerts</div>
+      <div class="demo-alert">
+        <div class="demo-alert-top">
+          <span class="demo-alert-player">Anthony Davis — OUT</span>
+          <span class="demo-alert-badge badge-critical">Critical</span>
+        </div>
+        <div class="demo-alert-detail">Left knee sprain (2-3 weeks)</div>
+        <div class="demo-alert-pickup">Grab Rui Hachimura (+8.2), Jaxson Hayes (+5.1)</div>
+      </div>
+      <div class="demo-alert">
+        <div class="demo-alert-top">
+          <span class="demo-alert-player">Ja Morant — OUT</span>
+          <span class="demo-alert-badge badge-critical">Critical</span>
+        </div>
+        <div class="demo-alert-detail">Right shoulder injury (1-2 weeks)</div>
+        <div class="demo-alert-pickup">Grab Desmond Bane (+9.3), Scotty Pippen Jr (+6.7)</div>
+      </div>
+      <div class="demo-alert">
+        <div class="demo-alert-top">
+          <span class="demo-alert-player">Devin Booker — Questionable</span>
+          <span class="demo-alert-badge badge-high">High</span>
+        </div>
+        <div class="demo-alert-detail">Sore hamstring, game-time decision</div>
+        <div class="demo-alert-pickup">Monitor Bradley Beal (+4.8)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <div class="features-header">
+      <h2>Your fantasy edge</h2>
+      <p>Everything you need to dominate your league's waiver wire</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background: rgba(248, 81, 73, 0.15);">&#x1F6A8;</div>
+        <h3>Instant injury alerts</h3>
+        <p>Push notifications the moment a player is ruled out, questionable, or returning. We monitor ESPN, CBS, RotoWire, Bluesky beat writers, and the official NBA injury report — simultaneously.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background: rgba(63, 185, 80, 0.15);">&#x1F3AF;</div>
+        <h3>AI pickup suggestions</h3>
+        <p>Every alert comes with waiver wire targets ranked by projected fantasy point increase. Know exactly who benefits when a star goes down — backed by historical game log data.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background: rgba(108, 60, 225, 0.15);">&#x1F465;</div>
+        <h3>Roster-aware intelligence</h3>
+        <p>Import your Yahoo Fantasy roster and get alerts personalized to your team. Your players get priority notifications. League-mates' players get flagged as threats.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background: rgba(46, 117, 182, 0.15);">&#x26A1;</div>
+        <h3>Multi-source pipeline</h3>
+        <p>We don't rely on one source. Seven independent injury feeds are cross-referenced and deduplicated to catch breaking news from any angle — often minutes before major outlets.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background: rgba(210, 153, 34, 0.15);">&#x1F4CA;</div>
+        <h3>Fantasy point projections</h3>
+        <p>See the projected FPTS impact for every injury. Our dependency graph maps how each player's absence ripples through their team's rotation and fantasy production.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background: rgba(139, 148, 158, 0.15);">&#x1F426;</div>
+        <h3>Live on X</h3>
+        <p>Every major alert is also posted to <a href="https://x.com/NaismithAIApp" target="_blank" style="color: var(--accent-blue); text-decoration: none;">@Naismith</a> on X — follow for a real-time public feed of NBA injury intelligence.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it Works -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="how-it-works-inner">
+      <h2>How it works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Download and set up your roster</h3>
+            <p>Install the app and import your fantasy roster directly from Yahoo — or manually add your players. Takes 30 seconds.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Get alerts when it matters</h3>
+            <p>When one of your players (or a league star) gets injured, you'll get a push notification with the injury details and projected timeline.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Act on pickup suggestions</h3>
+            <p>Each alert includes ranked waiver wire targets — the players most likely to see a fantasy boost. Grab them before your league-mates even know there's an injury.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- X/Twitter -->
+  <section class="twitter-section">
+    <h2>Follow the feed</h2>
+    <p>Don't want the app yet? Follow @Naismith on X for the same real-time injury alerts and pickup suggestions — free and public.</p>
+    <a href="https://x.com/NaismithAIApp" target="_blank" class="twitter-btn">
+      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      Follow @Naismith
+    </a>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="download">
+    <h2>Win your league</h2>
+    <p>Join the waitlist for early access on iOS.</p>
+    <a href="#" class="btn-primary" onclick="alert('Coming soon to TestFlight! Follow @Naismith on X for updates.'); return false;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      Join TestFlight Waitlist
+    </a>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>Naismith &copy; 2026 &middot; <a href="https://x.com/NaismithAIApp" target="_blank">@Naismith on X</a></p>
+  </footer>
+
+</body>
+</html>
