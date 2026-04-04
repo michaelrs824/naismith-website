@@ -1135,7 +1135,6 @@
     //  INJURY FEED
     // ═══════════════════════════════════════════
     let allAlerts = [];
-    let playerIndex = [];
     let activeFilter = 'all';
 
     // Normalize the nested API response into a flat structure
@@ -1420,8 +1419,10 @@
     document.getElementById('feedSearch').addEventListener('input', renderAlerts);
 
     // ═══════════════════════════════════════════
-    //  PLAYER INDEX (built from alerts + /debug/player lookups)
+    //  PLAYER SEARCH (uses /search/players — same as iOS app)
     // ═══════════════════════════════════════════
+    let playerIndex = []; // kept for What-If beneficiary fallback
+
     function buildPlayerIndexFromAlerts() {
       const seen = new Set();
       allAlerts.forEach(a => {
@@ -1445,6 +1446,26 @@
       });
     }
 
+    async function searchPlayers(query) {
+      if (!query || query.trim().length < 2) return [];
+      try {
+        const res = await fetch(`${API_BASE}/debug/search?q=${encodeURIComponent(query.trim())}&limit=8`);
+        if (!res.ok) return [];
+        const data = await res.json();
+        return (data.results || []).map(p => ({
+          name: p.name,
+          team: p.team || '',
+          position: p.position || '',
+          avg_fpts: p.avg_fpts || 0,
+          avg_min: p.avg_min || 0,
+          status: p.status || '',
+        }));
+      } catch (e) {
+        console.error('Player search error:', e);
+        return [];
+      }
+    }
+
     async function fetchPlayerData(name) {
       try {
         const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -1460,31 +1481,36 @@
     function setupAutocomplete(inputId, listId) {
       const input = document.getElementById(inputId);
       const list = document.getElementById(listId);
+      let debounceTimer = null;
 
       input.addEventListener('input', () => {
-        const q = input.value.toLowerCase().trim();
+        const q = input.value.trim();
         if (q.length < 2) { list.classList.remove('visible'); return; }
 
-        const matches = playerIndex
-          .filter(p => p.name.toLowerCase().includes(q) || p.key.includes(q))
-          .slice(0, 8);
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(async () => {
+          const matches = await searchPlayers(q);
 
-        if (matches.length === 0) { list.classList.remove('visible'); return; }
+          if (matches.length === 0) { list.classList.remove('visible'); return; }
 
-        list.innerHTML = matches.map(p =>
-          `<div class="autocomplete-item" data-name="${p.name}" data-team="${p.team}">
-            ${p.name} <span class="autocomplete-item-team">${p.team}${p.position ? ' · ' + p.position : ''}</span>
-          </div>`
-        ).join('');
+          list.innerHTML = matches.map(p => {
+            const statusBadge = p.status && p.status !== 'ACTIVE'
+              ? `<span style="color: var(--accent-red); font-size: 0.7rem; font-weight: 600; margin-left: 4px;">${p.status}</span>`
+              : '';
+            return `<div class="autocomplete-item" data-name="${p.name}" data-team="${p.team}">
+              ${p.name} <span class="autocomplete-item-team">${p.team}${p.position ? ' · ' + p.position : ''}</span>${statusBadge}
+            </div>`;
+          }).join('');
 
-        list.classList.add('visible');
+          list.classList.add('visible');
 
-        list.querySelectorAll('.autocomplete-item').forEach(item => {
-          item.addEventListener('click', () => {
-            input.value = item.dataset.name;
-            list.classList.remove('visible');
+          list.querySelectorAll('.autocomplete-item').forEach(item => {
+            item.addEventListener('click', () => {
+              input.value = item.dataset.name;
+              list.classList.remove('visible');
+            });
           });
-        });
+        }, 250); // 250ms debounce like iOS app
       });
 
       input.addEventListener('blur', () => {
