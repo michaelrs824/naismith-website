@@ -146,7 +146,6 @@
     /* ── Main Layout ─────────────────────────── */
     main {
       padding-top: 64px;
-      min-height: 100vh;
     }
 
     .page { display: none; }
@@ -788,6 +787,88 @@
       color: var(--text-secondary);
     }
 
+    /* ── Action Badges (PICKUP/MONITOR/SELL) ─── */
+    .action-badge {
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+    }
+
+    .action-pickup { background: rgba(63, 185, 80, 0.15); color: var(--accent-green); border: 1px solid rgba(63, 185, 80, 0.3); }
+    .action-monitor { background: rgba(210, 153, 34, 0.15); color: var(--accent-amber); border: 1px solid rgba(210, 153, 34, 0.3); }
+    .action-sell { background: rgba(248, 81, 73, 0.15); color: var(--accent-red); border: 1px solid rgba(248, 81, 73, 0.3); }
+
+    /* ── Matchup / Meta Badges ───────────────── */
+    .matchup-badge, .games-badge, .ease-badge {
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    .matchup-badge {
+      background: rgba(139, 148, 158, 0.1);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .games-badge { background: rgba(46, 117, 182, 0.1); color: var(--accent-blue); }
+    .ease-easy { background: rgba(63, 185, 80, 0.1); color: var(--accent-green); }
+    .ease-tough { background: rgba(248, 81, 73, 0.1); color: var(--accent-red); }
+
+    .yahoo-badge {
+      font-size: 0.55rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    .yahoo-fa { background: rgba(63, 185, 80, 0.12); color: var(--accent-green); border: 1px solid rgba(63, 185, 80, 0.25); }
+    .yahoo-rostered { background: rgba(139, 148, 158, 0.08); color: var(--text-muted); }
+
+    /* ── Alert Footer ────────────────────────── */
+    .alert-footer {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .alert-source {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .alert-date-full {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* ── Transaction (purple accent) ─────────── */
+    .severity-transaction { background: #9B59B6; }
+
+    /* ── Spinner overlay for compare/sim ─────── */
+    .inline-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+
     /* ── Loading / Empty States ──────────────── */
     .loading-state, .empty-state, .error-state {
       text-align: center;
@@ -1046,6 +1127,7 @@
         document.querySelectorAll(`.nav-tab[data-page="${page}"]`).forEach(t => t.classList.add('active'));
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(`page-${page}`).classList.add('active');
+        window.scrollTo(0, 0);
       });
     });
 
@@ -1063,7 +1145,15 @@
         player: r.player || '',
         action: r.action || 'PICKUP',
         fpts_delta: r.fpts_delta || 0,
+        available_in_league: r.available_in_league ?? null,
+        remaining_games: r.remaining_games || null,
+        favorable_matchup: r.favorable_matchup || false,
+        tough_matchup: r.tough_matchup || false,
       }));
+
+      // Detect transactions
+      const evtType = evt.event_type || '';
+      const isTransaction = evtType.includes('WAIV') || evtType.includes('TRADE') || evtType.includes('TRANSACTION');
 
       // Map event_type to a display status
       const typeMap = {
@@ -1075,7 +1165,7 @@
         'INJURY_DTD': 'DAY-TO-DAY',
         'INJURY_SUSPENDED': 'SUSPENDED',
       };
-      const status = typeMap[evt.event_type] || evt.event_type || 'UNKNOWN';
+      const status = typeMap[evtType] || evtType || 'UNKNOWN';
 
       return {
         id: raw.id,
@@ -1086,9 +1176,12 @@
         detail: evt.detail || '',
         duration_estimate: evt.duration_estimate || null,
         source: evt.source || '',
+        matchup: evt.matchup || null,
         timestamp: raw.timestamp || raw.source_timestamp || '',
+        source_timestamp: raw.source_timestamp || '',
         recommendations: recs,
         avg_fpts: raw.graph_match?.avg_fpts || 0,
+        is_transaction: isTransaction,
       };
     }
 
@@ -1145,7 +1238,7 @@
       let filtered = allAlerts;
 
       if (activeFilter === 'critical') {
-        filtered = filtered.filter(a => a.severity === 'HIGH');
+        filtered = filtered.filter(a => a.severity === 'HIGH' || a.severity === 'CRITICAL');
       } else if (activeFilter === 'out') {
         filtered = filtered.filter(a => a.status === 'OUT' || a.status === 'SUSPENDED');
       } else if (activeFilter === 'gtd') {
@@ -1172,17 +1265,43 @@
       feedList.innerHTML = filtered.map((alert, i) => renderAlertCard(alert, i)).join('');
     }
 
-    function renderAlertCard(alert, index) {
-      const { player_name, status, team, detail, recommendations, timestamp, severity } = alert;
+    function formatDateFull(ts) {
+      if (!ts) return '';
+      try {
+        const dt = new Date(ts);
+        const local = dt;
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const datePart = `${months[local.getMonth()]} ${local.getDate()}`;
+        const diff = Date.now() - dt.getTime();
+        const mins = Math.floor(diff / 60000);
+        let relative;
+        if (mins < 1) relative = 'Just now';
+        else if (mins < 60) relative = `${mins}m ago`;
+        else if (mins < 1440) relative = `${Math.floor(mins / 60)}h ago`;
+        else if (mins < 2880) relative = 'Yesterday';
+        else {
+          const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+          relative = days[local.getDay()];
+        }
+        return `${datePart} · ${relative}`;
+      } catch (e) { return ''; }
+    }
 
-      // Severity bar color
+    function renderAlertCard(alert, index) {
+      const { player_name, status, team, detail, recommendations, timestamp, severity, source, matchup, is_transaction } = alert;
+
+      // Severity bar — matches iOS: CRITICAL=red, HIGH=orange, MEDIUM=yellow, LOW=blue, transaction=purple
       let sevClass = 'severity-medium';
       let badgeClass = 'badge-dtd';
       let badgeText = status;
-      if (status === 'OUT' || status === 'SUSPENDED') {
+
+      if (is_transaction) {
+        sevClass = 'severity-transaction';
+        badgeClass = 'badge-dtd';
+      } else if (severity === 'CRITICAL' || status === 'OUT' || status === 'SUSPENDED') {
         sevClass = 'severity-critical';
         badgeClass = 'badge-out';
-      } else if (status === 'DOUBTFUL') {
+      } else if (severity === 'HIGH' || status === 'DOUBTFUL') {
         sevClass = 'severity-high';
         badgeClass = 'badge-doubtful';
       } else if (status === 'QUESTIONABLE' || status === 'DAY-TO-DAY') {
@@ -1195,76 +1314,89 @@
         badgeText = 'RETURNING';
       }
 
-      // Override with severity if HIGH
-      if (severity === 'HIGH' && status !== 'OUT') {
-        sevClass = 'severity-high';
-      }
+      // Full date (iOS style: "Mar 20 · 3h ago")
+      const dateStr = formatDateFull(alert.source_timestamp || timestamp);
 
-      // Time ago
-      let timeAgo = '';
-      if (timestamp) {
-        const diff = Date.now() - new Date(timestamp).getTime();
-        const mins = Math.floor(diff / 60000);
-        if (mins < 0) timeAgo = 'just now';
-        else if (mins < 60) timeAgo = `${mins}m ago`;
-        else if (mins < 1440) timeAgo = `${Math.floor(mins / 60)}h ago`;
-        else timeAgo = `${Math.floor(mins / 1440)}d ago`;
-      }
-
-      // Pickup chips (top 3)
-      const pickupRecs = recommendations.filter(r => r.action === 'PICKUP' || r.action === 'MONITOR');
-      const chips = pickupRecs.slice(0, 3).map(r => {
+      // Pickup chips with action badges
+      const chips = recommendations.slice(0, 3).map(r => {
         const sign = r.fpts_delta >= 0 ? '+' : '';
+        const actionClass = r.action === 'PICKUP' ? 'action-pickup' : r.action === 'SELL' ? 'action-sell' : 'action-monitor';
+        const actionText = r.action === 'PICKUP' ? 'PICKUP' : r.action === 'SELL' ? 'SELL' : 'MONITOR';
         return `<div class="pickup-chip">
+          <span class="action-badge ${actionClass}">${actionText}</span>
           <span>${r.player}</span>
+          ${r.available_in_league === true ? '<span class="yahoo-badge yahoo-fa">Yahoo FA</span>' : ''}
+          ${r.available_in_league === false ? '<span class="yahoo-badge yahoo-rostered">Rostered</span>' : ''}
           <span class="pickup-delta">${sign}${r.fpts_delta.toFixed(1)}</span>
         </div>`;
       }).join('');
 
-      // Expanded detail rows
-      const detailRows = pickupRecs.map((r, ri) => {
+      // Expanded detail rows with full badges
+      const detailRows = recommendations.map((r, ri) => {
         const sign = r.fpts_delta >= 0 ? '+' : '';
-        const actionLabel = r.action === 'PICKUP' ? 'Pickup' : r.action === 'MONITOR' ? 'Monitor' : r.action;
+        const actionClass = r.action === 'PICKUP' ? 'action-pickup' : r.action === 'SELL' ? 'action-sell' : 'action-monitor';
+        const actionText = r.action === 'PICKUP' ? 'PICKUP' : r.action === 'SELL' ? 'SELL' : 'MONITOR';
+        const yahooHtml = r.available_in_league === true
+          ? '<span class="yahoo-badge yahoo-fa" style="margin-left:6px">Yahoo FA</span>'
+          : r.available_in_league === false
+          ? '<span class="yahoo-badge yahoo-rostered" style="margin-left:6px">Rostered</span>'
+          : '';
+        const gamesHtml = r.remaining_games ? `<span class="games-badge" style="margin-left:4px">${r.remaining_games}G</span>` : '';
+        const matchupHtml = r.favorable_matchup
+          ? '<span class="ease-badge ease-easy" style="margin-left:4px">EASY</span>'
+          : r.tough_matchup
+          ? '<span class="ease-badge ease-tough" style="margin-left:4px">TOUGH</span>'
+          : '';
         return `<div class="pickup-detail-row">
           <div class="pickup-detail-left">
             <div class="pickup-rank">${ri + 1}</div>
             <div>
-              <div class="pickup-detail-name">${r.player}</div>
-              <div class="pickup-detail-info">${actionLabel}</div>
+              <div class="pickup-detail-name">
+                <span class="action-badge ${actionClass}" style="margin-right:6px">${actionText}</span>
+                ${r.player}${yahooHtml}${gamesHtml}${matchupHtml}
+              </div>
             </div>
           </div>
           <div class="pickup-detail-right">
             <div class="pickup-stat">
-              <div class="pickup-stat-value">${sign}${r.fpts_delta.toFixed(1)}</div>
+              <div class="pickup-stat-value" style="color: ${r.fpts_delta >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">${sign}${r.fpts_delta.toFixed(1)}</div>
               <div class="pickup-stat-label">FPTS/G</div>
             </div>
           </div>
         </div>`;
       }).join('');
 
+      // Footer: matchup + source + date
+      const matchupHtml = matchup ? `<span class="matchup-badge">${matchup}</span>` : '';
+      const sourceHtml = source ? `<span class="alert-source">${source}</span>` : '';
+
       return `<div class="alert-card" id="alert-${index}">
         <div class="alert-main" onclick="toggleAlert(${index})">
           <div class="alert-severity ${sevClass}"></div>
           <div class="alert-body">
             <div class="alert-top-row">
-              <span class="alert-player-name">${player_name}</span>
-              <span class="alert-time">${timeAgo}</span>
+              <span class="alert-player-name">${player_name} — ${badgeText}</span>
+              <span class="alert-time">${dateStr}</span>
             </div>
             <div class="alert-meta">
               <span class="alert-badge ${badgeClass}">${badgeText}</span>
-              <span class="alert-team">${team}</span>
+              ${team ? `<span class="alert-team">${team}</span>` : ''}
             </div>
             ${detail ? `<div class="alert-detail">${detail}</div>` : ''}
             ${chips ? `<div class="alert-pickups">${chips}</div>` : ''}
+            <div class="alert-footer">
+              ${matchupHtml}
+              ${sourceHtml}
+            </div>
           </div>
           <div class="alert-expand">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
           </div>
         </div>
-        ${pickupRecs.length > 0 ? `
+        ${recommendations.length > 0 ? `
         <div class="alert-detail-panel">
           <div class="detail-section">
-            <div class="detail-section-title">Pickup recommendations</div>
+            <div class="detail-section-title">Waiver targets</div>
             ${detailRows}
           </div>
         </div>` : ''}
@@ -1291,7 +1423,6 @@
     //  PLAYER INDEX (built from alerts + /debug/player lookups)
     // ═══════════════════════════════════════════
     function buildPlayerIndexFromAlerts() {
-      // Extract unique player names from alerts (injured + recommended)
       const seen = new Set();
       allAlerts.forEach(a => {
         if (a.player_name) seen.add(a.player_name);
@@ -1299,7 +1430,6 @@
           if (r.player) seen.add(r.player);
         });
       });
-      // Merge with existing index
       seen.forEach(name => {
         if (!playerIndex.find(p => p.name.toLowerCase() === name.toLowerCase())) {
           const alert = allAlerts.find(a => a.player_name === name);
@@ -1372,9 +1502,8 @@
 
       const btn = document.getElementById('compareBtn');
       btn.disabled = true;
-      btn.textContent = 'Comparing...';
+      btn.innerHTML = '<span class="inline-spinner"></span>Comparing...';
 
-      // Fetch both players from the API
       const [dataA, dataB] = await Promise.all([
         fetchPlayerData(nameA),
         fetchPlayerData(nameB),
@@ -1387,13 +1516,13 @@
       const statB = buildPlayerStats(nameB, dataB);
 
       const categories = [
-        { label: 'Avg FPTS', keyA: statA.avg_fpts, keyB: statB.avg_fpts },
-        { label: 'Avg Minutes', keyA: statA.avg_min, keyB: statB.avg_min },
-        { label: 'Avg Points', keyA: statA.avg_pts, keyB: statB.avg_pts },
-        { label: 'Avg Rebounds', keyA: statA.avg_reb, keyB: statB.avg_reb },
-        { label: 'Avg Assists', keyA: statA.avg_ast, keyB: statB.avg_ast },
-        { label: 'Stocks (STL+BLK)', keyA: statA.stocks, keyB: statB.stocks },
-        { label: 'Games Played', keyA: statA.games_played, keyB: statB.games_played },
+        { label: 'Avg FPTS', keyA: statA.avg_fpts, keyB: statB.avg_fpts, int: false },
+        { label: 'Avg Minutes', keyA: statA.avg_min, keyB: statB.avg_min, int: false },
+        { label: 'Avg Points', keyA: statA.avg_pts, keyB: statB.avg_pts, int: false },
+        { label: 'Avg Rebounds', keyA: statA.avg_reb, keyB: statB.avg_reb, int: false },
+        { label: 'Avg Assists', keyA: statA.avg_ast, keyB: statB.avg_ast, int: false },
+        { label: 'Stocks (STL+BLK)', keyA: statA.stocks, keyB: statB.stocks, int: false },
+        { label: 'Games Played', keyA: statA.games_played, keyB: statB.games_played, int: true },
       ];
 
       let winsA = 0, winsB = 0;
@@ -1410,14 +1539,14 @@
             <div class="compare-player-header">
               <div>
                 <div class="compare-player-name">${statA.name}</div>
-                <div class="compare-player-team">${statA.team} · ${statA.position}</div>
+                <div class="compare-player-team">${statA.team}${statA.position ? ' · ' + statA.position : ''}</div>
               </div>
               ${winner === 'A' ? '<span class="compare-winner-badge">Recommended</span>' : ''}
             </div>
             ${categories.map(c => `
               <div class="compare-stat-row">
                 <span class="compare-stat-name">${c.label}</span>
-                <span class="compare-stat-val ${c.keyA > c.keyB ? 'better' : ''}">${formatStat(c.keyA)}</span>
+                <span class="compare-stat-val ${c.keyA > c.keyB ? 'better' : ''}">${formatStat(c.keyA, c.int)}</span>
               </div>
             `).join('')}
           </div>
@@ -1425,14 +1554,14 @@
             <div class="compare-player-header">
               <div>
                 <div class="compare-player-name">${statB.name}</div>
-                <div class="compare-player-team">${statB.team} · ${statB.position}</div>
+                <div class="compare-player-team">${statB.team}${statB.position ? ' · ' + statB.position : ''}</div>
               </div>
               ${winner === 'B' ? '<span class="compare-winner-badge">Recommended</span>' : ''}
             </div>
             ${categories.map(c => `
               <div class="compare-stat-row">
                 <span class="compare-stat-name">${c.label}</span>
-                <span class="compare-stat-val ${c.keyB > c.keyA ? 'better' : ''}">${formatStat(c.keyB)}</span>
+                <span class="compare-stat-val ${c.keyB > c.keyA ? 'better' : ''}">${formatStat(c.keyB, c.int)}</span>
               </div>
             `).join('')}
           </div>
@@ -1446,6 +1575,9 @@
           </div>
         </div>
       `;
+
+      // Scroll results into view to fix visibility bug
+      setTimeout(() => results.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 
       btn.disabled = false;
       btn.textContent = 'Compare Players';
@@ -1471,9 +1603,12 @@
       };
     }
 
-    function formatStat(val) {
+    function formatStat(val, isInt) {
       if (val == null) return '—';
-      return typeof val === 'number' ? val.toFixed(1) : val;
+      if (typeof val === 'number') {
+        return isInt ? Math.round(val).toString() : val.toFixed(1);
+      }
+      return val;
     }
 
     // ═══════════════════════════════════════════
@@ -1486,11 +1621,10 @@
 
       const btn = document.getElementById('simBtn');
       btn.disabled = true;
-      btn.textContent = 'Simulating...';
+      btn.innerHTML = '<span class="inline-spinner"></span>Simulating...';
 
       const results = document.getElementById('simResults');
 
-      // Fetch player data from API
       const apiData = await fetchPlayerData(name);
       const ri = (apiData && apiData.roster_index && typeof apiData.roster_index === 'object')
         ? apiData.roster_index : {};
@@ -1500,7 +1634,6 @@
       const position = ri.position || '';
       const playerNameDisplay = ri.name || name;
 
-      // Find teammates from the player index
       let beneficiaries = playerIndex
         .filter(p => p.team === team && p.name.toLowerCase() !== name.toLowerCase() && p.avg_fpts > 0)
         .sort((a, b) => b.avg_fpts - a.avg_fpts)
@@ -1512,15 +1645,12 @@
           reason: `Absorbs usage from ${playerNameDisplay}'s absence`
         }));
 
-      // If no teammates found locally, try fetching some known ones from alerts
       if (beneficiaries.length === 0 && team) {
         const teamAlerts = allAlerts.filter(a => a.team === team);
         const teamRecs = [];
         teamAlerts.forEach(a => {
           (a.recommendations || []).forEach(r => {
-            if (!teamRecs.find(x => x.player === r.player)) {
-              teamRecs.push(r);
-            }
+            if (!teamRecs.find(x => x.player === r.player)) teamRecs.push(r);
           });
         });
         beneficiaries = teamRecs.slice(0, 6).map(r => ({
@@ -1585,6 +1715,8 @@
           </div>
         </div>` : ''}
       `;
+
+      setTimeout(() => results.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 
       btn.disabled = false;
       btn.textContent = 'Simulate';
