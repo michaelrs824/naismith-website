@@ -950,6 +950,205 @@
       margin-left: 0.5rem;
     }
 
+    /* ── Lookup Page ─────────────────────────── */
+    .lookup-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .lookup-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .lookup-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+    }
+    .lookup-search-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .lookup-search-row .autocomplete-wrapper { flex: 1; }
+    .lookup-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      outline: none;
+      font-family: inherit;
+    }
+    .lookup-input:focus { border-color: rgba(108, 60, 225, 0.5); }
+    .lookup-btn {
+      background: var(--gradient);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+      transition: opacity 0.2s;
+    }
+    .lookup-btn:hover { opacity: 0.9; }
+    .lookup-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .lookup-results { display: none; }
+    .lookup-results.visible { display: block; }
+
+    .lookup-player-card {
+      background: linear-gradient(135deg, rgba(108, 60, 225, 0.15) 0%, rgba(108, 60, 225, 0.05) 100%);
+      border: 1px solid rgba(108, 60, 225, 0.25);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .lookup-player-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    .lookup-player-name {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .lookup-player-meta {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+    .lookup-team-badge {
+      background: rgba(108, 60, 225, 0.2);
+      color: var(--accent-purple);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
+    }
+    .lookup-stats-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .lookup-stat-chip {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      text-align: center;
+      min-width: 80px;
+    }
+    .lookup-stat-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .lookup-stat-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.15rem;
+    }
+
+    .lookup-section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .lookup-section-bar {
+      width: 3px;
+      height: 16px;
+      background: var(--gradient);
+      border-radius: 2px;
+    }
+
+    .lookup-ben-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .lookup-ben-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .lookup-ben-meta {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 0.2rem;
+    }
+    .lookup-ben-delta {
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+    }
+    .lookup-ben-delta.positive {
+      color: var(--accent-green);
+      background: rgba(63, 185, 80, 0.1);
+    }
+
+    .lookup-alert-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+    .lookup-alert-status {
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+    .lookup-alert-detail {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .lookup-alert-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    .lookup-empty {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-muted);
+    }
+    .lookup-empty-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    .lookup-empty-text {
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .lookup-source {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.75rem;
+    }
+
     /* ── Responsive ───────────────────────────── */
     @media (max-width: 768px) {
       nav { padding: 0.5rem 1rem; }
@@ -968,7 +1167,7 @@
         z-index: 100;
         justify-content: center;
       }
-      .mobile-tabs .nav-tab { flex: 1; text-align: center; font-size: 0.75rem; }
+      .mobile-tabs .nav-tab { flex: 1; text-align: center; font-size: 0.7rem; padding: 0.5rem 0.25rem; }
       main { padding-bottom: 60px; }
       .feed-title-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
       .compare-input-row { grid-template-columns: 1fr; }
@@ -976,7 +1175,10 @@
       .compare-grid { grid-template-columns: 1fr; }
       .sim-input-row { grid-template-columns: 1fr; }
       .feed-header, .feed-list { padding-left: 1rem; padding-right: 1rem; }
-      .compare-container, .sim-container { padding: 1.5rem 1rem; }
+      .compare-container, .sim-container, .lookup-container { padding: 1.5rem 1rem; }
+      .lookup-search-row { flex-direction: column; }
+      .lookup-stats-row { gap: 0.5rem; }
+      .lookup-stat-chip { min-width: 65px; }
     }
 
     .mobile-tabs { display: none; }
@@ -993,6 +1195,7 @@
       </a>
       <div class="nav-tabs">
         <button class="nav-tab active" data-page="injuries">Injuries</button>
+        <button class="nav-tab" data-page="lookup">Lookup</button>
         <button class="nav-tab" data-page="compare">Compare</button>
         <button class="nav-tab" data-page="simulator">What-If</button>
       </div>
@@ -1009,6 +1212,7 @@
   <!-- Mobile tabs -->
   <div class="mobile-tabs">
     <button class="nav-tab active" data-page="injuries">Injuries</button>
+    <button class="nav-tab" data-page="lookup">Lookup</button>
     <button class="nav-tab" data-page="compare">Compare</button>
     <button class="nav-tab" data-page="simulator">What-If</button>
   </div>
@@ -1046,6 +1250,29 @@
         <div class="loading-state" id="feedLoading">
           <div class="loading-spinner"></div>
           <p>Loading injury feed...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ LOOKUP PAGE ═══ -->
+    <div class="page" id="page-lookup">
+      <div class="lookup-container">
+        <h1 class="lookup-title">Player Lookup</h1>
+        <p class="lookup-subtitle">Search any NBA player to see their stats, injury status, and who benefits when they're out.</p>
+
+        <div class="lookup-search-row">
+          <div class="autocomplete-wrapper">
+            <input type="text" class="lookup-input" id="lookupInput" placeholder="e.g. LeBron James, KAT, Wemby" autocomplete="off">
+            <div class="autocomplete-list" id="acListLookup"></div>
+          </div>
+          <button class="lookup-btn" id="lookupBtn" onclick="runLookup()">Look Up</button>
+        </div>
+
+        <div class="lookup-results" id="lookupResults"></div>
+
+        <div class="lookup-empty" id="lookupEmpty">
+          <div class="lookup-empty-icon">&#128270;</div>
+          <div class="lookup-empty-text">Search for any player to see their fantasy profile,<br>injury history, and beneficiary impact data.</div>
         </div>
       </div>
     </div>
@@ -1749,6 +1976,198 @@
     }
 
     // ═══════════════════════════════════════════
+    //  PLAYER LOOKUP
+    // ═══════════════════════════════════════════
+    let lookupSelectedPlayer = '';
+
+    function setupLookupAutocomplete() {
+      const input = document.getElementById('lookupInput');
+      const list = document.getElementById('acListLookup');
+      let debounceTimer = null;
+
+      input.addEventListener('input', () => {
+        const q = input.value.trim();
+        if (q.length < 2) { list.classList.remove('visible'); return; }
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(async () => {
+          const matches = await searchPlayers(q);
+          if (matches.length === 0) { list.classList.remove('visible'); return; }
+          list.innerHTML = matches.map(p => {
+            const statusBadge = p.status && p.status !== 'ACTIVE'
+              ? `<span style="color: var(--accent-red); font-size: 0.7rem; font-weight: 600; margin-left: 4px;">${p.status}</span>`
+              : '';
+            return `<div class="autocomplete-item" data-name="${p.name}" data-team="${p.team}">
+              ${p.name} <span class="autocomplete-item-team">${p.team}${p.position ? ' · ' + p.position : ''}</span>${statusBadge}
+              <span style="margin-left: auto; font-size: 0.75rem; color: var(--accent-purple); font-weight: 600;">${p.avg_fpts.toFixed(1)} FP</span>
+            </div>`;
+          }).join('');
+          list.classList.add('visible');
+          list.querySelectorAll('.autocomplete-item').forEach(item => {
+            item.addEventListener('mousedown', e => {
+              e.preventDefault();
+              input.value = item.dataset.name;
+              lookupSelectedPlayer = item.dataset.name;
+              list.classList.remove('visible');
+              runLookup();
+            });
+          });
+        }, 250);
+      });
+
+      input.addEventListener('blur', () => {
+        setTimeout(() => list.classList.remove('visible'), 200);
+      });
+
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { runLookup(); }
+      });
+    }
+
+    async function runLookup() {
+      const input = document.getElementById('lookupInput');
+      const results = document.getElementById('lookupResults');
+      const empty = document.getElementById('lookupEmpty');
+      const btn = document.getElementById('lookupBtn');
+      const query = input.value.trim();
+      if (!query) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Loading...';
+      empty.style.display = 'none';
+      results.classList.remove('visible');
+
+      try {
+        // Fetch lookup data and player alerts in parallel
+        const [lookupRes, alertsRes] = await Promise.all([
+          fetch(`${API_BASE}/lookup/${encodeURIComponent(query)}`),
+          fetch(`${API_BASE}/debug/recent-alerts`),
+        ]);
+
+        if (!lookupRes.ok) {
+          results.innerHTML = `<div class="lookup-empty">
+            <div class="lookup-empty-icon">&#128533;</div>
+            <div class="lookup-empty-text">Player not found. Try a different name or spelling.</div>
+          </div>`;
+          results.classList.add('visible');
+          btn.disabled = false;
+          btn.textContent = 'Look Up';
+          return;
+        }
+
+        const data = await lookupRes.json();
+        const alertsData = await alertsRes.json();
+
+        // Filter alerts for this player
+        const playerName = data.player || query;
+        const playerAlerts = (alertsData.alerts || []).filter(a => {
+          const evtName = (a.event?.player_name || '').toLowerCase();
+          return evtName === playerName.toLowerCase();
+        }).slice(0, 3);
+
+        const team = data.team || '';
+        const avgFpts = (data.avg_fpts || 0).toFixed(1);
+        const missed = data.games_missed_clean ?? data.games_missed ?? 0;
+        const status = data.player_status || '';
+        const dataSource = data.data_source || '';
+        const position = data.position || '';
+        const avgMin = data.avg_min ? data.avg_min.toFixed(1) : null;
+        const beneficiaries = data.beneficiaries || [];
+
+        // Status color
+        const statusColor = status === 'OUT' ? 'var(--accent-red)'
+          : status === 'QUESTIONABLE' || status === 'DOUBTFUL' ? 'var(--accent-orange)'
+          : status === 'RETURNING' ? 'var(--accent-green)'
+          : 'var(--text-muted)';
+
+        let html = `
+          <div class="lookup-player-card">
+            <div class="lookup-player-header">
+              <div>
+                <div class="lookup-player-name">${playerName}</div>
+                <div class="lookup-player-meta">${team}${position ? ' · ' + position : ''}${status ? ' · <span style="color: ' + statusColor + '; font-weight: 600;">' + status + '</span>' : ''}</div>
+              </div>
+              <div class="lookup-team-badge">${team}</div>
+            </div>
+            <div class="lookup-stats-row">
+              <div class="lookup-stat-chip">
+                <div class="lookup-stat-value" style="color: var(--accent-purple);">${avgFpts}</div>
+                <div class="lookup-stat-label">FPTS/Game</div>
+              </div>
+              ${avgMin ? `<div class="lookup-stat-chip">
+                <div class="lookup-stat-value">${avgMin}</div>
+                <div class="lookup-stat-label">MIN/Game</div>
+              </div>` : ''}
+              <div class="lookup-stat-chip">
+                <div class="lookup-stat-value">${missed}</div>
+                <div class="lookup-stat-label">Games Missed</div>
+              </div>
+            </div>
+            ${dataSource ? `<div class="lookup-source">Source: ${dataSource}</div>` : ''}
+          </div>`;
+
+        // Latest alerts
+        if (playerAlerts.length > 0) {
+          html += `<div class="lookup-section-title"><div class="lookup-section-bar" style="background: var(--accent-orange);"></div>Latest Alerts</div>`;
+          playerAlerts.forEach(a => {
+            const evt = a.event || {};
+            const evtType = evt.event_type || '';
+            const typeMap = { 'INJURY_OUT': 'OUT', 'INJURY_RETURN': 'RETURNING', 'INJURY_QUESTIONABLE': 'QUESTIONABLE', 'INJURY_DOUBTFUL': 'DOUBTFUL' };
+            const alertStatus = typeMap[evtType] || evtType;
+            const alertColor = evtType.includes('OUT') ? 'var(--accent-red)' : evtType.includes('RETURN') ? 'var(--accent-green)' : 'var(--accent-orange)';
+            const detail = evt.detail || '';
+            const ts = a.source_timestamp || a.timestamp || '';
+            const timeStr = ts ? new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
+            html += `<div class="lookup-alert-card">
+              <div class="lookup-alert-status" style="color: ${alertColor};">${alertStatus}</div>
+              <div class="lookup-alert-detail">${detail}</div>
+              <div class="lookup-alert-time">${timeStr}${evt.source ? ' · ' + evt.source : ''}</div>
+            </div>`;
+          });
+          html += '<div style="height: 1rem;"></div>';
+        }
+
+        // Beneficiaries
+        if (beneficiaries.length > 0) {
+          html += `<div class="lookup-section-title"><div class="lookup-section-bar"></div>Who Benefits When ${playerName.split(' ').pop()} Is Out</div>`;
+          beneficiaries.forEach(b => {
+            const bName = b.player_name || b.name || '';
+            const delta = b.fpts_delta || 0;
+            const confidence = b.confidence || 0;
+            const impact = b.impact_level || '';
+            const sign = delta >= 0 ? '+' : '';
+            html += `<div class="lookup-ben-card">
+              <div>
+                <div class="lookup-ben-name">${bName}</div>
+                <div class="lookup-ben-meta">${impact ? impact + ' impact' : ''}${confidence ? ' · ' + (confidence * 100).toFixed(0) + '% conf' : ''}</div>
+              </div>
+              <div class="lookup-ben-delta positive">${sign}${delta.toFixed(1)} FPTS</div>
+            </div>`;
+          });
+        }
+
+        if (playerAlerts.length === 0 && beneficiaries.length === 0) {
+          html += `<div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+            No recent alerts or beneficiary data for this player.
+          </div>`;
+        }
+
+        results.innerHTML = html;
+        results.classList.add('visible');
+
+      } catch (err) {
+        console.error('Lookup error:', err);
+        results.innerHTML = `<div class="lookup-empty">
+          <div class="lookup-empty-icon">&#9888;&#65039;</div>
+          <div class="lookup-empty-text">Something went wrong. Check your connection and try again.</div>
+        </div>`;
+        results.classList.add('visible');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Look Up';
+    }
+
+    // ═══════════════════════════════════════════
     //  INIT
     // ═══════════════════════════════════════════
     fetchAlerts().then(() => {
@@ -1757,6 +2176,7 @@
       setupAutocomplete('comparePlayerB', 'acListB');
       setupAutocomplete('simPlayer', 'acListSim');
     });
+    setupLookupAutocomplete();
 
     // Auto-refresh feed every 2 minutes
     setInterval(() => {
