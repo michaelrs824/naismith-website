@@ -2039,7 +2039,7 @@
       try {
         // Fetch lookup data and player alerts in parallel
         const [lookupRes, alertsRes] = await Promise.all([
-          fetch(`${API_BASE}/lookup/${encodeURIComponent(query)}`),
+          fetch(`${API_BASE}/debug/lookup/${encodeURIComponent(query)}`),
           fetch(`${API_BASE}/debug/recent-alerts`),
         ]);
 
