@@ -765,6 +765,7 @@
 
     .impact-high { background: rgba(248, 81, 73, 0.15); color: var(--accent-red); }
     .impact-medium { background: rgba(210, 153, 34, 0.15); color: var(--accent-amber); }
+    .impact-low { background: rgba(139, 148, 158, 0.12); color: var(--text-secondary); }
 
     .sim-ripple-list {
       display: flex;
@@ -1820,7 +1821,9 @@
         else if (c.keyB > c.keyA) winsB++;
       });
 
-      const winner = winsA >= winsB ? 'A' : 'B';
+      // Tie-break on FPTS, then default to true tie
+      const winner = winsA > winsB ? 'A' : winsB > winsA ? 'B'
+        : statA.avg_fpts > statB.avg_fpts ? 'A' : statB.avg_fpts > statA.avg_fpts ? 'B' : 'TIE';
 
       results.innerHTML = `
         <div class="compare-grid" style="margin-top: 2rem;">
@@ -1830,7 +1833,7 @@
                 <div class="compare-player-name">${statA.name}</div>
                 <div class="compare-player-team">${statA.team}${statA.position ? ' · ' + statA.position : ''}</div>
               </div>
-              ${winner === 'A' ? '<span class="compare-winner-badge">Recommended</span>' : ''}
+              ${winner === 'A' ? '<span class="compare-winner-badge">Recommended</span>' : winner === 'TIE' ? '<span class="compare-winner-badge" style="background: rgba(139,148,158,0.15); color: var(--text-secondary);">Even</span>' : ''}
             </div>
             ${categories.map(c => `
               <div class="compare-stat-row">
@@ -1845,7 +1848,7 @@
                 <div class="compare-player-name">${statB.name}</div>
                 <div class="compare-player-team">${statB.team}${statB.position ? ' · ' + statB.position : ''}</div>
               </div>
-              ${winner === 'B' ? '<span class="compare-winner-badge">Recommended</span>' : ''}
+              ${winner === 'B' ? '<span class="compare-winner-badge">Recommended</span>' : winner === 'TIE' ? '<span class="compare-winner-badge" style="background: rgba(139,148,158,0.15); color: var(--text-secondary);">Even</span>' : ''}
             </div>
             ${categories.map(c => `
               <div class="compare-stat-row">
@@ -1858,9 +1861,11 @@
         <div class="compare-verdict">
           <div class="compare-verdict-title">AI Verdict</div>
           <div class="compare-verdict-text">
-            <strong>${winner === 'A' ? statA.name : statB.name}</strong> gets the edge, winning ${Math.max(winsA, winsB)} of ${categories.length} categories.
+            ${winner === 'TIE'
+              ? `<strong>Too close to call.</strong> Both players win ${winsA} of ${categories.length} categories. ${statA.avg_fpts > 0 && statB.avg_fpts > 0 ? `${statA.name} averages ${statA.avg_fpts.toFixed(1)} FPTS/G vs ${statB.name}'s ${statB.avg_fpts.toFixed(1)} FPTS/G.` : ''} Consider schedule and matchup context to decide.`
+              : `<strong>${winner === 'A' ? statA.name : statB.name}</strong> gets the edge, winning ${Math.max(winsA, winsB)} of ${categories.length} categories.
             ${statA.avg_fpts > 0 && statB.avg_fpts > 0 ? `${statA.name} averages ${statA.avg_fpts.toFixed(1)} FPTS/G vs ${statB.name}'s ${statB.avg_fpts.toFixed(1)} FPTS/G. ` : ''}
-            ${(winner === 'A' ? statA : statB).stocks >= 2 ? `${winner === 'A' ? statA.name : statB.name} also provides elite stocks (${(winner === 'A' ? statA : statB).stocks.toFixed(1)} STL+BLK), a scarce category on waivers.` : ''}
+            ${(winner === 'A' ? statA : statB).stocks >= 2 ? `${winner === 'A' ? statA.name : statB.name} also provides elite stocks (${(winner === 'A' ? statA : statB).stocks.toFixed(1)} STL+BLK), a scarce category on waivers.` : ''}`}
           </div>
         </div>
       `;
@@ -1914,26 +1919,64 @@
 
       const results = document.getElementById('simResults');
 
-      const apiData = await fetchPlayerData(name);
+      // Fetch real data from both endpoints in parallel
+      let lookupData = null;
+      let apiData = null;
+      try {
+        const [lookupRes, playerRes] = await Promise.all([
+          fetch(`${API_BASE}/debug/lookup/${encodeURIComponent(name)}`).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetchPlayerData(name),
+        ]);
+        lookupData = lookupRes;
+        apiData = playerRes;
+      } catch (e) {
+        console.error('Simulation fetch error:', e);
+      }
+
+      // Extract player info — prefer lookup data, fall back to debug/player
       const ri = (apiData && apiData.roster_index && typeof apiData.roster_index === 'object')
         ? apiData.roster_index : {};
-
-      const team = ri.team || apiData?.roster_index_team || '';
-      const avgFpts = ri.avg_fpts || 0;
+      const team = lookupData?.team || ri.team || apiData?.roster_index_team || '';
+      const avgFpts = lookupData?.avg_fpts || ri.avg_fpts || 0;
       const position = ri.position || '';
-      const playerNameDisplay = ri.name || name;
+      const playerNameDisplay = lookupData?.player || ri.name || name;
 
-      let beneficiaries = playerIndex
-        .filter(p => p.team === team && p.name.toLowerCase() !== name.toLowerCase() && p.avg_fpts > 0)
-        .sort((a, b) => b.avg_fpts - a.avg_fpts)
+      // Error state: player not found at all
+      if (!lookupData && !ri.team) {
+        results.classList.add('visible');
+        results.innerHTML = `
+          <div class="empty-state" style="padding: 2rem; margin-top: 1rem;">
+            <p>Could not find "<strong>${name}</strong>". Check the spelling or try the autocomplete suggestions.</p>
+          </div>`;
+        btn.disabled = false;
+        btn.textContent = 'Simulate';
+        return;
+      }
+
+      // Use REAL beneficiary data from the lookup endpoint (graph-based)
+      const graphBeneficiaries = lookupData?.beneficiaries || [];
+      let beneficiaries = graphBeneficiaries
+        .filter(b => Math.abs(b.fpts_delta || 0) >= 2.0)
         .slice(0, 6)
-        .map(p => ({
-          name: p.name,
-          position: p.position || '',
-          estimated_boost: Math.round((avgFpts * (0.06 + Math.random() * 0.14)) * 10) / 10,
-          reason: `Absorbs usage from ${playerNameDisplay}'s absence`
-        }));
+        .map(b => {
+          const pType = (b.pickup_type || '').replace(/_/g, ' ').toLowerCase();
+          const statParts = [];
+          if (b.pts_delta > 0) statParts.push(`+${b.pts_delta.toFixed(0)} PTS`);
+          if (b.ast_delta > 0) statParts.push(`+${b.ast_delta.toFixed(0)} AST`);
+          if (b.reb_delta > 0) statParts.push(`+${b.reb_delta.toFixed(0)} REB`);
+          const statStr = statParts.length > 0 ? statParts.join(', ') : '';
+          const reason = statStr
+            ? `Projected ${statStr} with ${playerNameDisplay} out`
+            : pType ? `${pType.charAt(0).toUpperCase() + pType.slice(1)} — absorbs usage` : `Benefits from ${playerNameDisplay}'s absence`;
+          return {
+            name: b.player_name || '',
+            estimated_boost: Math.abs(b.fpts_delta || 0),
+            confidence: b.confidence || 0,
+            reason: reason,
+          };
+        });
 
+      // Fallback: use existing alert recommendations for this team
       if (beneficiaries.length === 0 && team) {
         const teamAlerts = allAlerts.filter(a => a.team === team);
         const teamRecs = [];
@@ -1945,10 +1988,14 @@
         beneficiaries = teamRecs.slice(0, 6).map(r => ({
           name: r.player,
           position: '',
-          estimated_boost: r.fpts_delta || 3,
-          reason: 'Previously recommended as pickup'
+          estimated_boost: Math.abs(r.fpts_delta || 3),
+          confidence: 0,
+          reason: 'Identified from recent injury alerts',
         }));
       }
+
+      // Sort by boost descending (real data should already be sorted, but ensure it)
+      beneficiaries.sort((a, b) => b.estimated_boost - a.estimated_boost);
 
       const durationMap = {
         'tonight': { label: 'Out Tonight', games: 1 },
@@ -1959,8 +2006,11 @@
       };
       const dur = durationMap[duration] || durationMap['1-2weeks'];
 
-      const impactClass = avgFpts >= 35 ? 'impact-high' : 'impact-medium';
+      const impactClass = avgFpts >= 35 ? 'impact-high' : avgFpts >= 20 ? 'impact-medium' : 'impact-low';
       const impactLabel = avgFpts >= 35 ? 'High Impact' : avgFpts >= 20 ? 'Moderate Impact' : 'Low Impact';
+
+      // Scale boosts by duration (longer absence = more certainty of sustained boost)
+      const durationScale = dur.games >= 11 ? 1.0 : dur.games >= 5 ? 0.85 : dur.games >= 2 ? 0.7 : 0.5;
 
       results.classList.add('visible');
       results.innerHTML = `
@@ -1970,7 +2020,8 @@
             <span class="sim-impact-badge ${impactClass}">${impactLabel}</span>
           </div>
           <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1rem;">
-            <strong style="color: var(--text-primary);">${playerNameDisplay}</strong> averages
+            <strong style="color: var(--text-primary);">${playerNameDisplay}</strong>
+            ${position ? `(${position}) ` : ''}averages
             <strong style="color: var(--text-primary);">${avgFpts.toFixed(1)} FPTS/G</strong>
             ${team ? `for the ${team}` : ''}.
             Missing ~${dur.games} game${dur.games > 1 ? 's' : ''} would remove approximately
@@ -1981,7 +2032,7 @@
           <div style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.75rem;">Projected Beneficiaries</div>
           <div class="sim-ripple-list">
             ${beneficiaries.map(b => {
-              const boost = b.estimated_boost || 3;
+              const boost = b.estimated_boost * durationScale;
               return `<div class="sim-ripple">
                 <div>
                   <div class="sim-ripple-player">${b.name}</div>
@@ -1992,15 +2043,16 @@
             }).join('')}
           </div>` : `
           <div class="empty-state" style="padding: 2rem;">
-            <p>No teammate data available${team ? ' for ' + team : ''}. Try a different player.</p>
+            <p>No beneficiary data available for ${playerNameDisplay}${team ? ' (' + team + ')' : ''}. This player may not be in our graph yet.</p>
           </div>`}
         </div>
         ${beneficiaries.length > 0 ? `
         <div class="compare-verdict" style="margin-top: 1rem;">
           <div class="compare-verdict-title">Simulation Summary</div>
           <div class="compare-verdict-text">
-            <strong>${beneficiaries[0].name}</strong> stands to gain the most from ${playerNameDisplay}'s absence.
+            <strong>${beneficiaries[0].name}</strong> stands to gain the most from ${playerNameDisplay}'s absence with a projected <strong>+${(beneficiaries[0].estimated_boost * durationScale).toFixed(1)} FPTS/G</strong> boost.
             ${dur.games >= 5 ? 'With a multi-week absence, this is a strong waiver pickup target.' : 'Monitor the situation — if the absence extends, move quickly on waivers.'}
+            ${beneficiaries.length > 1 ? ` Also keep an eye on <strong>${beneficiaries[1].name}</strong> as a secondary beneficiary.` : ''}
           </div>
         </div>` : ''}
       `;
