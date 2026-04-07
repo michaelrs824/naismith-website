@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Naismith — Injury Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='68' font-size='60' font-family='Arial' font-weight='800' text-anchor='middle' fill='white'>N</text></svg>">
   <meta name="description" content="Live NBA injury feed with AI-powered fantasy pickup recommendations.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -293,6 +294,9 @@
       color: var(--text-muted);
       flex-shrink: 0;
     }
+    .alert-time.stale {
+      opacity: 0.5;
+    }
 
     .alert-meta {
       display: flex;
@@ -315,11 +319,19 @@
     .badge-doubtful { background: rgba(210, 153, 34, 0.15); color: var(--accent-amber); }
     .badge-questionable { background: rgba(46, 117, 182, 0.15); color: var(--accent-blue); }
     .badge-dtd { background: rgba(139, 148, 158, 0.15); color: var(--text-secondary); }
+    .badge-returning { background: rgba(63, 185, 80, 0.15); color: var(--accent-green); }
 
     .alert-team {
       font-size: 0.75rem;
       color: var(--text-secondary);
       font-weight: 500;
+    }
+
+    .alert-fpts {
+      font-size: 0.7rem;
+      color: var(--accent-purple);
+      font-weight: 600;
+      margin-left: 0.5rem;
     }
 
     .alert-detail {
@@ -928,7 +940,7 @@
       margin-top: 4px;
       max-height: 200px;
       overflow-y: auto;
-      z-index: 50;
+      z-index: 200;
       display: none;
     }
 
@@ -1167,7 +1179,7 @@
         z-index: 100;
         justify-content: center;
       }
-      .mobile-tabs .nav-tab { flex: 1; text-align: center; font-size: 0.7rem; padding: 0.5rem 0.25rem; }
+      .mobile-tabs .nav-tab { flex: 1; text-align: center; font-size: 0.7rem; padding: 0.5rem 0.25rem; white-space: nowrap; }
       main { padding-bottom: 60px; }
       .feed-title-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
       .compare-input-row { grid-template-columns: 1fr; }
@@ -1176,7 +1188,7 @@
       .sim-input-row { grid-template-columns: 1fr; }
       .feed-header, .feed-list { padding-left: 1rem; padding-right: 1rem; }
       .compare-container, .sim-container, .lookup-container { padding: 1.5rem 1rem; }
-      .lookup-search-row { flex-direction: column; }
+      .lookup-search-row { flex-direction: column; gap: 0.75rem; }
       .lookup-stats-row { gap: 0.5rem; }
       .lookup-stat-chip { min-width: 65px; }
     }
@@ -1243,6 +1255,7 @@
           <button class="filter-btn" data-filter="critical">Critical</button>
           <button class="filter-btn" data-filter="out">Out</button>
           <button class="filter-btn" data-filter="gtd">GTD</button>
+          <button class="filter-btn" data-filter="returning">Returning</button>
           <input type="text" class="feed-search" id="feedSearch" placeholder="Search player or team...">
         </div>
       </div>
@@ -1367,7 +1380,7 @@
     // Normalize the nested API response into a flat structure
     function normalizeAlert(raw) {
       const evt = raw.event || {};
-      const recs = (raw.top_recommendations || []).map(r => ({
+      const rawRecs = (raw.top_recommendations || []).map(r => ({
         player: r.player || '',
         action: r.action || 'PICKUP',
         fpts_delta: r.fpts_delta || 0,
@@ -1376,6 +1389,14 @@
         favorable_matchup: r.favorable_matchup || false,
         tough_matchup: r.tough_matchup || false,
       }));
+      // Deduplicate pickup recs by player name
+      const seenRecs = new Set();
+      const recs = rawRecs.filter(r => {
+        const k = r.player.toLowerCase();
+        if (seenRecs.has(k)) return false;
+        seenRecs.add(k);
+        return true;
+      });
 
       // Detect transactions
       const evtType = evt.event_type || '';
@@ -1423,7 +1444,15 @@
         document.getElementById('statusText').textContent = 'Live';
 
         const rawAlerts = data.alerts || [];
-        allAlerts = rawAlerts.map(normalizeAlert);
+        // Deduplicate: keep the first (most recent) alert per player+status
+        const seen = new Set();
+        const deduped = rawAlerts.filter(raw => {
+          const key = `${(raw.event?.player_name || '').toLowerCase()}:${raw.event?.event_type || ''}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        allAlerts = deduped.map(normalizeAlert);
         updateStats();
         renderAlerts();
       } catch (err) {
@@ -1469,6 +1498,8 @@
         filtered = filtered.filter(a => a.status === 'OUT' || a.status === 'SUSPENDED');
       } else if (activeFilter === 'gtd') {
         filtered = filtered.filter(a => ['QUESTIONABLE', 'DAY-TO-DAY', 'DOUBTFUL'].includes(a.status));
+      } else if (activeFilter === 'returning') {
+        filtered = filtered.filter(a => a.status === 'RETURNING');
       }
 
       if (search) {
@@ -1492,7 +1523,7 @@
     }
 
     function formatDateFull(ts) {
-      if (!ts) return '';
+      if (!ts) return { text: '', stale: false };
       try {
         const dt = new Date(ts);
         const local = dt;
@@ -1509,8 +1540,8 @@
           const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
           relative = days[local.getDay()];
         }
-        return `${datePart} · ${relative}`;
-      } catch (e) { return ''; }
+        return { text: `${datePart} · ${relative}`, stale: mins > 1440 };
+      } catch (e) { return { text: '', stale: false }; }
     }
 
     function renderAlertCard(alert, index) {
@@ -1536,18 +1567,21 @@
         badgeText = status === 'DAY-TO-DAY' ? 'GTD' : status;
       } else if (status === 'RETURNING') {
         sevClass = 'severity-low';
-        badgeClass = 'badge-dtd';
+        badgeClass = 'badge-returning';
         badgeText = 'RETURNING';
       }
 
       // Full date (iOS style: "Mar 20 · 3h ago")
-      const dateStr = formatDateFull(alert.source_timestamp || timestamp);
+      const dateInfo = formatDateFull(alert.source_timestamp || timestamp);
+      const dateStr = dateInfo.text;
+      const staleClass = dateInfo.stale ? ' stale' : '';
 
       // Pickup chips with action badges
       const chips = recommendations.slice(0, 3).map(r => {
         const sign = r.fpts_delta >= 0 ? '+' : '';
-        const actionClass = r.action === 'PICKUP' ? 'action-pickup' : r.action === 'SELL' ? 'action-sell' : 'action-monitor';
-        const actionText = r.action === 'PICKUP' ? 'PICKUP' : r.action === 'SELL' ? 'SELL' : 'MONITOR';
+        const isSell = r.action === 'SELL' || r.action === 'MONITOR_DOWN';
+        const actionClass = r.action === 'PICKUP' ? 'action-pickup' : isSell ? 'action-sell' : 'action-monitor';
+        const actionText = r.action === 'PICKUP' ? 'PICKUP' : isSell ? 'SELL' : 'MONITOR';
         return `<div class="pickup-chip">
           <span class="action-badge ${actionClass}">${actionText}</span>
           <span>${r.player}</span>
@@ -1560,8 +1594,9 @@
       // Expanded detail rows with full badges
       const detailRows = recommendations.map((r, ri) => {
         const sign = r.fpts_delta >= 0 ? '+' : '';
-        const actionClass = r.action === 'PICKUP' ? 'action-pickup' : r.action === 'SELL' ? 'action-sell' : 'action-monitor';
-        const actionText = r.action === 'PICKUP' ? 'PICKUP' : r.action === 'SELL' ? 'SELL' : 'MONITOR';
+        const isSell = r.action === 'SELL' || r.action === 'MONITOR_DOWN';
+        const actionClass = r.action === 'PICKUP' ? 'action-pickup' : isSell ? 'action-sell' : 'action-monitor';
+        const actionText = r.action === 'PICKUP' ? 'PICKUP' : isSell ? 'SELL' : 'MONITOR';
         const yahooHtml = r.available_in_league === true
           ? '<span class="yahoo-badge yahoo-fa" style="margin-left:6px">Yahoo FA</span>'
           : r.available_in_league === false
@@ -1602,11 +1637,12 @@
           <div class="alert-body">
             <div class="alert-top-row">
               <span class="alert-player-name">${player_name} — ${badgeText}</span>
-              <span class="alert-time">${dateStr}</span>
+              <span class="alert-time${staleClass}">${dateStr}</span>
             </div>
             <div class="alert-meta">
               <span class="alert-badge ${badgeClass}">${badgeText}</span>
               ${team ? `<span class="alert-team">${team}</span>` : ''}
+              ${alert.avg_fpts >= 10 ? `<span class="alert-fpts">${alert.avg_fpts.toFixed(1)} FPTS/g</span>` : ''}
             </div>
             ${detail ? `<div class="alert-detail">${detail}</div>` : ''}
             ${chips ? `<div class="alert-pickups">${chips}</div>` : ''}
@@ -2097,10 +2133,10 @@
                 <div class="lookup-stat-value">${avgMin}</div>
                 <div class="lookup-stat-label">MIN/Game</div>
               </div>` : ''}
-              <div class="lookup-stat-chip">
-                <div class="lookup-stat-value">${missed}</div>
+              ${missed > 0 ? `<div class="lookup-stat-chip">
+                <div class="lookup-stat-value" style="color: var(--accent-red);">${missed}</div>
                 <div class="lookup-stat-label">Games Missed</div>
-              </div>
+              </div>` : ''}
             </div>
             ${dataSource ? `<div class="lookup-source">Source: ${dataSource}</div>` : ''}
           </div>`;
@@ -2132,13 +2168,17 @@
           beneficiaries.forEach(b => {
             const bName = b.player_name || b.name || '';
             const delta = b.fpts_delta || 0;
-            const confidence = b.confidence || 0;
-            const impact = b.impact_level || '';
+            const rawConf = b.confidence || 0;
+            // API returns confidence as 0-100 (whole number), not 0-1
+            const confPct = rawConf > 1 ? rawConf : Math.round(rawConf * 100);
+            const rawImpact = b.impact_level || '';
+            // Clean internal labels: "PROJECTED_HIGH" → "High", "STATISTICAL_HIGH" → "High"
+            const impact = rawImpact.replace(/^(PROJECTED_|STATISTICAL_|DYNAMIC_)/i, '').toLowerCase().replace(/^\w/, c => c.toUpperCase());
             const sign = delta >= 0 ? '+' : '';
             html += `<div class="lookup-ben-card">
               <div>
                 <div class="lookup-ben-name">${bName}</div>
-                <div class="lookup-ben-meta">${impact ? impact + ' impact' : ''}${confidence ? ' · ' + (confidence * 100).toFixed(0) + '% conf' : ''}</div>
+                <div class="lookup-ben-meta">${impact ? impact + ' impact' : ''}${confPct ? ' · ' + confPct + '% conf' : ''}</div>
               </div>
               <div class="lookup-ben-delta positive">${sign}${delta.toFixed(1)} FPTS</div>
             </div>`;
