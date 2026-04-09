@@ -218,6 +218,55 @@
     .filter-btn:hover { border-color: var(--border-hover); color: var(--text-primary); }
     .filter-btn.active { background: rgba(108, 60, 225, 0.15); border-color: rgba(108, 60, 225, 0.4); color: #A78BFA; }
 
+    .sort-dropdown {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .sort-dropdown:hover { border-color: var(--border-hover); color: var(--text-primary); }
+    .sort-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      min-width: 200px;
+      z-index: 300;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      overflow: hidden;
+    }
+    .sort-menu.open { display: block; }
+    .sort-option {
+      padding: 0.6rem 1rem;
+      font-size: 0.8rem;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.15s;
+    }
+    .sort-option:hover { background: rgba(139, 148, 158, 0.08); }
+    .sort-option.active { color: #A78BFA; font-weight: 600; }
+    .sort-desc {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
     .feed-search {
       flex: 1;
       min-width: 200px;
@@ -1257,6 +1306,16 @@
           <button class="filter-btn" data-filter="out">Out</button>
           <button class="filter-btn" data-filter="gtd">GTD</button>
           <button class="filter-btn" data-filter="returning">Returning</button>
+          <div class="sort-dropdown" id="sortDropdown" onclick="toggleSortMenu()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h12M3 18h6"/></svg>
+            <span id="sortLabel">Recent</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            <div class="sort-menu" id="sortMenu">
+              <div class="sort-option active" data-sort="recent">Most Recent<span class="sort-desc">Newest updates first</span></div>
+              <div class="sort-option" data-sort="severity">Severity<span class="sort-desc">Critical alerts first</span></div>
+              <div class="sort-option" data-sort="impact">Biggest Impact<span class="sort-desc">Highest FPTS upside first</span></div>
+            </div>
+          </div>
           <input type="text" class="feed-search" id="feedSearch" placeholder="Search player or team...">
         </div>
       </div>
@@ -1377,6 +1436,7 @@
     // ═══════════════════════════════════════════
     let allAlerts = [];
     let activeFilter = 'all';
+    let activeSort = 'recent'; // 'recent' | 'severity' | 'impact'
 
     // Normalize the nested API response into a flat structure
     function normalizeAlert(raw) {
@@ -1510,6 +1570,25 @@
             || a.detail.toLowerCase().includes(search);
         });
       }
+
+      // Sort — matches iOS app sort modes exactly
+      if (activeSort === 'severity') {
+        const sevOrder = { 'CRITICAL': 0, 'HIGH': 1, 'MEDIUM': 2, 'LOW': 3 };
+        filtered = [...filtered].sort((a, b) => {
+          const sa = sevOrder[a.severity] ?? 4;
+          const sb = sevOrder[b.severity] ?? 4;
+          if (sa !== sb) return sa - sb;
+          return new Date(b.source_timestamp || b.timestamp) - new Date(a.source_timestamp || a.timestamp);
+        });
+      } else if (activeSort === 'impact') {
+        filtered = [...filtered].sort((a, b) => {
+          const da = (a.recommendations?.[0]?.fpts_delta) || 0;
+          const db = (b.recommendations?.[0]?.fpts_delta) || 0;
+          if (da !== db) return db - da; // highest impact first
+          return new Date(b.source_timestamp || b.timestamp) - new Date(a.source_timestamp || a.timestamp);
+        });
+      }
+      // 'recent' = default API order (newest first), no re-sort needed
 
       if (filtered.length === 0) {
         feedList.innerHTML = `
@@ -1681,6 +1760,30 @@
     });
 
     document.getElementById('feedSearch').addEventListener('input', renderAlerts);
+
+    // Sort dropdown
+    function toggleSortMenu() {
+      document.getElementById('sortMenu').classList.toggle('open');
+    }
+    document.querySelectorAll('.sort-option').forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        activeSort = opt.dataset.sort;
+        document.getElementById('sortLabel').textContent =
+          activeSort === 'recent' ? 'Recent' : activeSort === 'severity' ? 'Severity' : 'Impact';
+        document.querySelectorAll('.sort-option').forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        document.getElementById('sortMenu').classList.remove('open');
+        renderAlerts();
+      });
+    });
+    // Close sort menu on outside click
+    document.addEventListener('click', (e) => {
+      const dd = document.getElementById('sortDropdown');
+      if (dd && !dd.contains(e.target)) {
+        document.getElementById('sortMenu').classList.remove('open');
+      }
+    });
 
     // ═══════════════════════════════════════════
     //  PLAYER SEARCH (uses /search/players — same as iOS app)
