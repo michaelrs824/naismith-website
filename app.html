@@ -1441,7 +1441,7 @@
     // Normalize the nested API response into a flat structure
     function normalizeAlert(raw) {
       const evt = raw.event || {};
-      const rawRecs = (raw.top_recommendations || []).map(r => ({
+      const rawRecs = (raw.top_recommendations || raw.recommendations || []).map(r => ({
         player: r.player || '',
         action: r.action || 'PICKUP',
         fpts_delta: r.fpts_delta || 0,
@@ -1488,7 +1488,7 @@
         timestamp: raw.timestamp || raw.source_timestamp || '',
         source_timestamp: raw.source_timestamp || '',
         recommendations: recs,
-        avg_fpts: raw.graph_match?.avg_fpts || 0,
+        avg_fpts: raw.graph_match?.avg_fpts || raw.avg_fpts || 0,
         is_transaction: isTransaction,
       };
     }
@@ -1497,12 +1497,18 @@
       const feedList = document.getElementById('feedList');
 
       try {
-        const res = await fetch(`${API_BASE}/debug/recent-alerts`);
+        const res = await fetch(`${API_BASE}/public/alerts`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
         document.getElementById('statusDot').classList.remove('offline');
-        document.getElementById('statusText').textContent = 'Live';
+        // Show when the last alert went out, so a quiet night doesn't look like a dead feed
+        let live = 'Live';
+        if (data.last_alert_at) {
+          const mins = Math.max(0, Math.round((Date.now() - new Date(data.last_alert_at).getTime()) / 60000));
+          live += mins < 60 ? ` · last alert ${mins}m ago` : mins < 1440 ? ` · last alert ${Math.round(mins / 60)}h ago` : ` · last alert ${Math.round(mins / 1440)}d ago`;
+        }
+        document.getElementById('statusText').textContent = live;
 
         const rawAlerts = data.alerts || [];
         // Deduplicate: keep the first (most recent) alert per player+status
@@ -1816,7 +1822,7 @@
     async function searchPlayers(query) {
       if (!query || query.trim().length < 2) return [];
       try {
-        const res = await fetch(`${API_BASE}/debug/search?q=${encodeURIComponent(query.trim())}&limit=8`);
+        const res = await fetch(`${API_BASE}/public/search?q=${encodeURIComponent(query.trim())}&limit=8`);
         if (!res.ok) return [];
         const data = await res.json();
         return (data.results || []).map(p => ({
@@ -1836,7 +1842,7 @@
     async function fetchPlayerData(name) {
       try {
         const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-        const res = await fetch(`${API_BASE}/debug/player/${encodeURIComponent(slug)}`);
+        const res = await fetch(`${API_BASE}/public/player/${encodeURIComponent(slug)}`);
         if (!res.ok) return null;
         return await res.json();
       } catch (e) {
@@ -2027,7 +2033,7 @@
       let apiData = null;
       try {
         const [lookupRes, playerRes] = await Promise.all([
-          fetch(`${API_BASE}/debug/lookup/${encodeURIComponent(name)}`).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(`${API_BASE}/public/lookup/${encodeURIComponent(name)}`).then(r => r.ok ? r.json() : null).catch(() => null),
           fetchPlayerData(name),
         ]);
         lookupData = lookupRes;
@@ -2230,8 +2236,8 @@
       try {
         // Fetch lookup data and player alerts in parallel
         const [lookupRes, alertsRes] = await Promise.all([
-          fetch(`${API_BASE}/debug/lookup/${encodeURIComponent(query)}`),
-          fetch(`${API_BASE}/debug/recent-alerts`),
+          fetch(`${API_BASE}/public/lookup/${encodeURIComponent(query)}`),
+          fetch(`${API_BASE}/public/alerts`),
         ]);
 
         if (!lookupRes.ok) {
@@ -2379,5 +2385,6 @@
     }, 120000);
   </script>
 
+  <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

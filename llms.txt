@@ -1,0 +1,30 @@
+# Naismith
+
+> Naismith is a free NBA fantasy basketball injury-alert service. It posts injury news on X (@NaismithAIApp, https://x.com/NaismithAIApp) as it breaks, with the injured player's fantasy points per game and the best waiver-wire pickups, tagged by league size.
+
+## What it posts
+
+- Injury alerts: when a player is ruled out, listed doubtful or questionable, or gets a recovery timeline.
+- In-game updates: when a player leaves a game, followed by a reply if he returns.
+- Pickups: each shows the projected fantasy points per game gained while the injured player is out. Tags: All leagues (+8 or more), 12+ team (+5 to +8), Deep league (+3 to +5).
+- A nightly recap thread: top performers, breakouts and minutes to watch, with full stat lines.
+
+## Sources
+
+The official NBA injury report, ESPN, RotoWire, CBS Sports and leading NBA insiders on X. The top insiders are checked every minute or two.
+
+## Scoring
+
+Fantasy points: points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, three-pointers made 0.5, turnovers -1.
+
+## Accuracy
+
+Every report is read by AI, and code checks the AI-written line against the original report before it posts, so it can't add a day, an opponent or a timeline the report didn't mention.
+
+## Links
+
+- [Naismith on X](https://x.com/NaismithAIApp): every alert and recap
+- [Live dashboard](https://naismithai.com/app.html): recent alerts, player search and lookups
+- [Privacy](https://naismithai.com/privacy.html)
+
+Naismith is free and has no app or account. Not affiliated with the NBA or any team.

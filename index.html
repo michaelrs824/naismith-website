@@ -3,723 +3,399 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Naismith — NBA Fantasy Intelligence</title>
+  <title>Naismith: Free NBA Fantasy Injury Alerts and Pickups</title>
+  <meta name="description" content="Naismith posts NBA injury news on X the moment it breaks, with the fantasy points at stake and the best waiver pickups, tagged by league size. Free, no app or account.">
+  <link rel="canonical" href="https://naismithai.com/">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='68' font-size='60' font-family='Arial' font-weight='800' text-anchor='middle' fill='white'>N</text></svg>">
-  <meta name="description" content="Real-time NBA injury alerts and fantasy pickup suggestions. Know who's out and who to grab — before your league does.">
-  <meta property="og:title" content="Naismith — NBA Fantasy Intelligence">
-  <meta property="og:description" content="Real-time NBA injury alerts and fantasy pickup suggestions. Know who's out and who to grab — before your league does.">
+
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Naismith">
+  <meta property="og:url" content="https://naismithai.com/">
+  <meta property="og:title" content="Naismith: NBA injury news, turned into fantasy moves">
+  <meta property="og:description" content="Who's out, what it costs you, and who to pick up. Posted free on X as the news breaks.">
+  <meta property="og:image" content="https://naismithai.com/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@NaismithAIApp">
+  <meta name="twitter:title" content="Naismith: NBA injury news, turned into fantasy moves">
+  <meta name="twitter:description" content="Who's out, what it costs you, and who to pick up. Posted free on X as the news breaks.">
+  <meta name="twitter:image" content="https://naismithai.com/og.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://naismithai.com/#org",
+        "name": "Naismith",
+        "url": "https://naismithai.com/",
+        "logo": "https://naismithai.com/og.png",
+        "description": "Naismith is a free NBA fantasy basketball injury-alert service. It posts injury news on X (@NaismithAIApp) as it breaks, with the fantasy points at stake and the best waiver-wire pickups.",
+        "sameAs": ["https://x.com/NaismithAIApp"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://naismithai.com/#site",
+        "url": "https://naismithai.com/",
+        "name": "Naismith",
+        "publisher": {"@id": "https://naismithai.com/#org"}
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {"@type": "Question", "name": "What is Naismith?",
+           "acceptedAnswer": {"@type": "Answer", "text": "Naismith is a free NBA fantasy basketball injury-alert service. When a player is ruled out, leaves a game or gets a recovery timeline, Naismith posts the news on X (@NaismithAIApp) with the player's fantasy points per game and the best waiver pickups, tagged by league size."}},
+          {"@type": "Question", "name": "Where does Naismith get its injury news?",
+           "acceptedAnswer": {"@type": "Answer", "text": "Naismith watches the official NBA injury report, ESPN, RotoWire, CBS Sports and leading NBA insiders on X. The top insiders are checked every minute or two."}},
+          {"@type": "Question", "name": "What do All leagues, 12+ team and Deep league mean?",
+           "acceptedAnswer": {"@type": "Answer", "text": "Each pickup shows how many fantasy points per game Naismith projects the player to gain. All leagues means a projected gain of 8 or more, worth a look in any league. 12+ team means 5 to 8, worth it in 12-team leagues and bigger. Deep league means 3 to 5, for deep leagues only."}},
+          {"@type": "Question", "name": "What fantasy scoring does Naismith use?",
+           "acceptedAnswer": {"@type": "Answer", "text": "Points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, three-pointers made 0.5 and turnovers -1."}},
+          {"@type": "Question", "name": "How does Naismith check its alerts?",
+           "acceptedAnswer": {"@type": "Answer", "text": "Every report is read by AI, and code checks the AI-written line against the original report before it posts, so it can't add a day, an opponent or a timeline the report didn't mention."}},
+          {"@type": "Question", "name": "Does Naismith cost anything?",
+           "acceptedAnswer": {"@type": "Answer", "text": "No. Naismith is free. There's no app to install and no account to create. Follow @NaismithAIApp on X or open the live dashboard at naismithai.com."}}
+        ]
+      }
+    ]
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-primary: #0D1117;
-      --bg-surface: #161B22;
-      --bg-card: #1C2129;
-      --text-primary: #E6EDF3;
-      --text-secondary: #8B949E;
-      --text-muted: #484F58;
-      --accent-purple: #6C3CE1;
-      --accent-blue: #2E75B6;
-      --accent-green: #3FB950;
-      --accent-red: #F85149;
-      --accent-amber: #D29922;
+      --bg: #0D1117;
+      --surface: #161B22;
+      --card: #1C2129;
+      --border: rgba(139, 148, 158, 0.16);
+      --text: #E6EDF3;
+      --text-2: #8B949E;
+      --text-3: #6E7681;
+      --purple: #6C3CE1;
+      --blue: #2E75B6;
+      --green: #3FB950;
       --gradient: linear-gradient(135deg, #6C3CE1 0%, #2E75B6 100%);
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
+    html { -webkit-text-size-adjust: 100%; }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
       -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
     }
+    a { color: inherit; }
+    .wrap { max-width: 640px; margin: 0 auto; padding: 0 16px; }
 
-    /* ── Nav ─────────────────────────────────── */
-    nav {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      z-index: 100;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(13, 17, 23, 0.85);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(139, 148, 158, 0.1);
+    /* Header */
+    header { padding: 20px 0 8px; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo {
+      width: 34px; height: 34px; border-radius: 9px; background: var(--gradient);
+      display: grid; place-items: center; font-weight: 800; color: #fff; font-size: 1.1rem;
     }
+    .brand-name { font-weight: 700; font-size: 1.1rem; }
+    .brand-handle { color: var(--text-2); font-size: 0.9rem; margin-left: auto; text-decoration: none; }
 
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      text-decoration: none;
+    /* Hero */
+    .hero { padding: 36px 0 28px; }
+    h1 {
+      font-size: clamp(1.9rem, 7vw, 2.6rem); line-height: 1.12; font-weight: 800;
+      letter-spacing: -0.02em; text-wrap: balance;
     }
-
-    .nav-logo-icon {
-      width: 36px;
-      height: 36px;
-      background: var(--gradient);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: white;
+    h1 .grad { background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lede { color: var(--text-2); font-size: 1.05rem; margin-top: 14px; max-width: 34em; }
+    .ctas { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      min-height: 52px; padding: 0 20px; border-radius: 12px; text-decoration: none;
+      font-weight: 600; font-size: 1rem; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); transition: border-color .15s, transform .15s;
     }
-
-    .nav-logo-text {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--text-primary);
+    .btn:hover { border-color: rgba(139,148,158,.4); }
+    .btn:active { transform: scale(.99); }
+    .btn-primary { background: #fff; color: #0D1117; border-color: #fff; }
+    .btn-primary:hover { border-color: #fff; opacity: .92; }
+    .btn svg { width: 18px; height: 18px; flex: none; }
+    .live {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;
+      color: var(--text-2); font-size: 0.85rem;
     }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); }
+    .dot.on { background: var(--green); box-shadow: 0 0 0 4px rgba(63,185,80,.15); }
 
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      align-items: center;
+    /* Sections */
+    section { padding: 28px 0; border-top: 1px solid var(--border); }
+    h2 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+    .sub { color: var(--text-2); font-size: 0.95rem; margin-top: 4px; }
+
+    /* Tweet cards */
+    .feed { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+    .tweet {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px;
     }
-
-    .nav-links a {
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: color 0.2s;
+    .tweet-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .tweet-head .logo { width: 28px; height: 28px; font-size: .9rem; border-radius: 7px; }
+    .tweet-who { font-size: 0.9rem; line-height: 1.25; }
+    .tweet-who b { display: block; }
+    .tweet-who span { color: var(--text-2); }
+    .tag {
+      margin-left: auto; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--text-2); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px;
     }
+    .tweet-body { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.95rem; }
+    .tweet-body .ht { color: #58A6FF; }
+    .tweet-foot { margin-top: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-2); }
+    .tweet-foot a { color: #58A6FF; text-decoration: none; font-weight: 500; }
+    .more { margin-top: 14px; font-size: 0.95rem; }
+    .more a { color: #58A6FF; text-decoration: none; font-weight: 500; }
 
-    .nav-links a:hover { color: var(--text-primary); }
-
-    .nav-cta {
-      background: var(--gradient) !important;
-      color: white !important;
-      padding: 0.5rem 1.25rem;
-      border-radius: 8px;
-      font-weight: 600 !important;
-      transition: opacity 0.2s !important;
+    /* Feature list */
+    .features { list-style: none; display: grid; gap: 12px; margin-top: 16px; }
+    .features li {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
     }
+    .features b { display: block; font-size: 0.98rem; }
+    .features span { color: var(--text-2); font-size: 0.92rem; }
+    @media (min-width: 560px) { .features { grid-template-columns: 1fr 1fr; } }
 
-    .nav-cta:hover { opacity: 0.9; }
-
-    /* ── Hero ────────────────────────────────── */
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 8rem 2rem 4rem;
-      position: relative;
+    /* Tags legend */
+    .legend { display: grid; gap: 8px; margin-top: 16px; }
+    .legend div {
+      display: grid; grid-template-columns: 2rem 1fr; gap: 4px 8px; align-items: baseline;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px;
     }
+    .legend .ico { font-size: 1.2rem; grid-column: 1; grid-row: 1 / span 2; }
+    .legend b { font-size: 0.98rem; grid-column: 2; grid-row: 1; }
+    .legend span:not(.ico) { color: var(--text-2); font-size: 0.9rem; grid-column: 2; grid-row: 2; }
 
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -20%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 800px;
-      height: 800px;
-      background: radial-gradient(ellipse, rgba(108, 60, 225, 0.15) 0%, rgba(46, 117, 182, 0.05) 50%, transparent 70%);
-      pointer-events: none;
-    }
+    /* FAQ */
+    details { border-bottom: 1px solid var(--border); padding: 14px 0; }
+    details:first-of-type { margin-top: 8px; }
+    summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--text-2); font-weight: 400; font-size: 1.2rem; line-height: 1; }
+    details[open] summary::after { content: "−"; }
+    details p { color: var(--text-2); margin-top: 8px; font-size: 0.95rem; }
 
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(108, 60, 225, 0.15);
-      border: 1px solid rgba(108, 60, 225, 0.3);
-      padding: 0.4rem 1rem;
-      border-radius: 100px;
-      font-size: 0.85rem;
-      color: #A78BFA;
-      margin-bottom: 2rem;
-      position: relative;
-    }
-
-    .hero-badge-dot {
-      width: 6px;
-      height: 6px;
-      background: var(--accent-green);
-      border-radius: 50%;
-      animation: pulse-dot 2s infinite;
-    }
-
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    .hero h1 {
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      font-weight: 800;
-      line-height: 1.1;
-      max-width: 800px;
-      margin-bottom: 1.5rem;
-      position: relative;
-    }
-
-    .hero h1 .gradient-text {
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero p {
-      font-size: 1.25rem;
-      color: var(--text-secondary);
-      max-width: 560px;
-      line-height: 1.6;
-      margin-bottom: 2.5rem;
-      position: relative;
-    }
-
-    .hero-buttons {
-      display: flex;
-      gap: 1rem;
-      position: relative;
-    }
-
-    .btn-primary {
-      background: var(--gradient);
-      color: white;
-      padding: 0.85rem 2rem;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: opacity 0.2s, transform 0.2s;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-
-    .btn-secondary {
-      background: var(--bg-surface);
-      color: var(--text-primary);
-      padding: 0.85rem 2rem;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      border: 1px solid rgba(139, 148, 158, 0.2);
-      transition: border-color 0.2s, transform 0.2s;
-      cursor: pointer;
-    }
-
-    .btn-secondary:hover { border-color: rgba(139, 148, 158, 0.4); transform: translateY(-1px); }
-
-    /* ── Alert Demo ──────────────────────────── */
-    .demo-section {
-      padding: 2rem 2rem 6rem;
-      display: flex;
-      justify-content: center;
-    }
-
-    .demo-phone {
-      width: 320px;
-      background: var(--bg-surface);
-      border-radius: 24px;
-      border: 1px solid rgba(139, 148, 158, 0.15);
-      overflow: hidden;
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
-    }
-
-    .demo-statusbar {
-      padding: 0.75rem 1.25rem;
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.7rem;
-      color: var(--text-secondary);
-    }
-
-    .demo-header {
-      padding: 0 1.25rem 0.75rem;
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-
-    .demo-alert {
-      margin: 0.5rem 1rem;
-      padding: 1rem;
-      background: var(--bg-card);
-      border-radius: 14px;
-      border-left: 3px solid var(--accent-red);
-      animation: fade-in-up 0.6s ease-out both;
-    }
-
-    .demo-alert:nth-child(2) { animation-delay: 0.2s; }
-    .demo-alert:nth-child(3) { animation-delay: 0.4s; border-left-color: var(--accent-amber); }
-    .demo-alert:last-child { margin-bottom: 1.5rem; }
-
-    @keyframes fade-in-up {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .demo-alert-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 0.4rem;
-    }
-
-    .demo-alert-player {
-      font-weight: 700;
-      font-size: 0.9rem;
-    }
-
-    .demo-alert-badge {
-      font-size: 0.65rem;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 4px;
-      text-transform: uppercase;
-    }
-
-    .badge-critical { background: rgba(248, 81, 73, 0.2); color: var(--accent-red); }
-    .badge-high { background: rgba(210, 153, 34, 0.2); color: var(--accent-amber); }
-
-    .demo-alert-detail {
-      font-size: 0.78rem;
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
-    }
-
-    .demo-alert-pickup {
-      font-size: 0.75rem;
-      color: var(--accent-green);
-      font-weight: 500;
-    }
-
-    /* ── Features ─────────────────────────────── */
-    .features {
-      padding: 6rem 2rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .features-header {
-      text-align: center;
-      margin-bottom: 4rem;
-    }
-
-    .features-header h2 {
-      font-size: 2.25rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
-    }
-
-    .features-header p {
-      color: var(--text-secondary);
-      font-size: 1.1rem;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .feature-card {
-      background: var(--bg-surface);
-      border: 1px solid rgba(139, 148, 158, 0.1);
-      border-radius: 16px;
-      padding: 2rem;
-      transition: border-color 0.3s, transform 0.2s;
-    }
-
-    .feature-card:hover {
-      border-color: rgba(108, 60, 225, 0.3);
-      transform: translateY(-2px);
-    }
-
-    .feature-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .feature-card h3 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    .feature-card p {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      line-height: 1.6;
-    }
-
-    /* ── How it Works ─────────────────────────── */
-    .how-it-works {
-      padding: 6rem 2rem;
-      background: var(--bg-surface);
-    }
-
-    .how-it-works-inner {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .how-it-works h2 {
-      text-align: center;
-      font-size: 2.25rem;
-      font-weight: 800;
-      margin-bottom: 4rem;
-    }
-
-    .steps {
-      display: flex;
-      flex-direction: column;
-      gap: 3rem;
-    }
-
-    .step {
-      display: flex;
-      gap: 2rem;
-      align-items: flex-start;
-    }
-
-    .step-number {
-      flex-shrink: 0;
-      width: 48px;
-      height: 48px;
-      background: var(--gradient);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: white;
-    }
-
-    .step-content h3 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 0.4rem;
-    }
-
-    .step-content p {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-      line-height: 1.6;
-    }
-
-    /* ── X/Twitter Section ────────────────────── */
-    .twitter-section {
-      padding: 6rem 2rem;
-      text-align: center;
-      max-width: 700px;
-      margin: 0 auto;
-    }
-
-    .twitter-section h2 {
-      font-size: 2rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
-    }
-
-    .twitter-section p {
-      color: var(--text-secondary);
-      font-size: 1.05rem;
-      margin-bottom: 2rem;
-      line-height: 1.6;
-    }
-
-    .twitter-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      background: #000;
-      color: white;
-      padding: 0.85rem 2rem;
-      border-radius: 100px;
-      font-size: 1rem;
-      font-weight: 600;
-      text-decoration: none;
-      border: 1px solid rgba(139, 148, 158, 0.3);
-      transition: background 0.2s;
-    }
-
-    .twitter-btn:hover { background: #1a1a1a; }
-
-    .twitter-btn svg {
-      width: 18px;
-      height: 18px;
-      fill: white;
-    }
-
-    /* ── CTA ──────────────────────────────────── */
-    .cta {
-      padding: 8rem 2rem;
-      text-align: center;
-      position: relative;
-    }
-
-    .cta::before {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(ellipse, rgba(46, 117, 182, 0.1) 0%, transparent 60%);
-      pointer-events: none;
-    }
-
-    .cta h2 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
-      position: relative;
-    }
-
-    .cta p {
-      color: var(--text-secondary);
-      font-size: 1.15rem;
-      margin-bottom: 2.5rem;
-      position: relative;
-    }
-
-    .cta .btn-primary { position: relative; }
-
-    /* ── Footer ───────────────────────────────── */
-    footer {
-      padding: 3rem 2rem;
-      border-top: 1px solid rgba(139, 148, 158, 0.1);
-      text-align: center;
-    }
-
-    footer p {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-
-    footer a {
-      color: var(--text-secondary);
-      text-decoration: none;
-    }
-
-    footer a:hover { color: var(--text-primary); }
-
-    /* ── Responsive ───────────────────────────── */
-    @media (max-width: 768px) {
-      nav { padding: 0.75rem 1rem; }
-      .nav-links { display: none; }
-      .hero { padding: 7rem 1.5rem 3rem; }
-      .hero-buttons { flex-direction: column; width: 100%; max-width: 320px; }
-      .btn-primary, .btn-secondary { justify-content: center; }
-      .features-grid { grid-template-columns: 1fr; }
-      .step { flex-direction: column; gap: 1rem; }
-      .demo-phone { width: 280px; }
-    }
+    footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--text-3); font-size: 0.85rem; }
+    footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 10px; }
+    footer a { color: var(--text-2); text-decoration: none; }
+    footer a:hover { color: var(--text); }
   </style>
 </head>
 <body>
-
-  <!-- Nav -->
-  <nav>
-    <a href="index.html" class="nav-logo">
-      <div class="nav-logo-icon">N</div>
-      <span class="nav-logo-text">Naismith</span>
-    </a>
-    <div class="nav-links">
-      <a href="#features">Features</a>
-      <a href="#how-it-works">How It Works</a>
-      <a href="https://x.com/NaismithAIApp" target="_blank">@Naismith</a>
-      <a href="https://testflight.apple.com/join/RvuZwZcx" target="_blank" class="nav-cta">Get the App &rarr;</a>
-    </div>
-  </nav>
-
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-badge">
-      <span class="hero-badge-dot"></span>
-      Tracking live NBA injury feeds
-    </div>
-    <h1>Know who's out.<br><span class="gradient-text">Know who to grab.</span></h1>
-    <p>Real-time NBA injury alerts with AI-powered waiver wire suggestions. Get notified before your league does.</p>
-    <div class="hero-buttons">
-      <a href="https://testflight.apple.com/join/RvuZwZcx" target="_blank" class="btn-primary">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-        Download for iOS
+  <div class="wrap">
+    <header>
+      <a class="brand" href="/" aria-label="Naismith home">
+        <div class="logo">N</div>
+        <div class="brand-name">Naismith</div>
       </a>
-      <a href="app.html" class="btn-secondary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        Web Dashboard
-      </a>
-      <a href="https://x.com/NaismithAIApp" target="_blank" class="btn-secondary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        Follow on X
-      </a>
-    </div>
-  </section>
+    </header>
 
-  <!-- Demo Phone -->
-  <section class="demo-section">
-    <div class="demo-phone">
-      <div class="demo-statusbar">
-        <span>9:41</span>
-        <span>Naismith</span>
-      </div>
-      <div class="demo-header">Alerts</div>
-      <div class="demo-alert">
-        <div class="demo-alert-top">
-          <span class="demo-alert-player">Anthony Davis — OUT</span>
-          <span class="demo-alert-badge badge-critical">Critical</span>
+    <main>
+      <div class="hero">
+        <h1>NBA injury news, turned into <span class="grad">fantasy moves.</span></h1>
+        <p class="lede">When a player is ruled out or leaves a game, Naismith posts who's out, how many fantasy points you're losing, and who to pick up. It's free on X, as the news breaks.</p>
+        <div class="ctas">
+          <a class="btn btn-primary" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            Follow @NaismithAIApp
+          </a>
+          <a class="btn" href="/app.html">Open the live dashboard</a>
+          <a class="btn" id="recap-cta" href="#recap">Last night's recap</a>
         </div>
-        <div class="demo-alert-detail">Left knee sprain (2-3 weeks)</div>
-        <div class="demo-alert-pickup">Grab Rui Hachimura (+8.2), Jaxson Hayes (+5.1)</div>
+        <div class="live" id="live"><span class="dot" id="live-dot"></span><span id="live-text">Free · no app, no account</span></div>
       </div>
-      <div class="demo-alert">
-        <div class="demo-alert-top">
-          <span class="demo-alert-player">Ja Morant — OUT</span>
-          <span class="demo-alert-badge badge-critical">Critical</span>
+
+      <section id="alerts" aria-labelledby="alerts-h">
+        <h2 id="alerts-h">Latest alerts</h2>
+        <p class="sub">Our latest posts on X.</p>
+        <div class="feed" id="feed">
+          <!-- Shown until live alerts load (and to readers without JavaScript). -->
+          <article class="tweet">
+            <div class="tweet-head"><div class="logo">N</div><div class="tweet-who"><b>Naismith</b><span>@NaismithAIApp</span></div><span class="tag">Example</span></div>
+            <div class="tweet-body">🚨 Star Guard (TEAM) — OUT (2-3 weeks) | 41 FPTS/g
+The team says he'll be re-evaluated in two weeks.
+🔥 Backup Guard (+8.4 FPTS/g) — All leagues
+🎯 Bench Wing (+5.6 FPTS/g) — 12+ team
+📰 Shams Charania</div>
+          </article>
+          <article class="tweet">
+            <div class="tweet-head"><div class="logo">N</div><div class="tweet-who"><b>Naismith</b><span>@NaismithAIApp</span></div><span class="tag">Example</span></div>
+            <div class="tweet-body">🚑 Starting Forward (TEAM) — Left game | 33 FPTS/g
+He went to the locker room with an ankle injury in the second quarter.
+🎯 Backup Forward (+6.1 FPTS/g) — 12+ team
+👀 Reserve Big (+3.9 FPTS/g) — Deep league</div>
+          </article>
         </div>
-        <div class="demo-alert-detail">Right shoulder injury (1-2 weeks)</div>
-        <div class="demo-alert-pickup">Grab Desmond Bane (+9.3), Scotty Pippen Jr (+6.7)</div>
-      </div>
-      <div class="demo-alert">
-        <div class="demo-alert-top">
-          <span class="demo-alert-player">Devin Booker — Questionable</span>
-          <span class="demo-alert-badge badge-high">High</span>
+        <p class="more"><a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">See every alert on X →</a></p>
+      </section>
+
+      <section id="recap" aria-labelledby="recap-h">
+        <h2 id="recap-h">The nightly recap</h2>
+        <p class="sub">After the last game each night: top performers, breakouts and minutes to watch, with full stat lines.</p>
+        <div class="feed" id="recap-feed">
+          <article class="tweet">
+            <div class="tweet-head"><div class="logo">N</div><div class="tweet-who"><b>Naismith</b><span>@NaismithAIApp</span></div><span class="tag">Example</span></div>
+            <div class="tweet-body">🏀 Fantasy recap · 7 games
+
+Top performers:
+1. Player One (TEAM): 29/14/3 on 14-23 FG, 2 stl, 2 blk · 57.3 FPTS
+2. Player Two (TEAM): 43/5/4 on 14-27 FG, 4 3PM · 56.0 FPTS
+
+🧵👇</div>
+          </article>
         </div>
-        <div class="demo-alert-detail">Sore hamstring, game-time decision</div>
-        <div class="demo-alert-pickup">Monitor Bradley Beal (+4.8)</div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- Features -->
-  <section class="features" id="features">
-    <div class="features-header">
-      <h2>Your fantasy edge</h2>
-      <p>Everything you need to dominate your league's waiver wire</p>
-    </div>
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon" style="background: rgba(248, 81, 73, 0.15);">&#x1F6A8;</div>
-        <h3>Instant injury alerts</h3>
-        <p>Push notifications the moment a player is ruled out, questionable, or returning. We monitor ESPN, CBS, RotoWire, Bluesky beat writers, and the official NBA injury report — simultaneously.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon" style="background: rgba(63, 185, 80, 0.15);">&#x1F3AF;</div>
-        <h3>AI pickup suggestions</h3>
-        <p>Every alert comes with waiver wire targets ranked by projected fantasy point increase. Know exactly who benefits when a star goes down — backed by historical game log data.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon" style="background: rgba(108, 60, 225, 0.15);">&#x1F465;</div>
-        <h3>Roster-aware intelligence</h3>
-        <p>Import your Yahoo Fantasy roster and get alerts personalized to your team. Your players get priority notifications. League-mates' players get flagged as threats.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon" style="background: rgba(46, 117, 182, 0.15);">&#x26A1;</div>
-        <h3>Multi-source pipeline</h3>
-        <p>We don't rely on one source. Six independent injury feeds are cross-referenced and deduplicated to catch breaking news from any angle — often minutes before major outlets.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon" style="background: rgba(210, 153, 34, 0.15);">&#x1F4CA;</div>
-        <h3>Fantasy point projections</h3>
-        <p>See the projected FPTS impact for every injury. Our dependency graph maps how each player's absence ripples through their team's rotation and fantasy production.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon" style="background: rgba(139, 148, 158, 0.15);">&#x1F426;</div>
-        <h3>Live on X</h3>
-        <p>Every major alert is also posted to <a href="https://x.com/NaismithAIApp" target="_blank" style="color: var(--accent-blue); text-decoration: none;">@Naismith</a> on X — follow for a real-time public feed of NBA injury intelligence.</p>
-      </div>
-    </div>
-  </section>
+      <section aria-labelledby="how-h">
+        <h2 id="how-h">How Naismith works</h2>
+        <ul class="features">
+          <li><b>Top insiders, checked every minute or two</b><span>We also watch the official NBA injury report, ESPN, RotoWire and CBS Sports.</span></li>
+          <li><b>Read by AI, checked by code</b><span>Code checks every AI-written line against the original report before it posts, so it can't add a day, an opponent or a timeline the report didn't mention.</span></li>
+          <li><b>The fantasy points at stake</b><span>Every alert shows the injured player's fantasy points per game, so you know right away how much it matters.</span></li>
+          <li><b>Pickups sized to your league</b><span>Each pickup shows its projected gain and the league sizes where it's worth a roster spot.</span></li>
+          <li><b>Live in-game updates</b><span>We post when a player leaves a game, then reply under that post if he comes back.</span></li>
+          <li><b>Free. No app, no account.</b><span>Follow on X, or open the live dashboard here.</span></li>
+        </ul>
+      </section>
 
-  <!-- How it Works -->
-  <section class="how-it-works" id="how-it-works">
-    <div class="how-it-works-inner">
-      <h2>How it works</h2>
-      <div class="steps">
-        <div class="step">
-          <div class="step-number">1</div>
-          <div class="step-content">
-            <h3>Download from TestFlight</h3>
-            <p>Install the iOS app via TestFlight and import your fantasy roster directly from Yahoo — or manually add your players. Takes 30 seconds.</p>
-          </div>
+      <section aria-labelledby="tags-h">
+        <h2 id="tags-h">Reading the pickup tags</h2>
+        <p class="sub">Projected fantasy points per game gained while the injured player is out.</p>
+        <div class="legend">
+          <div><span class="ico">🔥</span><b>All leagues</b><span>+8 or more. Worth a look in any league.</span></div>
+          <div><span class="ico">🎯</span><b>12+ team</b><span>+5 to +8. Worth it in 12-team leagues and bigger.</span></div>
+          <div><span class="ico">👀</span><b>Deep league</b><span>+3 to +5. Deep leagues only.</span></div>
         </div>
-        <div class="step">
-          <div class="step-number">2</div>
-          <div class="step-content">
-            <h3>Get alerts when it matters</h3>
-            <p>When one of your players (or a league star) gets injured, you'll get a push notification with the injury details and projected timeline.</p>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-number">3</div>
-          <div class="step-content">
-            <h3>Act on pickup suggestions</h3>
-            <p>Each alert includes ranked waiver wire targets — the players most likely to see a fantasy boost. Grab them before your league-mates even know there's an injury.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- X/Twitter -->
-  <section class="twitter-section">
-    <h2>Follow the feed</h2>
-    <p>Follow @Naismith on X for real-time injury alerts and pickup suggestions — free and public.</p>
-    <a href="https://x.com/NaismithAIApp" target="_blank" class="twitter-btn">
-      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      Follow @Naismith
-    </a>
-  </section>
+      <section aria-labelledby="faq-h">
+        <h2 id="faq-h">Questions</h2>
+        <details>
+          <summary>What is Naismith?</summary>
+          <p>Naismith is a free NBA fantasy basketball injury-alert service. When a player is ruled out, leaves a game or gets a recovery timeline, Naismith posts the news on X (@NaismithAIApp) with the player's fantasy points per game and the best waiver pickups, tagged by league size.</p>
+        </details>
+        <details>
+          <summary>Where does the injury news come from?</summary>
+          <p>Naismith watches the official NBA injury report, ESPN, RotoWire, CBS Sports and leading NBA insiders on X. The top insiders are checked every minute or two.</p>
+        </details>
+        <details>
+          <summary>What scoring do the fantasy points use?</summary>
+          <p>Points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, three-pointers made 0.5 and turnovers -1.</p>
+        </details>
+        <details>
+          <summary>How accurate are the alerts?</summary>
+          <p>Every report is read by AI, and code checks the AI-written line against the original report before it posts, so it can't add a day, an opponent or a timeline the report didn't mention. Injury news changes fast, and when we get something wrong, we correct it on X.</p>
+        </details>
+        <details>
+          <summary>Does it cost anything?</summary>
+          <p>No. There's no app to install and no account to create. Follow @NaismithAIApp on X or open the live dashboard.</p>
+        </details>
+      </section>
+    </main>
 
-  <!-- CTA -->
-  <section class="cta" id="download">
-    <h2>Win your league</h2>
-    <p>Get real-time injury alerts and AI pickup suggestions on your iPhone.</p>
-    <div class="hero-buttons" style="justify-content: center;">
-      <a href="https://testflight.apple.com/join/RvuZwZcx" target="_blank" class="btn-primary">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-        Download for iOS
-      </a>
-      <a href="app.html" class="btn-secondary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        Web Dashboard
-      </a>
-      <a href="https://x.com/NaismithAIApp" target="_blank" class="btn-secondary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        Follow on X
-      </a>
-    </div>
-  </section>
+    <footer>
+      <nav>
+        <a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a>
+        <a href="/app.html">Live dashboard</a>
+        <a href="/privacy.html">Privacy</a>
+      </nav>
+      <p>Naismith © 2026. Not affiliated with the NBA or any team.</p>
+    </footer>
+  </div>
 
-  <!-- Footer -->
-  <footer>
-    <p>Naismith &copy; 2026 &middot; <a href="https://x.com/NaismithAIApp" target="_blank">@Naismith on X</a></p>
-  </footer>
+  <script>
+  (function () {
+    var API = 'https://naismith-api-production.up.railway.app';
+    var X = 'https://x.com/NaismithAIApp/status/';
 
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c];
+      });
+    }
+    function body(text) {
+      return esc(text).replace(/(^|\s)(#[A-Za-z0-9_]+)/g, '$1<span class="ht">$2</span>');
+    }
+    function ago(iso) {
+      var m = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+      if (m < 60) return m + 'm ago';
+      var h = Math.round(m / 60);
+      if (h < 24) return h + 'h ago';
+      return Math.round(h / 24) + 'd ago';
+    }
+    function card(text, link, when, linkLabel) {
+      return '<article class="tweet">' +
+        '<div class="tweet-head"><div class="logo">N</div><div class="tweet-who"><b>Naismith</b><span>@NaismithAIApp</span></div></div>' +
+        '<div class="tweet-body">' + body(text) + '</div>' +
+        '<div class="tweet-foot"><span>' + esc(when || '') + '</span>' +
+        (link ? '<a href="' + link + '" target="_blank" rel="noopener">' + esc(linkLabel || 'View on X') + ' →</a>' : '') +
+        '</div></article>';
+    }
+
+    // Alerts posted before tweet text was saved: rebuild only the first line,
+    // the same way the X poster does, and send readers to X for the pickups.
+    var EMOJI = {INJURY_OUT: '🚨', INJURY_DOUBTFUL: '🔴', INJURY_QUESTIONABLE: '⚠️'};
+    var LABEL = {INJURY_OUT: 'OUT', INJURY_DOUBTFUL: 'Doubtful', INJURY_QUESTIONABLE: 'Questionable'};
+    var DONE = /\b(did not return|won'?t return|will not return|ruled out for the (rest|remainder))\b/i;
+    var EXIT = /locker room|\bexited\b|\bleft\b[^.()]{0,60}\bgame\b|\b(helped|carted|stretchered) off\b/i;
+    function headline(a) {
+      var ev = a.event || {}, t = ev.event_type, d = ev.detail || '';
+      if (!LABEL[t]) return null;
+      var emoji = EMOJI[t], label = LABEL[t];
+      if (DONE.test(d)) { emoji = '🚑'; label = "Won't return"; }
+      else if (EXIT.test(d)) { emoji = '🚑'; label = 'Left game'; }
+      var s = emoji + ' ' + ev.player_name + (ev.player_team ? ' (' + ev.player_team + ')' : '') + ' — ' + label;
+      if (ev.duration_estimate) s += ' (' + ev.duration_estimate + ')';
+      if (a.avg_fpts >= 10) s += ' | ' + Math.round(a.avg_fpts) + ' FPTS/g';
+      return s;
+    }
+
+    fetch(API + '/public/alerts?tweeted_only=true&hours=168&limit=20')
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (data) {
+        if (data.last_alert_at) {
+          document.getElementById('live-dot').className = 'dot on';
+          document.getElementById('live-text').textContent = 'Live · last alert ' + ago(data.last_alert_at);
+        }
+        var html = [], seen = {};
+        (data.alerts || []).forEach(function (a) {  // newest first
+          var ev = a.event || {}, who = ev.player_name;
+          if (html.length >= 3 || seen[who]) return;
+          seen[who] = true;  // one card per player, his latest news
+          // A back-in-game reply reads oddly on its own, and his earlier exit is stale.
+          if (ev.event_type === 'INJURY_RETURN') return;
+          var text = a.tweet_text || headline(a);
+          if (!text) return;
+          html.push(card(text, a.tweet_id ? X + a.tweet_id : null, ago(a.timestamp),
+                         a.tweet_text ? 'View on X' : 'Pickups on X'));
+        });
+        if (html.length) document.getElementById('feed').innerHTML = html.join('');
+      })
+      .catch(function () { /* keep the examples */ });
+
+    fetch(API + '/public/recap')
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (d) {
+        if (!d.thread || !d.thread.length) return;
+        var link = d.first_tweet_id ? X + d.first_tweet_id : null;
+        document.getElementById('recap-feed').innerHTML =
+          card(d.thread[0], link, d.thread.length + ' posts', 'Read the thread');
+        if (link) {
+          var cta = document.getElementById('recap-cta');
+          cta.href = link; cta.target = '_blank'; cta.rel = 'noopener';
+        }
+      })
+      .catch(function () {});
+  })();
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
