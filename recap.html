@@ -157,7 +157,21 @@
     .back { color: var(--text-2); text-decoration: none; font-size: 0.9rem; margin-left: auto; }
     .empty { color: var(--text-2); margin-top: 16px; }
     .how h2 + p { margin-top: 8px; }
+    .rsec { border-top: 0; padding: 8px 0 12px; }
+    .rsec h2 { font-size: 1.1rem; margin-top: 12px; }
+    .rrows { list-style: none; margin-top: 8px; }
+    .rrows li { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-top: 8px; }
+    .rtop { display: flex; align-items: baseline; gap: 8px; }
+    .rname { font-weight: 700; }
+    .rteam { color: var(--text-2); font-size: 0.85rem; }
+    .rfp { margin-left: auto; font-weight: 800; font-size: 1.1rem; white-space: nowrap; }
+    .rfp small { font-weight: 500; font-size: 0.72rem; color: var(--text-2); }
+    .rstat { color: var(--text-2); font-size: 0.9rem; margin-top: 4px; }
+    .rnotes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .pill { font-size: 0.75rem; font-weight: 600; border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px; color: var(--text-2); }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/site.css">
 </head>
 <body>
   <div class="wrap">
@@ -172,10 +186,10 @@
     <main>
       <div class="hero" style="padding-bottom:8px">
         <h1>Last night's recap</h1>
-        <p class="lede" id="recap-sub">Top performers, breakouts and minutes to watch from last night's games, with full stat lines.</p>
+        <p class="lede" id="recap-sub">Top performers, breakouts and minutes to watch from last night's games.</p>
       </div>
       <section aria-label="Recap" style="border-top:0;padding-top:0">
-        <div class="feed" id="thread" style="margin-top:0"><p class="empty">Loading the recap…</p></div>
+        <div id="thread"><p class="empty">Loading the recap…</p></div>
         <a class="btn" id="on-x" style="margin-top:16px;display:none" target="_blank" rel="noopener">Read the thread on X</a>
       </section>
 
@@ -201,7 +215,49 @@
   <script src="/feed.js"></script>
   <script>
   (function () {
-    var F = window.NaismithFeed;
+    var F = window.NaismithFeed, esc = F.esc;
+    var ITEM = /^(?:\d+\.\s+|•\s*)(.+?)\s+\(([A-Z]{2,4})\):\s+(.+)$/;
+
+    // The thread is written for X; read it back into sections and player rows.
+    function parse(thread) {
+      var sections = [], cur = null;
+      thread.join('\n').split('\n').forEach(function (raw) {
+        var line = raw.trim();
+        if (!line || /^🧵/.test(line) || /fantasy recap/i.test(line)) return;
+        var m = line.match(ITEM);
+        if (m) {
+          if (!cur) { cur = {title: '', rows: []}; sections.push(cur); }
+          var parts = m[3].split(' · '), row = {name: m[1], team: m[2], stat: parts[0], fpts: null, avg: null, notes: []};
+          parts.slice(1).forEach(function (p) {
+            var f = p.match(/([\d.]+)\s*FPTS(?:\s*\(avg ([\d.]+)\))?/);
+            if (f) { row.fpts = f[1]; row.avg = f[2] || null; } else row.notes.push(p);
+          });
+          cur.rows.push(row);
+        } else if (/:$/.test(line)) {
+          cur = {title: line.replace(/:$/, '').replace(/^[^A-Za-z]+/, ''), rows: []};
+          sections.push(cur);
+        }
+      });
+      return sections.filter(function (s) { return s.rows.length; });
+    }
+    // "40/11/3 on 15-19 FG, 9 blk" -> "40 pts, 11 reb, 3 ast on 15-19 FG, 9 blk"
+    function readable(stat) {
+      return stat.replace(/(^|,\s*)(\d+)\/(\d+)\/(\d+)(?=\s|$)/, '$1$2 pts, $3 reb, $4 ast');
+    }
+    function renderSections(sections) {
+      return sections.map(function (sec) {
+        return '<section class="rsec"><h2>' + esc(sec.title) + '</h2><ul class="rrows">' +
+          sec.rows.map(function (r) {
+            return '<li><div class="rtop"><span class="rname">' + esc(r.name) + '</span><span class="rteam">' + esc(r.team) +
+              '</span>' + (r.fpts ? '<span class="rfp">' + esc(r.fpts) + '<small> FPTS</small></span>' : '') + '</div>' +
+              '<div class="rstat">' + esc(readable(r.stat)) + '</div>' +
+              ((r.avg || r.notes.length) ? '<div class="rnotes">' + (r.avg ? '<span class="pill">Usually ' + esc(r.avg) + ' FPTS</span>' : '') +
+                r.notes.map(function (n) { return '<span class="pill">' + esc(n) + '</span>'; }).join('') + '</div>' : '') +
+              '</li>';
+          }).join('') + '</ul></section>';
+      }).join('');
+    }
+
     fetch('https://naismith-api-production.up.railway.app/public/recap')
       .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
       .then(function (d) {
@@ -210,9 +266,12 @@
         if (d.game_day && d.game_day.length === 8) {
           var dt = new Date(+d.game_day.slice(0, 4), +d.game_day.slice(4, 6) - 1, +d.game_day.slice(6, 8));
           document.getElementById('recap-sub').textContent = dt.toLocaleDateString(undefined, {weekday: 'long', month: 'long', day: 'numeric'}) +
-            (d.games ? ' · ' + d.games + ' games' : '') + '. Top performers, breakouts and minutes to watch, with full stat lines.';
+            (d.games ? ' · ' + d.games + ' games' : '');
         }
-        el.innerHTML = d.thread.map(function (t) { return F.card(t, null, ''); }).join('');
+        var sections = parse(d.thread);
+        el.className = '';
+        el.innerHTML = sections.length ? renderSections(sections)
+          : '<div class="feed">' + d.thread.map(function (t) { return F.card(t, null, ''); }).join('') + '</div>';
         if (d.first_tweet_id) { var a = document.getElementById('on-x'); a.href = F.X + d.first_tweet_id; a.style.display = 'flex'; }
       })
       .catch(function () { document.getElementById('thread').innerHTML = '<p class="empty">Couldn\'t load the recap. Try again in a minute.</p>'; });

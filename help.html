@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>How it works · Naismith</title>
-  <meta name="description" content="Where Naismith gets NBA injury news, what it posts, how the pickup tags work and what scoring it uses.">
+  <title>How our NBA injury alerts work · Naismith</title>
+  <meta name="description" content="Where @NaismithAIApp gets NBA injury news, how to read an alert, what the pickup tags mean and which fantasy scoring the numbers use.">
   <link rel="canonical" href="https://naismithai.com/help.html">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='68' font-size='60' font-family='Arial' font-weight='800' text-anchor='middle' fill='white'>N</text></svg>">
   <link rel="apple-touch-icon" href="/logo.png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://naismithai.com/help.html">
-  <meta property="og:title" content="How it works">
-  <meta property="og:description" content="Where Naismith gets NBA injury news, what it posts, how the pickup tags work and what scoring it uses.">
+  <meta property="og:title" content="How @NaismithAIApp works">
+  <meta property="og:description" content="Where @NaismithAIApp gets NBA injury news, how to read an alert, what the pickup tags mean and which fantasy scoring the numbers use.">
   <meta property="og:image" content="https://naismithai.com/og.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@NaismithAIApp">
@@ -157,7 +157,33 @@
     .back { color: var(--text-2); text-decoration: none; font-size: 0.9rem; margin-left: auto; }
     .empty { color: var(--text-2); margin-top: 16px; }
     .how h2 + p { margin-top: 8px; }
+
+    .jump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .jump a { font-size: 0.85rem; font-weight: 600; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text-2); text-decoration: none; }
+    .help section { scroll-margin-top: 12px; }
+    .help p, .help li { color: var(--text-2); font-size: 0.95rem; }
+    .help p { margin-top: 10px; }
+    .help strong { color: var(--text); font-weight: 600; }
+    .help ol, .help ul { margin-top: 10px; padding-left: 1.2rem; }
+    .help li { margin-top: 6px; }
+    .anno { position: relative; }
+    .anno .tweet-body { white-space: normal; }
+    .anno .ln { display: flex; gap: 10px; align-items: flex-start; margin-top: 6px; }
+    .anno .ln:first-child { margin-top: 0; }
+    .badge { flex: none; width: 20px; height: 20px; border-radius: 50%; background: var(--purple); color: #fff;
+      font-size: 0.72rem; font-weight: 700; display: grid; place-items: center; margin-top: 2px; }
+    .badge.blank { visibility: hidden; }
+    .rows { list-style: none; padding: 0 !important; margin-top: 12px; }
+    .rows li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; margin: 0; border-bottom: 1px solid var(--border); }
+    .rows li span:last-child { color: var(--text); font-weight: 600; white-space: nowrap; }
+    .callout { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-top: 12px; }
+    .callout p { margin-top: 0; color: var(--text); }
+    .links { text-align: center; margin-top: 14px; font-size: 0.9rem; }
+    .links a { color: #58A6FF; text-decoration: none; }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/site.css">
 </head>
 <body>
   <div class="wrap">
@@ -170,28 +196,94 @@
     </header>
 
     <main>
-      <div class="hero" style="padding-bottom:8px">
+      <div class="hero help" style="padding-bottom:8px">
         <h1>How it works</h1>
-        <p class="lede">Where the news comes from, what we post, and how to read a pickup.</p>
+        <p class="lede">@NaismithAIApp posts NBA injury alerts on X, with the players most likely to benefit. It's free and there's nothing to sign up for.</p>
+        <nav class="jump" aria-label="On this page">
+          <a href="#alert">Reading an alert</a><a href="#tags">Tags</a><a href="#scoring">Scoring</a><a href="#sources">Sources</a><a href="#accuracy">Accuracy</a>
+        </nav>
       </div>
-      <section class="how" aria-labelledby="how-h" style="border-top:0;padding-top:0">
-        <h2 id="how-h">The basics</h2>
-        <p><b>Sources.</b> We check Shams Charania and Underdog NBA about every 90 seconds, other main insiders every 10 minutes and beat writers about every 50. We also read the official NBA injury report, ESPN, RotoWire, CBS Sports and Bluesky.</p>
-        <p><b>Alerts.</b> We post when a player is ruled out, listed doubtful or questionable, or gets a new timeline. When a player leaves a game, we post that too, and if he comes back within about four hours, we reply under the post.</p>
-        <p><b>Accuracy.</b> An AI model writes the one-line summary. Code then checks it against the original report and rejects any team, day, body part or timeline the report doesn't contain. It still gets things wrong sometimes.</p>
-        <p><b>Scoring.</b> Points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, threes 0.5, turnovers -1.</p>
+
+      <div class="help">
+      <section id="alert" aria-labelledby="alert-h">
+        <h2 id="alert-h">How do I read an alert?</h2>
+        <p>Every alert has the same four parts. Here's a real one from November 10:</p>
+        <div class="feed">
+          <article class="tweet anno">
+            <div class="tweet-head"><div class="logo">N</div><div class="tweet-who"><b>Naismith</b><span>@NaismithAIApp</span></div></div>
+            <div class="tweet-body">
+              <div class="ln"><span class="badge">1</span><span>🚨 Yves Missi (NOP) — OUT Wed vs BKN | 22 FPTS/g</span></div>
+              <div class="ln"><span class="badge">2</span><span>Knee injury will sideline him Wednesday.</span></div>
+              <div class="ln"><span class="badge">3</span><span>🔥 Jeremiah Fears (+9.4 FPTS/g) — All leagues</span></div>
+              <div class="ln"><span class="badge blank">·</span><span>👀 Karlo Matković (+4.2 FPTS/g) — Deep league</span></div>
+              <div class="ln"><span class="badge">4</span><span>📰 Underdog NBA</span></div>
+            </div>
+            <div class="tweet-foot"><span></span><a href="https://x.com/NaismithAIApp/status/2120234291661582656" target="_blank" rel="noopener">View on X →</a></div>
+          </article>
+        </div>
+        <ol>
+          <li><strong>Who and what.</strong> The player, his team, his status, and how long he's out if the report says. Next to that is his average fantasy points per game (FPTS/g).</li>
+          <li><strong>The news.</strong> One plain-English line.</li>
+          <li><strong>Pickups.</strong> Up to three players we project to gain, each with a tag.</li>
+          <li><strong>Source.</strong> Where the report came from.</li>
+        </ol>
+        <p>Statuses you'll see: OUT, Doubtful, Questionable, Left game, Won't return.</p>
       </section>
 
       <section id="tags" aria-labelledby="tags-h">
-        <h2 id="tags-h">What the tags mean</h2>
-        <p class="sub">The number next to each pickup is the fantasy points per game we project he gains while the injured player is out.</p>
+        <h2 id="tags-h">What do the tags mean?</h2>
+        <p>The + number next to a pickup is how many more fantasy points per game we project for him while the injured player is out. We base it on how teammates played when he sat before and who usually takes his minutes. The tag tells you which league sizes he's worth a look in.</p>
         <div class="legend">
           <div><span class="ico">🔥</span><b>All leagues</b><span>+8 or more</span></div>
           <div><span class="ico">🎯</span><b>12+ team</b><span>+5 to +8</span></div>
           <div><span class="ico">👀</span><b>Deep league</b><span>+3 to +5</span></div>
         </div>
-        <p class="note">We don't list pickups under +3, or anyone averaging 32+ fantasy points a game. He's already rostered.</p>
+        <p>We leave out pickups under +3. We also leave out anyone already averaging 32+ fantasy points a game, because he's rostered everywhere.</p>
+        <p><a href="/pickups.html#record" style="color:var(--accent-2);text-decoration:none">See how past pickups played →</a></p>
       </section>
+
+      <section id="scoring" aria-labelledby="scoring-h">
+        <h2 id="scoring-h">Does it fit my league's scoring?</h2>
+        <p>Every number uses this points scoring:</p>
+        <ul class="rows">
+          <li><span>Point</span><span>1</span></li>
+          <li><span>Rebound</span><span>1.2</span></li>
+          <li><span>Assist</span><span>1.5</span></li>
+          <li><span>Steal</span><span>3</span></li>
+          <li><span>Block</span><span>3</span></li>
+          <li><span>Three made</span><span>0.5</span></li>
+          <li><span>Turnover</span><span>-1</span></li>
+        </ul>
+        <p>If your league scores differently or uses categories, treat the numbers as a rough guide.</p>
+      </section>
+
+      <section id="sources" aria-labelledby="sources-h">
+        <h2 id="sources-h">Where does the news come from?</h2>
+        <p>Reporters on X, and how often we check them:</p>
+        <ul class="rows">
+          <li><span>Shams Charania and Underdog NBA</span><span>About every 90 seconds</span></li>
+          <li><span>Other main insiders</span><span>Every 10 minutes</span></li>
+          <li><span>Beat writers</span><span>About every 50 minutes</span></li>
+        </ul>
+        <p>We also read the official NBA injury report, ESPN, RotoWire, CBS Sports and Bluesky.</p>
+      </section>
+
+      <section id="posts" aria-labelledby="posts-h">
+        <h2 id="posts-h">What gets posted?</h2>
+        <ul>
+          <li>A player is ruled out, or listed doubtful or questionable.</li>
+          <li>A player who's already out gets a new timeline, like "out 2-3 weeks".</li>
+          <li>A player leaves a game. If he comes back within about four hours, we reply under that post.</li>
+          <li>Each night, a recap thread: top performers, breakouts and minutes to watch.</li>
+        </ul>
+      </section>
+
+      <section id="accuracy" aria-labelledby="accuracy-h">
+        <h2 id="accuracy-h">Can I trust it?</h2>
+        <p>An AI model reads each report, decides the status and writes the one-line summary. Code then checks that line against the original report and rejects it if it names a team, day, body part or timeline the report doesn't.</p>
+        <div class="callout"><p>Mistakes still happen, in the summaries and in the pickups. Every alert names its source, so check it before a move you can't undo.</p></div>
+      </section>
+      </div>
 
       <section class="cta-end" aria-label="Follow on X">
         <h2>Get each new injury as it breaks.</h2>
@@ -199,6 +291,7 @@
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           Follow Naismith on X
         </a>
+        <p class="links"><a href="/pickups.html">Today's best pickups</a> · <a href="/app.html#lookup">Look up any player</a></p>
       </section>
     </main>
 

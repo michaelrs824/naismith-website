@@ -186,6 +186,8 @@
     footer a { color: var(--text-2); text-decoration: none; }
     footer a:hover { color: var(--text); }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/site.css">
 </head>
 <body>
   <div class="wrap">
@@ -198,17 +200,18 @@
 
     <main>
       <div class="hero">
+        <span class="eyebrow">NBA injuries · fantasy pickups</span>
         <h1>Someone's out. <span class="grad">Here's who to pick up.</span></h1>
         <p class="lede">NBA injury news for fantasy basketball, with who to pick up in your league. Free.</p>
-        <div class="ctas">
-          <a class="btn" href="/app.html#lookup">Look up any player</a>
-          <a class="btn" href="/pickups.html">Today's best pickups</a>
-          <a class="btn" href="/recap.html">Last night's recap</a>
-          <a class="btn btn-primary" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            Follow Naismith on X
-          </a>
-        </div>
+        <nav class="tiles" aria-label="Explore">
+          <a class="tile" href="/app.html#lookup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Look up any player</span></a>
+          <a class="tile" href="/pickups.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><span>Today's best pickups</span></a>
+          <a class="tile" href="/recap.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Last night's recap</span></a>
+        </nav>
+        <a class="btn btn-primary follow-bar" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Follow Naismith on X
+        </a>
         <div class="live" id="live"><span class="dot" id="live-dot"></span><span id="live-text">No app, no sign-up.</span></div>
       </div>
 
