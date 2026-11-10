@@ -7,6 +7,7 @@
   --accent-bg: rgba(108, 60, 225, 0.14);
   --purple: #6C3CE1;
   --display: 'Barlow Condensed', 'Inter', system-ui, sans-serif;
+  --text-3: #848D97;   /* passes contrast on the cards (QA, Nov 2026) */
 }
 
 /* Display type */
@@ -198,3 +199,20 @@ section { border-top: 0; }
 /* Pickups page: tag key inline */
 .tagkey { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; color: var(--text-2); font-size: 0.85rem; }
 .tagkey b { color: var(--text); font-weight: 600; }
+
+/* ── QA fixes (Nov 2026) ── */
+/* Phones: the main menu as a scrollable row under the logo (it was hidden, leaving only "Home") */
+@media (max-width: 759px) {
+  .site-header { flex-wrap: wrap; row-gap: 10px; }
+  .site-header .back { display: none; }
+  .topnav { display: flex; order: 3; width: 100%; gap: 4px; overflow-x: auto; margin: 0 -8px; scrollbar-width: none; }
+  .topnav::-webkit-scrollbar { display: none; }
+  .topnav a { color: var(--text-2); text-decoration: none; font-size: 0.92rem; font-weight: 500; padding: 8px 10px; border-radius: 8px; white-space: nowrap; }
+  .topnav a[aria-current="page"] { color: var(--text); background: var(--accent-bg); }
+}
+/* Bigger tap targets */
+.ac-foot a, .sec-link { display: inline-block; padding: 6px 0; margin: -6px 0; }
+footer nav a { display: inline-block; padding: 6px 0; }
+/* Links inside running text are underlined */
+.legal p a, .legal li a { text-decoration: underline; text-underline-offset: 2px; }
+.legal .updated { color: var(--text-2); }

@@ -1258,7 +1258,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     /* Match the rest of naismithai.com (site.css isn't loaded here: its generic class names collide with the dashboard's). */
-    :root { --gradient: #6C3CE1; --accent: #6C3CE1; --accent-2: #A487F7; --display: 'Barlow Condensed', 'Inter', system-ui, sans-serif; }
+    :root { --text-muted: #848D97; --gradient: #6C3CE1; --accent: #6C3CE1; --accent-2: #A487F7; --display: 'Barlow Condensed', 'Inter', system-ui, sans-serif; }
     .nav-logo-icon { background: var(--accent) !important; }
     .nav-logo-text { font-family: var(--display); font-weight: 700; font-size: 1.5rem; letter-spacing: 0.01em; }
     .feed-title, .lookup-title, .compare-title, .sim-title {
@@ -1289,6 +1289,19 @@
       .site-header .back { display: none; }
     }
     @media (min-width: 1000px) { .wrap { max-width: 1180px; padding: 0 40px; } .site-header { padding-top: 28px; } }
+    @media (max-width: 759px) {
+      .site-header { flex-wrap: wrap; row-gap: 10px; }
+      .site-header .back { display: none; }
+      .site-header .topnav { display: flex; order: 3; width: 100%; gap: 4px; overflow-x: auto; position: static; padding: 0; background: none; border: 0; backdrop-filter: none; margin: 0 -8px; }
+      .site-header .topnav a { color: #8B949E; text-decoration: none; font-size: 0.92rem; font-weight: 500; padding: 8px 10px; border-radius: 8px; white-space: nowrap; }
+      .site-header .topnav a[aria-current="page"] { color: #E6EDF3; background: rgba(108,60,225,0.14); }
+    }
+    .site-footer nav a { display: inline-block; padding: 6px 0; }
+    /* QA: readable contrast for purple text and muted labels */
+    .alert-fpts, .autocomplete-item > span, .lookup-stat-value { color: var(--accent-2) !important; }
+    .alert-time.stale { color: #848D97 !important; opacity: 1 !important; }
+    .badge-out { color: #FF7B72 !important; }
+    .site-footer, .site-footer p { color: #848D97; }
 
     /* Dashboard tabs, under the site header on every screen size */
     .app-tabs-bar { max-width: 1200px; margin: 0 auto; padding: 14px 2rem 0; }
@@ -1323,7 +1336,7 @@
       <a class="back" href="/">Home</a>
     </header>
   </div>
-  <div class="app-tabs-bar">
+  <div class="app-tabs-bar" role="navigation" aria-label="Dashboard sections">
     <div class="app-tabs">
       <button class="nav-tab active" data-page="injuries">Injury feed</button>
       <button class="nav-tab" data-page="lookup">Lookup</button>
@@ -1408,7 +1421,7 @@
     <div class="page" id="page-compare">
       <div class="compare-container">
         <h1 class="compare-title">Head-to-Head Waiver Compare</h1>
-        <p class="compare-subtitle">Compare two waiver wire targets side by side — factoring in schedule, matchups, and injury context.</p>
+        <p class="compare-subtitle">Compare two players side by side on fantasy points, minutes and box-score averages.</p>
 
         <div class="compare-input-row">
           <div class="compare-input-group">
@@ -1492,6 +1505,8 @@
         document.querySelectorAll(`.nav-tab[data-page="${page}"]`).forEach(t => t.classList.add('active'));
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(`page-${page}`).classList.add('active');
+        // keep the address in step, so the top menu's Lookup link always switches back here
+        if (location.hash !== '#' + page) history.replaceState(null, '', '#' + page);
         window.scrollTo(0, 0);
       });
     });
@@ -2314,7 +2329,7 @@
         // Fetch lookup data and player alerts in parallel
         const [lookupRes, alertsRes] = await Promise.all([
           fetch(`${API_BASE}/public/lookup/${encodeURIComponent(query)}`),
-          fetch(`${API_BASE}/public/alerts`),
+          fetch(`${API_BASE}/public/alerts?tweeted_only=true`),
         ]);
 
         if (!lookupRes.ok) {
