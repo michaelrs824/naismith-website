@@ -49,7 +49,7 @@
     }
 
     /* ── Nav ─────────────────────────────────── */
-    nav {
+    .legacy-nav {
       position: fixed;
       top: 0;
       width: 100%;
@@ -156,7 +156,7 @@
 
     /* ── Main Layout ─────────────────────────── */
     main {
-      padding-top: 64px;
+      padding-top: 0;
     }
 
     .page { display: none; }
@@ -1269,39 +1269,68 @@
     .site-footer nav { position: static !important; width: auto !important; padding: 0 !important; background: none !important; border: 0 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; z-index: auto !important; display: flex; justify-content: flex-start !important; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 10px; }
     .site-footer a { color: #8B949E; text-decoration: none; }
     .site-footer a:hover { color: #E6EDF3; }
+
+    /* Shared site header (same as the other pages) */
+    .wrap { max-width: 640px; margin: 0 auto; padding: 0 16px; }
+    .site-header { display: flex; align-items: center; gap: 28px; padding: 20px 0 8px; }
+    .site-header .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
+    .site-header .logo { width: 34px; height: 34px; border-radius: 9px; background: #6C3CE1; display: grid; place-items: center; font-weight: 800; color: #fff; font-size: 1.1rem; }
+    .site-header .brand-name { font-family: var(--display); font-weight: 700; font-size: 1.5rem; letter-spacing: 0.01em; }
+    .site-header .back { margin-left: auto; color: #8B949E; text-decoration: none; font-size: 0.9rem; }
+    .site-header .topnav, .site-header .nav-follow { display: none; }
+    @media (min-width: 600px) { .wrap { max-width: 920px; padding: 0 24px; } }
+    @media (min-width: 760px) {
+      .site-header { padding: 22px 0 10px; border-bottom: 1px solid rgba(139,148,158,.16); }
+      .site-header .topnav { display: flex; gap: 4px; margin-left: 8px; position: static; width: auto; padding: 0; background: none; border: 0; backdrop-filter: none; }
+      .site-header .topnav a { color: #8B949E; text-decoration: none; font-size: 0.92rem; font-weight: 500; padding: 8px 12px; border-radius: 8px; }
+      .site-header .topnav a:hover { color: #E6EDF3; background: #161B22; }
+      .site-header .topnav a[aria-current="page"] { color: #E6EDF3; background: rgba(108,60,225,0.14); }
+      .site-header .nav-follow { display: inline-flex; margin-left: auto; align-items: center; padding: 9px 16px; border-radius: 10px; background: #6C3CE1; color: #fff; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+      .site-header .back { display: none; }
+    }
+    @media (min-width: 1000px) { .wrap { max-width: 1180px; padding: 0 40px; } .site-header { padding-top: 28px; } }
+
+    /* Dashboard tabs, under the site header on every screen size */
+    .app-tabs-bar { max-width: 1200px; margin: 0 auto; padding: 14px 2rem 0; }
+    /* Line every dashboard page up with the header's edges, like the other pages */
+    @media (min-width: 1000px) {
+      .app-tabs-bar, .feed-header, .feed-list, .compare-container, .sim-container, .lookup-container {
+        max-width: 1180px !important; padding-left: 40px !important; padding-right: 40px !important; margin-left: auto !important; margin-right: auto !important;
+      }
+      .lookup-container > *, .compare-container > *, .sim-container > * { max-width: 820px; }
+    }
+    .app-tabs { display: flex; align-items: center; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .app-tabs .nav-tab { white-space: nowrap; }
+    .app-tabs .nav-status { margin-left: auto; white-space: nowrap; padding-left: 12px; }
+    @media (max-width: 768px) {
+      .app-tabs-bar { padding: 10px 16px 0; }
+      .app-tabs .nav-status { display: none; }
+      main { padding-bottom: 0 !important; }
+    }
   </style>
 </head>
 <body>
 
   <!-- Nav -->
-  <nav>
-    <div class="nav-left">
-      <a href="index.html" class="nav-logo">
-        <div class="nav-logo-icon">N</div>
-        <span class="nav-logo-text">Naismith AI</span>
+  <div class="wrap">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Naismith AI home">
+        <div class="logo">N</div>
+        <div class="brand-name">Naismith AI</div>
       </a>
-      <div class="nav-tabs">
-        <button class="nav-tab active" data-page="injuries">Injuries</button>
-        <button class="nav-tab" data-page="lookup">Lookup</button>
-        <button class="nav-tab" data-page="compare">Compare</button>
-        <button class="nav-tab" data-page="simulator">What-If</button>
-      </div>
+      <nav class="topnav" aria-label="Main"><a href="/alerts.html">Alerts</a><a href="/pickups.html">Pickups</a><a href="/recap.html">Recap</a><a href="/app.html#lookup" aria-current="page">Lookup</a></nav>
+      <a class="nav-follow" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
+      <a class="back" href="/">Home</a>
+    </header>
+  </div>
+  <div class="app-tabs-bar">
+    <div class="app-tabs">
+      <button class="nav-tab active" data-page="injuries">Injury feed</button>
+      <button class="nav-tab" data-page="lookup">Lookup</button>
+      <button class="nav-tab" data-page="compare">Compare</button>
+      <button class="nav-tab" data-page="simulator">What-If</button>
+      <div class="nav-status"><span class="status-dot" id="statusDot"></span><span id="statusText">Connecting...</span></div>
     </div>
-    <div class="nav-right">
-      <div class="nav-status">
-        <span class="status-dot" id="statusDot"></span>
-        <span id="statusText">Connecting...</span>
-      </div>
-      <a href="index.html" class="nav-home">Home</a>
-    </div>
-  </nav>
-
-  <!-- Mobile tabs -->
-  <div class="mobile-tabs">
-    <button class="nav-tab active" data-page="injuries">Injuries</button>
-    <button class="nav-tab" data-page="lookup">Lookup</button>
-    <button class="nav-tab" data-page="compare">Compare</button>
-    <button class="nav-tab" data-page="simulator">What-If</button>
   </div>
 
   <main>
@@ -1473,6 +1502,11 @@
       const tab = page && document.querySelector(`.nav-tab[data-page="${page}"]`);
       if (tab && document.getElementById(`page-${page}`)) tab.click();
     })();
+    window.addEventListener('hashchange', function () {
+      const page = (location.hash || '').slice(1);
+      const tab = page && document.querySelector(`.nav-tab[data-page="${page}"]`);
+      if (tab && document.getElementById(`page-${page}`)) tab.click();
+    });
 
     // ═══════════════════════════════════════════
     //  INJURY FEED
