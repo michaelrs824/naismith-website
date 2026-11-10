@@ -37,7 +37,7 @@
       "@id": "https://naismithai.com/#page",
       "url": "https://naismithai.com/",
       "name": "Naismith: NBA injury alerts with fantasy pickups",
-      "description": "When an NBA player is ruled out or leaves a game, @NaismithAIApp posts it on X with his fantasy points per game and up to three players to pick up. Free.",
+      "description": "NBA injury news for fantasy basketball, with who to pick up in your league. Free.",
       "isPartOf": {
         "@id": "https://naismithai.com/#site"
       },
@@ -199,15 +199,16 @@
     <main>
       <div class="hero">
         <h1>Someone's out. <span class="grad">Here's who to pick up.</span></h1>
-        <p class="lede">When an NBA player is ruled out or leaves a game, @NaismithAIApp posts it on X with his fantasy points per game and up to three players to pick up. Free.</p>
+        <p class="lede">NBA injury news for fantasy basketball, with who to pick up in your league. Free.</p>
         <div class="ctas">
+          <a class="btn" href="/app.html#lookup">Look up any player</a>
+          <a class="btn" href="/pickups.html">Today's best pickups</a>
+          <a class="btn" href="/recap.html">Last night's recap</a>
           <a class="btn btn-primary" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            Follow @NaismithAIApp
+            Follow Naismith on X
           </a>
-          <a class="btn" href="/pickups.html">See today's best pickups</a>
         </div>
-        <p class="btn-note">Ranked across every current injury, by league size. Or <a href="/app.html#lookup">look up any player</a>.</p>
         <div class="live" id="live"><span class="dot" id="live-dot"></span><span id="live-text">No app, no sign-up.</span></div>
       </div>
 
@@ -231,49 +232,7 @@ He went to the locker room with an ankle injury in the second quarter.
 👀 Reserve Big (+3.9 FPTS/g) — Deep league</div>
           </article>
         </div>
-        <p class="more"><a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X →</a></p>
-      </section>
-
-      <section id="top-pickups" aria-labelledby="top-h">
-        <h2 id="top-h">Best pickups right now</h2>
-        <ul class="tops" id="tops"><li class="sub">Loading…</li></ul>
-        <p class="more"><a href="/pickups.html">All pickups, by league size →</a></p>
-      </section>
-
-      <section aria-labelledby="tags-h">
-        <h2 id="tags-h">What the tags mean</h2>
-        <p class="sub">The number next to each pickup is the fantasy points per game we project he gains while the injured player is out.</p>
-        <div class="legend">
-          <div><span class="ico">🔥</span><b>All leagues</b><span>+8 or more</span></div>
-          <div><span class="ico">🎯</span><b>12+ team</b><span>+5 to +8</span></div>
-          <div><span class="ico">👀</span><b>Deep league</b><span>+3 to +5</span></div>
-        </div>
-        <p class="note">We don't list pickups under +3, or anyone averaging 32+ fantasy points a game. He's already rostered.</p>
-      </section>
-
-      <section id="recap" aria-labelledby="recap-h">
-        <h2 id="recap-h">Nightly recap</h2>
-        <p class="sub">A thread after each night's games: top performers, breakouts and minutes to watch, with full stat lines.</p>
-        <div class="feed" id="recap-feed">
-          <article class="tweet">
-            <div class="tweet-head"><div class="logo">N</div><div class="tweet-who"><b>Naismith</b><span>@NaismithAIApp</span></div><span class="tag">Example</span></div>
-            <div class="tweet-body">🏀 Fantasy recap · 7 games
-
-Top performers:
-1. Player One (TEAM): 29/14/3 on 14-23 FG, 2 stl, 2 blk · 57.3 FPTS
-2. Player Two (TEAM): 43/5/4 on 14-27 FG, 4 3PM · 56.0 FPTS
-
-🧵👇</div>
-          </article>
-        </div>
-      </section>
-
-      <section class="how" aria-labelledby="how-h">
-        <h2 id="how-h">How it works</h2>
-        <p><b>Sources.</b> We check Shams Charania and Underdog NBA about every 90 seconds, other main insiders every 10 minutes and beat writers about every 50. We also read the official NBA injury report, ESPN, RotoWire, CBS Sports and Bluesky.</p>
-        <p><b>Alerts.</b> We post when a player is ruled out, listed doubtful or questionable, or gets a new timeline. When a player leaves a game, we post that too, and if he comes back within about four hours, we reply under the post.</p>
-        <p><b>Accuracy.</b> An AI model writes the one-line summary. Code then checks it against the original report and rejects any team, day, body part or timeline the report doesn't contain. It still gets things wrong sometimes.</p>
-        <p><b>Scoring.</b> Points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, threes 0.5, turnovers -1.</p>
+        <a class="btn" href="/alerts.html" style="margin-top:14px">See all latest alerts</a>
       </section>
 
       <section class="cta-end" aria-label="Follow on X">
@@ -288,60 +247,20 @@ Top performers:
     <footer>
       <nav>
         <a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a>
-        <a href="/app.html">Player lookup</a>
+        <a href="/app.html#lookup">Player lookup</a>
+        <a href="/help.html">How it works</a>
         <a href="/privacy.html">Privacy</a>
       </nav>
       <p>© 2026 Naismith. Not affiliated with the NBA.</p>
     </footer>
   </div>
 
+  <script src="/feed.js"></script>
   <script>
   (function () {
     var API = 'https://naismith-api-production.up.railway.app';
-    var X = 'https://x.com/NaismithAIApp/status/';
 
-    function esc(s) {
-      return String(s).replace(/[&<>"']/g, function (c) {
-        return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c];
-      });
-    }
-    function body(text) {
-      // Hashtags are for X; on the site they're clutter.
-      return esc(text.replace(/(\n\s*)?(#[A-Za-z0-9_]+\s*)+$/, '').trim());
-    }
-    function ago(iso) {
-      var m = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
-      if (m < 60) return m + 'm ago';
-      var h = Math.round(m / 60);
-      if (h < 24) return h + 'h ago';
-      return Math.round(h / 24) + 'd ago';
-    }
-    function card(text, link, when, linkLabel) {
-      return '<article class="tweet">' +
-        '<div class="tweet-head"><div class="logo">N</div><div class="tweet-who"><b>Naismith</b><span>@NaismithAIApp</span></div></div>' +
-        '<div class="tweet-body">' + body(text) + '</div>' +
-        '<div class="tweet-foot"><span>' + esc(when || '') + '</span>' +
-        (link ? '<a href="' + link + '" target="_blank" rel="noopener">' + esc(linkLabel || 'View on X') + ' →</a>' : '') +
-        '</div></article>';
-    }
-
-    // Alerts posted before tweet text was saved: rebuild only the first line,
-    // the same way the X poster does, and send readers to X for the pickups.
-    var EMOJI = {INJURY_OUT: '🚨', INJURY_DOUBTFUL: '🔴', INJURY_QUESTIONABLE: '⚠️'};
-    var LABEL = {INJURY_OUT: 'OUT', INJURY_DOUBTFUL: 'Doubtful', INJURY_QUESTIONABLE: 'Questionable'};
-    var DONE = /\b(did not return|won'?t return|will not return|ruled out for the (rest|remainder))\b/i;
-    var EXIT = /locker room|\bexited\b|\bleft\b[^.()]{0,60}\bgame\b|\b(helped|carted|stretchered) off\b/i;
-    function headline(a) {
-      var ev = a.event || {}, t = ev.event_type, d = ev.detail || '';
-      if (!LABEL[t]) return null;
-      var emoji = EMOJI[t], label = LABEL[t];
-      if (DONE.test(d)) { emoji = '🚑'; label = "Won't return"; }
-      else if (EXIT.test(d)) { emoji = '🚑'; label = 'Left game'; }
-      var s = emoji + ' ' + ev.player_name + (ev.player_team ? ' (' + ev.player_team + ')' : '') + ' — ' + label;
-      if (ev.duration_estimate) s += ' (' + ev.duration_estimate + ')';
-      if (a.avg_fpts >= 10) s += ' | ' + Math.round(a.avg_fpts) + ' FPTS/g';
-      return s;
-    }
+    var F = window.NaismithFeed, esc = F.esc, ago = F.ago;
 
     fetch(API + '/public/alerts?tweeted_only=true&hours=168&limit=20')
       .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
@@ -353,43 +272,17 @@ Top performers:
         var html = [], seen = {};
         (data.alerts || []).forEach(function (a) {  // newest first
           var ev = a.event || {}, who = ev.player_name;
-          if (html.length >= 2 || seen[who]) return;
+          if (html.length >= 5 || seen[who]) return;
           seen[who] = true;  // one card per player, his latest news
           // A back-in-game reply reads oddly on its own, and his earlier exit is stale.
           if (ev.event_type === 'INJURY_RETURN') return;
-          var text = a.tweet_text || headline(a);
-          if (!text) return;
-          html.push(card(text, a.tweet_id ? X + a.tweet_id : null, ago(a.timestamp),
-                         a.tweet_text ? 'View on X' : 'Pickups on X'));
+          var c = F.alertCard(a);
+          if (c) html.push(c);
         });
         if (html.length) document.getElementById('feed').innerHTML = html.join('');
       })
       .catch(function () { /* keep the examples */ });
 
-    fetch(API + '/public/pickups')
-      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
-      .then(function (d) {
-        var el = document.getElementById('tops');
-        if (!d.pickups || !d.pickups.length) { document.getElementById('top-pickups').style.display = 'none'; return; }
-        el.innerHTML = d.pickups.slice(0, 3).map(function (p) {
-          var b = p.because[0];
-          return '<li><span>' + esc(p.icon) + '</span><span class="who">' + esc(p.player) + ' <span class="why">' +
-            esc(p.tag) + ' · with ' + esc(b.player) + (b.status === 'DOUBTFUL' ? ' doubtful' : ' out') +
-            (b.duration ? ' (' + esc(b.duration) + ')' : '') + '</span></span><span class="gain">+' +
-            p.fpts_delta.toFixed(1) + '</span></li>';
-        }).join('');
-      })
-      .catch(function () { document.getElementById('top-pickups').style.display = 'none'; });
-
-    fetch(API + '/public/recap')
-      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
-      .then(function (d) {
-        if (!d.thread || !d.thread.length) return;
-        var link = d.first_tweet_id ? X + d.first_tweet_id : null;
-        document.getElementById('recap-feed').innerHTML =
-          card(d.thread[0], link, d.thread.length + ' posts', 'Read the thread');
-      })
-      .catch(function () {});
   })();
   </script>
   <script defer src="/_vercel/insights/script.js"></script>

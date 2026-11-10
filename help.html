@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How it works · Naismith</title>
+  <meta name="description" content="Where Naismith gets NBA injury news, what it posts, how the pickup tags work and what scoring it uses.">
+  <link rel="canonical" href="https://naismithai.com/help.html">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='68' font-size='60' font-family='Arial' font-weight='800' text-anchor='middle' fill='white'>N</text></svg>">
+  <link rel="apple-touch-icon" href="/logo.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://naismithai.com/help.html">
+  <meta property="og:title" content="How it works">
+  <meta property="og:description" content="Where Naismith gets NBA injury news, what it posts, how the pickup tags work and what scoring it uses.">
+  <meta property="og:image" content="https://naismithai.com/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@NaismithAIApp">
+  <meta name="twitter:image" content="https://naismithai.com/og.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0D1117;
+      --surface: #161B22;
+      --card: #1C2129;
+      --border: rgba(139, 148, 158, 0.16);
+      --text: #E6EDF3;
+      --text-2: #8B949E;
+      --text-3: #6E7681;
+      --purple: #6C3CE1;
+      --blue: #2E75B6;
+      --green: #3FB950;
+      --gradient: linear-gradient(135deg, #6C3CE1 0%, #2E75B6 100%);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    .wrap { max-width: 640px; margin: 0 auto; padding: 0 16px; }
+
+    /* Header */
+    header { padding: 20px 0 8px; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo {
+      width: 34px; height: 34px; border-radius: 9px; background: var(--gradient);
+      display: grid; place-items: center; font-weight: 800; color: #fff; font-size: 1.1rem;
+    }
+    .brand-name { font-weight: 700; font-size: 1.1rem; }
+    .brand-handle { color: var(--text-2); font-size: 0.9rem; margin-left: auto; text-decoration: none; }
+
+    /* Hero */
+    .hero { padding: 36px 0 28px; }
+    h1 {
+      font-size: clamp(1.9rem, 7vw, 2.6rem); line-height: 1.12; font-weight: 800;
+      letter-spacing: -0.02em; text-wrap: balance;
+    }
+    h1 .grad { background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lede { color: var(--text-2); font-size: 1.05rem; margin-top: 14px; max-width: 34em; }
+    .ctas { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      min-height: 52px; padding: 0 20px; border-radius: 12px; text-decoration: none;
+      font-weight: 600; font-size: 1rem; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); transition: border-color .15s, transform .15s;
+    }
+    .btn:hover { border-color: rgba(139,148,158,.4); }
+    .btn:active { transform: scale(.99); }
+    .btn-primary { background: #fff; color: #0D1117; border-color: #fff; }
+    .btn-primary:hover { border-color: #fff; opacity: .92; }
+    .btn svg { width: 18px; height: 18px; flex: none; }
+    .btn-note { color: var(--text-2); font-size: 0.85rem; text-align: center; margin-top: 6px; }
+    .btn-note a { color: #58A6FF; text-decoration: none; }
+    .tops { list-style: none; margin-top: 12px; }
+    .tops li { display: flex; gap: 10px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .tops .who { font-weight: 600; }
+    .tops .why { display: block; color: var(--text-2); font-size: 0.85rem; font-weight: 400; }
+    .tops .gain { margin-left: auto; color: var(--green); font-weight: 800; white-space: nowrap; }
+    .live {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;
+      color: var(--text-2); font-size: 0.85rem;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); }
+    .dot.on { background: var(--green); box-shadow: 0 0 0 4px rgba(63,185,80,.15); }
+
+    /* Sections */
+    section { padding: 28px 0; border-top: 1px solid var(--border); }
+    h2 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+    .sub { color: var(--text-2); font-size: 0.95rem; margin-top: 4px; }
+
+    /* Tweet cards */
+    .feed { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+    .tweet {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px;
+    }
+    .tweet-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .tweet-head .logo { width: 28px; height: 28px; font-size: .9rem; border-radius: 7px; }
+    .tweet-who { font-size: 0.9rem; line-height: 1.25; }
+    .tweet-who b { display: block; }
+    .tweet-who span { color: var(--text-2); }
+    .tag {
+      margin-left: auto; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--text-2); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px;
+    }
+    .tweet-body { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.95rem; }
+    .tweet-body .ht { color: #58A6FF; }
+    .tweet-foot { margin-top: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-2); }
+    .tweet-foot a { color: #58A6FF; text-decoration: none; font-weight: 500; }
+    .more { margin-top: 14px; font-size: 0.95rem; }
+    .more a { color: #58A6FF; text-decoration: none; font-weight: 500; }
+
+    /* Feature list */
+    .features { list-style: none; display: grid; gap: 12px; margin-top: 16px; }
+    .features li {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+    }
+    .features b { display: block; font-size: 0.98rem; }
+    .features span { color: var(--text-2); font-size: 0.92rem; }
+    @media (min-width: 560px) { .features { grid-template-columns: 1fr 1fr; } }
+
+    /* Tags legend */
+    .legend { display: grid; gap: 8px; margin-top: 16px; }
+    .legend div {
+      display: grid; grid-template-columns: 2rem 1fr; gap: 4px 8px; align-items: baseline;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px;
+    }
+    .legend .ico { font-size: 1.2rem; grid-column: 1; grid-row: 1 / span 2; }
+    .legend b { font-size: 0.98rem; grid-column: 2; grid-row: 1; }
+    .legend span:not(.ico) { color: var(--text-2); font-size: 0.9rem; grid-column: 2; grid-row: 2; }
+
+    /* FAQ */
+    details { border-bottom: 1px solid var(--border); padding: 14px 0; }
+    details:first-of-type { margin-top: 8px; }
+    summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--text-2); font-weight: 400; font-size: 1.2rem; line-height: 1; }
+    details[open] summary::after { content: "−"; }
+    details p { color: var(--text-2); margin-top: 8px; font-size: 0.95rem; }
+
+    .h3 { font-size: 1rem; font-weight: 700; margin-top: 24px; }
+    .note { color: var(--text-2); font-size: 0.9rem; margin-top: 10px; }
+    .cta-end { text-align: center; }
+    .cta-end .btn { margin-top: 16px; }
+    #alerts { border-top: 0; padding-top: 4px; }
+    .how p { color: var(--text-2); font-size: 0.95rem; margin-top: 12px; }
+    .how b { color: var(--text); font-weight: 600; }
+    footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--text-3); font-size: 0.85rem; }
+    footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 10px; }
+    footer a { color: var(--text-2); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+    .back { color: var(--text-2); text-decoration: none; font-size: 0.9rem; margin-left: auto; }
+    .empty { color: var(--text-2); margin-top: 16px; }
+    .how h2 + p { margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header style="display:flex;align-items:center">
+      <a class="brand" href="/" aria-label="Naismith home">
+        <div class="logo">N</div>
+        <div class="brand-name">Naismith</div>
+      </a>
+      <a class="back" href="/">Home</a>
+    </header>
+
+    <main>
+      <div class="hero" style="padding-bottom:8px">
+        <h1>How it works</h1>
+        <p class="lede">Where the news comes from, what we post, and how to read a pickup.</p>
+      </div>
+      <section class="how" aria-labelledby="how-h" style="border-top:0;padding-top:0">
+        <h2 id="how-h">The basics</h2>
+        <p><b>Sources.</b> We check Shams Charania and Underdog NBA about every 90 seconds, other main insiders every 10 minutes and beat writers about every 50. We also read the official NBA injury report, ESPN, RotoWire, CBS Sports and Bluesky.</p>
+        <p><b>Alerts.</b> We post when a player is ruled out, listed doubtful or questionable, or gets a new timeline. When a player leaves a game, we post that too, and if he comes back within about four hours, we reply under the post.</p>
+        <p><b>Accuracy.</b> An AI model writes the one-line summary. Code then checks it against the original report and rejects any team, day, body part or timeline the report doesn't contain. It still gets things wrong sometimes.</p>
+        <p><b>Scoring.</b> Points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, threes 0.5, turnovers -1.</p>
+      </section>
+
+      <section id="tags" aria-labelledby="tags-h">
+        <h2 id="tags-h">What the tags mean</h2>
+        <p class="sub">The number next to each pickup is the fantasy points per game we project he gains while the injured player is out.</p>
+        <div class="legend">
+          <div><span class="ico">🔥</span><b>All leagues</b><span>+8 or more</span></div>
+          <div><span class="ico">🎯</span><b>12+ team</b><span>+5 to +8</span></div>
+          <div><span class="ico">👀</span><b>Deep league</b><span>+3 to +5</span></div>
+        </div>
+        <p class="note">We don't list pickups under +3, or anyone averaging 32+ fantasy points a game. He's already rostered.</p>
+      </section>
+
+      <section class="cta-end" aria-label="Follow on X">
+        <h2>Get each new injury as it breaks.</h2>
+        <a class="btn btn-primary" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Follow Naismith on X
+        </a>
+      </section>
+    </main>
+
+    <footer>
+      <nav>
+        <a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a>
+        <a href="/app.html#lookup">Player lookup</a>
+        <a href="/help.html">How it works</a>
+        <a href="/privacy.html">Privacy</a>
+      </nav>
+      <p>© 2026 Naismith. Not affiliated with the NBA.</p>
+    </footer>
+  </div>
+  <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>
