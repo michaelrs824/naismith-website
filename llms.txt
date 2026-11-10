@@ -1,21 +1,21 @@
 # Naismith
 
-> Naismith (@NaismithAIApp, https://x.com/NaismithAIApp) is a free NBA fantasy basketball injury-alert account on X. When an NBA player is ruled out or leaves a game, it posts his fantasy points per game and up to three waiver pickups, tagged by league size, usually within minutes. Not connected to the Naismith Awards or the Naismith Memorial Basketball Hall of Fame.
+> @NaismithAIApp (https://x.com/NaismithAIApp) posts free NBA injury alerts on X for fantasy basketball. Each alert shows the injured player's fantasy points per game and up to three pickups, tagged by league size.
 
 Last updated: 2026-11-10
 
-## Key facts
+## Facts
 
-- Free. No app, no account. Alerts are posted on X; naismithai.com has a player-lookup dashboard.
-- Posts when a player is ruled out, listed doubtful or questionable, gets a new recovery timeline, or leaves a game (with a reply if he returns within about four hours).
-- Each alert shows the injured player's fantasy points per game and up to three pickups.
-- Pickup tags, by projected fantasy points per game gained: All leagues (+8 or more), 12+ team (+5 to +8), Deep league (+3 to +5). Pickups under +3 aren't shown; players averaging 32+ aren't suggested.
-- Shams Charania and Underdog NBA are checked about every 90 seconds, other leading insiders every 10 minutes, beat writers about every 50 minutes.
-- A recap thread posts after each night's games: top performers, breakouts and minutes to watch, with full stat lines.
-- Scoring: points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, three-pointers made 0.5, turnovers -1.
+- Free. No app, no account. Alerts are on X; naismithai.com has a player-lookup dashboard.
+- Posts when a player is ruled out, listed doubtful or questionable, gets a new timeline, or leaves a game. If he returns within about four hours, it replies under that post.
+- Pickup tags, by projected fantasy points per game gained while the injured player is out: All leagues (+8 or more), 12+ team (+5 to +8), Deep league (+3 to +5). Pickups under +3 aren't listed. Players averaging 32+ aren't suggested.
+- Sources: the official NBA injury report, ESPN, RotoWire, CBS Sports, Bluesky, and NBA insiders and beat writers on X. Shams Charania and Underdog NBA are checked about every 90 seconds, other main insiders every 10 minutes, beat writers about every 50 minutes.
+- An AI model writes each one-line summary. Code checks it against the original report and rejects any team, day, body part or timeline the report doesn't contain. Mistakes still happen.
+- A recap thread follows each night's games: top performers, breakouts and minutes to watch, with full stat lines.
+- Scoring: points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, three-pointers 0.5, turnovers -1.
 - Not affiliated with the NBA.
 
-## Example alert (format)
+## Alert format
 
 🚨 Star Guard (TEAM) — OUT (2-3 weeks) | 41 FPTS/g
 The team says he'll be re-evaluated in two weeks.
@@ -23,33 +23,8 @@ The team says he'll be re-evaluated in two weeks.
 🎯 Bench Wing (+5.6 FPTS/g) — 12+ team
 📰 Shams Charania
 
-Line 1: status, expected time out when known, and his fantasy points per game. Line 2: one plain-English line on the news. Then up to three pickups with their projected gain and league tag, then the source.
-
-## FAQ
-
-### What is Naismith?
-Naismith (@NaismithAIApp) is a free NBA fantasy basketball injury-alert account on X. When a player is ruled out, listed doubtful or questionable, leaves a game, or gets a new recovery timeline, it posts the news with the player's fantasy points per game and up to three waiver pickups, tagged by league size. It isn't connected to the Naismith Awards or the Naismith Memorial Basketball Hall of Fame.
-
-### When does Naismith post?
-When a player is ruled out, listed doubtful or questionable, or gets a new recovery timeline; when he leaves a game, with a reply under that post if he returns within about four hours; and a recap thread after each night's games.
-
-### Where does the news come from, and how often is it checked?
-The official NBA injury report, ESPN, RotoWire, CBS Sports, Bluesky, and NBA insiders and beat writers on X. Shams Charania and Underdog NBA are checked about every 90 seconds, other leading insiders every 10 minutes, and beat writers about every 50 minutes.
-
-### What do the pickup tags mean?
-Each pickup shows how many fantasy points per game Naismith projects him to gain while the injured player is out. All leagues: +8 or more. 12+ team: +5 to +8. Deep league: +3 to +5. Pickups under +3 aren't shown, and players averaging 32 or more fantasy points per game aren't suggested, since they're rostered almost everywhere.
-
-### What fantasy scoring does Naismith use?
-Points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, three-pointers made 0.5 and turnovers -1.
-
-### How accurate are the alerts?
-An AI model reads each report and writes a one-line summary. Code then checks that line against the original report and rejects any team, day, body part or timeline the report doesn't contain. Mistakes have happened; corrections are reviewed before they're posted on X.
-
-### Does it cost anything?
-No. There's no app and no account. Follow @NaismithAIApp on X, or use the dashboard at naismithai.com to look up any player's status.
-
 ## Links
 
-- [Naismith on X](https://x.com/NaismithAIApp): every alert and recap
-- [Player lookup dashboard](https://naismithai.com/app.html): recent alerts, player search and status lookups
+- [X account](https://x.com/NaismithAIApp)
+- [Player lookup](https://naismithai.com/app.html)
 - [Privacy](https://naismithai.com/privacy.html)
