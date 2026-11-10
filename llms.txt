@@ -1,6 +1,6 @@
 # Naismith
 
-> @NaismithAIApp (https://x.com/NaismithAIApp) posts free NBA injury alerts on X for fantasy basketball. Each alert shows the injured player's fantasy points per game and up to three pickups, tagged by league size.
+> @NaismithAIApp (https://x.com/NaismithAIApp) posts NBA injury news from the top insiders on X, together with who to pick up for fantasy basketball, usually within minutes. Each alert shows the injured player's fantasy points per game and up to three pickups, tagged by league size. Free.
 
 Last updated: 2026-11-10
 
@@ -29,6 +29,5 @@ The team says he'll be re-evaluated in two weeks.
 - [Today's best pickups](https://naismithai.com/pickups.html): every player projected to gain from a current injury, by league size, updated every 15 minutes, plus how past pickups played
 - [Latest alerts](https://naismithai.com/alerts.html): everything posted on X in the last week
 - [Last night's recap](https://naismithai.com/recap.html)
-- [How it works](https://naismithai.com/help.html): sources, pickup tags and scoring
 - [Player lookup](https://naismithai.com/app.html)
 - [Privacy](https://naismithai.com/privacy.html)
