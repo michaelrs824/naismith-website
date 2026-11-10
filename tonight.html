@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tonight's NBA games and injury news · Naismith AI</title>
+  <meta name="description" content="Every NBA game tonight with each team's injury news: who's out, doubtful or questionable before lineups lock, and who to pick up if they sit.">
+  <link rel="canonical" href="https://naismithai.com/tonight.html">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='68' font-size='60' font-family='Arial' font-weight='800' text-anchor='middle' fill='white'>N</text></svg>">
+  <link rel="apple-touch-icon" href="/logo.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://naismithai.com/tonight.html">
+  <meta property="og:title" content="Tonight's NBA injury news">
+  <meta property="og:description" content="Who's out or questionable in every game tonight, and who to pick up if they sit.">
+  <meta property="og:image" content="https://naismithai.com/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@NaismithAIApp">
+  <meta name="twitter:image" content="https://naismithai.com/og.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0D1117;
+      --surface: #161B22;
+      --card: #1C2129;
+      --border: rgba(139, 148, 158, 0.16);
+      --text: #E6EDF3;
+      --text-2: #8B949E;
+      --text-3: #6E7681;
+      --purple: #6C3CE1;
+      --blue: #2E75B6;
+      --green: #3FB950;
+      --gradient: linear-gradient(135deg, #6C3CE1 0%, #2E75B6 100%);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    .wrap { max-width: 640px; margin: 0 auto; padding: 0 16px; }
+
+    /* Header */
+    header { padding: 20px 0 8px; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo {
+      width: 34px; height: 34px; border-radius: 9px; background: var(--gradient);
+      display: grid; place-items: center; font-weight: 800; color: #fff; font-size: 1.1rem;
+    }
+    .brand-name { font-weight: 700; font-size: 1.1rem; }
+    .brand-handle { color: var(--text-2); font-size: 0.9rem; margin-left: auto; text-decoration: none; }
+
+    /* Hero */
+    .hero { padding: 36px 0 28px; }
+    h1 {
+      font-size: clamp(1.9rem, 7vw, 2.6rem); line-height: 1.12; font-weight: 800;
+      letter-spacing: -0.02em; text-wrap: balance;
+    }
+    h1 .grad { background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lede { color: var(--text-2); font-size: 1.05rem; margin-top: 14px; max-width: 34em; }
+    .ctas { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      min-height: 52px; padding: 0 20px; border-radius: 12px; text-decoration: none;
+      font-weight: 600; font-size: 1rem; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); transition: border-color .15s, transform .15s;
+    }
+    .btn:hover { border-color: rgba(139,148,158,.4); }
+    .btn:active { transform: scale(.99); }
+    .btn-primary { background: #fff; color: #0D1117; border-color: #fff; }
+    .btn-primary:hover { border-color: #fff; opacity: .92; }
+    .btn svg { width: 18px; height: 18px; flex: none; }
+    .btn-note { color: var(--text-2); font-size: 0.85rem; text-align: center; margin-top: 6px; }
+    .btn-note a { color: var(--accent-2); text-decoration: none; }
+    .tops { list-style: none; margin-top: 12px; }
+    .tops li { display: flex; gap: 10px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .tops .who { font-weight: 600; }
+    .tops .why { display: block; color: var(--text-2); font-size: 0.85rem; font-weight: 400; }
+    .tops .gain { margin-left: auto; color: var(--green); font-weight: 800; white-space: nowrap; }
+    .live {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;
+      color: var(--text-2); font-size: 0.85rem;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); }
+    .dot.on { background: var(--green); box-shadow: 0 0 0 4px rgba(63,185,80,.15); }
+
+    /* Sections */
+    section { padding: 28px 0; border-top: 1px solid var(--border); }
+    h2 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+    .sub { color: var(--text-2); font-size: 0.95rem; margin-top: 4px; }
+
+    /* Tweet cards */
+    .feed { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+    .tweet {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px;
+    }
+    .tweet-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .tweet-head .logo { width: 28px; height: 28px; font-size: .9rem; border-radius: 7px; }
+    .tweet-who { font-size: 0.9rem; line-height: 1.25; }
+    .tweet-who b { display: block; }
+    .tweet-who span { color: var(--text-2); }
+    .tag {
+      margin-left: auto; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--text-2); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px;
+    }
+    .tweet-body { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.95rem; }
+    .tweet-body .ht { color: var(--accent-2); }
+    .tweet-foot { margin-top: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-2); }
+    .tweet-foot a { color: var(--accent-2); text-decoration: none; font-weight: 500; }
+    .more { margin-top: 14px; font-size: 0.95rem; }
+    .more a { color: var(--accent-2); text-decoration: none; font-weight: 500; }
+
+    /* Feature list */
+    .features { list-style: none; display: grid; gap: 12px; margin-top: 16px; }
+    .features li {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+    }
+    .features b { display: block; font-size: 0.98rem; }
+    .features span { color: var(--text-2); font-size: 0.92rem; }
+    @media (min-width: 560px) { .features { grid-template-columns: 1fr 1fr; } }
+
+    /* Tags legend */
+    .legend { display: grid; gap: 8px; margin-top: 16px; }
+    .legend div {
+      display: grid; grid-template-columns: 2rem 1fr; gap: 4px 8px; align-items: baseline;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px;
+    }
+    .legend .ico { font-size: 1.2rem; grid-column: 1; grid-row: 1 / span 2; }
+    .legend b { font-size: 0.98rem; grid-column: 2; grid-row: 1; }
+    .legend span:not(.ico) { color: var(--text-2); font-size: 0.9rem; grid-column: 2; grid-row: 2; }
+
+    /* FAQ */
+    details { border-bottom: 1px solid var(--border); padding: 14px 0; }
+    details:first-of-type { margin-top: 8px; }
+    summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--text-2); font-weight: 400; font-size: 1.2rem; line-height: 1; }
+    details[open] summary::after { content: "−"; }
+    details p { color: var(--text-2); margin-top: 8px; font-size: 0.95rem; }
+
+    .h3 { font-size: 1rem; font-weight: 700; margin-top: 24px; }
+    .note { color: var(--text-2); font-size: 0.9rem; margin-top: 10px; }
+    .cta-end { text-align: center; }
+    .cta-end .btn { margin-top: 16px; }
+    #alerts { border-top: 0; padding-top: 4px; }
+    .how p { color: var(--text-2); font-size: 0.95rem; margin-top: 12px; }
+    .how b { color: var(--text); font-weight: 600; }
+    footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--text-3); font-size: 0.85rem; }
+    footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 10px; }
+    footer a { color: var(--text-2); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+    .day { font-size: 0.85rem; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: .06em; margin: 22px 0 10px; }
+    .back { color: var(--text-2); text-decoration: none; font-size: 0.9rem; margin-left: auto; }
+    .empty { color: var(--text-2); margin-top: 16px; }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/site.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Naismith AI home">
+        <div class="logo">N</div>
+        <div class="brand-name">Naismith AI</div>
+      </a>
+      <nav class="topnav" aria-label="Main"><a href="/tonight.html" aria-current="page">Tonight</a><a href="/alerts.html">Alerts</a><a href="/pickups.html">Pickups</a><a href="/recap.html">Recap</a><a href="/app.html#lookup">Lookup</a></nav>
+      <a class="nav-follow" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
+      <a class="back" href="/">Home</a>
+    </header>
+
+    <main>
+      <div class="hero" style="padding-bottom:8px">
+        <h1>Tonight</h1>
+        <p class="lede" id="t-sub">Every game on tonight's slate, with each team's injury news and who to pick up if a player sits.</p>
+        <div class="live"><span class="dot" id="dot"></span><span id="updated">Loading…</span></div>
+        <div class="feed-controls">
+          <div class="chips" role="group" aria-label="Show">
+            <button class="chip" data-v="all" aria-pressed="true">All games</button>
+            <button class="chip" data-v="mine" aria-pressed="false">★ My players</button>
+            <button class="chip" data-v="news" aria-pressed="false">Games with news</button>
+          </div>
+        </div>
+      </div>
+      <section aria-label="Games" style="border-top:0;padding-top:0">
+        <div class="games" id="games"><p class="empty">Loading tonight's games…</p></div>
+      </section>
+      <section class="cta-end" aria-label="Follow on X">
+        <h2>Get each new injury as it breaks.</h2>
+        <a class="btn btn-primary" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Follow Naismith AI on X
+        </a>
+      </section>
+    </main>
+
+    <footer>
+      <nav>
+        <a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a>
+        <a href="/tonight.html">Tonight</a>
+        <a href="/alerts.html">Latest alerts</a>
+        <a href="/pickups.html">Best pickups</a>
+        <a href="/app.html#lookup">Player lookup</a>
+        <a href="mailto:naismithai@gmail.com?subject=Naismith%20AI%20feedback">Feedback</a>
+        <a href="/privacy.html">Privacy</a>
+      </nav>
+      <p>Not affiliated with the NBA.</p>
+    </footer>
+  </div>
+
+  <script src="/feed.js"></script>
+  <script>
+  (function () {
+    var API = 'https://naismith-api-production.up.railway.app';
+    var F = window.NaismithFeed, W = window.NaismithWatch, esc = F.esc, data = null, view = 'all';
+    try { view = localStorage.getItem('tonightView') || 'all'; } catch (e) {}
+    if (view === 'mine' && !W.names().length) view = 'all';
+
+    function time(iso) { return iso ? new Date(iso).toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'}) : ''; }
+    function owned(x) { return x == null ? '' : ' · ' + (x < 1 ? 'under 1%' : Math.round(x) + '%') + ' owned'; }
+    function label(s) { return s === 'OUT' ? 'Out' : s === 'DOUBTFUL' ? 'Doubtful' : 'Questionable'; }
+
+    function render() {
+      var el = document.getElementById('games');
+      if (!data || !data.games) return;
+      if (!data.games.length) { el.innerHTML = '<p class="empty">No NBA games today.</p>'; return; }
+      var games = data.games.map(function (g) {
+        var ps = g.players;
+        if (view === 'mine') ps = ps.filter(function (p) { return W.has(p.player) || p.pickups.some(function (x) { return W.has(x.player); }); });
+        return {g: g, ps: ps};
+      }).filter(function (x) { return view === 'all' || x.ps.length; });
+      if (!games.length) {
+        el.innerHTML = '<p class="empty">' + (view === 'mine' ? 'None of your players have injury news in tonight\'s games.' : 'No injury news for tonight\'s games yet.') + '</p>';
+        return;
+      }
+      el.innerHTML = games.map(function (x) {
+        var g = x.g;
+        var state = g.state === 'live' ? '<span class="game-state live">Live</span>' : g.state === 'final' ? '<span class="game-state final">Final</span>' : '';
+        return '<article class="game"><div class="game-head"><span class="game-teams">' + esc(g.teams.join(' vs ')) + '</span>' + state +
+          '<span class="game-time">' + (g.state === 'upcoming' ? esc(time(g.start)) : esc(g.detail || '')) + '</span></div>' +
+          (x.ps.length ? '<ul class="game-players">' + x.ps.map(function (p) {
+            var mine = W.has(p.player);
+            return '<li class="' + (mine ? 'mine-row' : '') + '"><div class="gp-top">' + W.star(p.player) +
+              '<span class="gp-status ' + p.status + '">' + label(p.status) + '</span>' +
+              '<span class="gp-name">' + esc(p.player) + '</span><span class="gp-team">' + esc(p.team) + (p.duration ? ' · ' + esc(p.duration) : '') + '</span>' +
+              '<span class="gp-fp">' + p.avg_fpts.toFixed(0) + '<small> FPTS/g</small></span></div>' +
+              (p.pickups.length ? '<div class="gp-picks">If he sits: ' + p.pickups.map(function (k) {
+                return '<b>' + esc(k.player) + '</b> <span class="d">+' + k.fpts_delta.toFixed(1) + '</span><span class="owned">' + owned(k.owned) + '</span>';
+              }).join(', ') + '</div>' : '') + '</li>';
+          }).join('') + '</ul>' : '<p class="game-quiet">No injury news for either team.</p>') + '</article>';
+      }).join('');
+    }
+    function chips() {
+      Array.prototype.forEach.call(document.querySelectorAll('.chip[data-v]'), function (b) {
+        b.setAttribute('aria-pressed', String(b.dataset.v === view));
+        if (b.dataset.v === 'mine') b.hidden = !W.names().length;
+      });
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('.chip[data-v]'), function (b) {
+      b.addEventListener('click', function () { view = b.dataset.v; try { localStorage.setItem('tonightView', view); } catch (e) {} chips(); render(); });
+    });
+    document.addEventListener('watchchange', function () { chips(); if (view === 'mine') render(); });
+    chips();
+
+    function load() {
+      fetch(API + '/public/tonight').then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+        .then(function (d) {
+          data = d;
+          var up = (d.games || []).filter(function (g) { return g.state === 'upcoming' && g.start; }).map(function (g) { return g.start; }).sort();
+          var n = (d.games || []).length, hurt = (d.games || []).reduce(function (s, g) { return s + g.players.length; }, 0);
+          document.getElementById('dot').className = 'dot on';
+          document.getElementById('updated').textContent = n + ' game' + (n === 1 ? '' : 's') + ' · ' + hurt + ' players with news' +
+            (up.length ? ' · first tip ' + time(up[0]) : '');
+          render();
+        })
+        .catch(function () {
+          document.getElementById('games').innerHTML = '<p class="empty">Couldn\'t load tonight\'s games. Try again in a minute.</p>';
+          document.getElementById('updated').textContent = '';
+        });
+    }
+    load();
+    setInterval(load, 120000);  // statuses change fast before tip-off
+  })();
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

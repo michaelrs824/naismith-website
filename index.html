@@ -196,7 +196,7 @@
         <div class="logo">N</div>
         <div class="brand-name">Naismith AI</div>
       </a>
-      <nav class="topnav" aria-label="Main"><a href="/alerts.html">Alerts</a><a href="/pickups.html">Pickups</a><a href="/recap.html">Recap</a><a href="/app.html#lookup">Lookup</a></nav>
+      <nav class="topnav" aria-label="Main"><a href="/tonight.html">Tonight</a><a href="/alerts.html">Alerts</a><a href="/pickups.html">Pickups</a><a href="/recap.html">Recap</a><a href="/app.html#lookup">Lookup</a></nav>
       <a class="nav-follow" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
     </header>
 
@@ -206,9 +206,14 @@
         <span class="eyebrow">Straight from NBA insiders on X</span>
         <h1>Injury news fast. <span class="grad">Pickups faster.</span></h1>
         <p class="lede">When a player is ruled out or leaves a game, we post the news and who to pick up in the same post, fast. Free.</p>
+        <form class="hero-search" action="/app.html" method="get" role="search">
+          <input type="search" name="player" placeholder="Look up a player" aria-label="Look up a player" autocomplete="off">
+          <button type="submit">Search</button>
+        </form>
         </div>
         <div class="hero-actions">
         <nav class="tiles" aria-label="Explore">
+          <a class="tile" href="/tonight.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span class="tile-text"><span>Tonight's games</span><small class="tile-desc">Who's out or questionable before lineups lock</small></span></a>
           <a class="tile" href="/app.html#lookup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="tile-text"><span>Look up any player</span><small class="tile-desc">Status, recent news and who gains when he's out</small></span></a>
           <a class="tile" href="/pickups.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><span class="tile-text"><span>Today's best pickups</span><small class="tile-desc">Ranked across every injury, by league size</small></span></a>
           <a class="tile" href="/recap.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span class="tile-text"><span>Last night's recap</span><small class="tile-desc">Top performers, breakouts and minutes to watch</small></span></a>
@@ -221,6 +226,11 @@
         </div>
       </div>
 
+      <section class="mine" id="mine" aria-labelledby="mine-h" hidden>
+        <div class="sec-head"><h2 id="mine-h">Your players</h2><a class="sec-link" href="/alerts.html#mine">All their news →</a></div>
+        <ul class="mine-list" id="mine-list"></ul>
+      </section>
+
       <section class="values" aria-label="Why follow">
         <div class="value"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><div><b>Straight from X</b><span>The top NBA insiders on X, checked about every 90 seconds.</span></div></div>
         <div class="value"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><div><b>Pickups in the same post</b><span>Who to add, with projected fantasy points and a tag for your league size.</span></div></div>
@@ -229,6 +239,7 @@
 
       <section id="alerts" aria-labelledby="alerts-h">
         <div class="sec-head"><h2 id="alerts-h">Latest alerts</h2><a class="sec-link" href="/alerts.html">See all →</a></div>
+        <p class="tagkey"><span>🔥 <b>All leagues</b> +8 or more</span><span>🎯 <b>12+ team</b> +5 to +8</span><span>👀 <b>Deep league</b> +3 to +5</span><span>☆ <b>Star a player</b> to follow him under Your players</span></p>
         <div class="feed" id="feed">
           <!-- Shown until live alerts load (and to readers without JavaScript). -->
           <article class="tweet">
@@ -262,9 +273,11 @@ He went to the locker room with an ankle injury in the second quarter.
     <footer>
       <nav>
         <a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a>
+        <a href="/tonight.html">Tonight</a>
         <a href="/alerts.html">Latest alerts</a>
         <a href="/pickups.html">Best pickups</a>
         <a href="/app.html#lookup">Player lookup</a>
+        <a href="mailto:naismithai@gmail.com?subject=Naismith%20AI%20feedback">Feedback</a>
         <a href="/privacy.html">Privacy</a>
       </nav>
       <p>Not affiliated with the NBA.</p>
@@ -277,6 +290,42 @@ He went to the locker room with an ankle injury in the second quarter.
     var API = 'https://naismith-api-production.up.railway.app';
 
     var F = window.NaismithFeed, esc = F.esc, ago = F.ago;
+
+    // Your players: latest news for everyone starred on this device
+    function renderMine() {
+      var W = window.NaismithWatch, names = W.names(), box = document.getElementById('mine');
+      if (!names.length) { box.hidden = true; return; }
+      box.hidden = false;
+      var list = document.getElementById('mine-list');
+      if (!list.children.length) list.innerHTML = '<li class="what">Loading…</li>';
+      Promise.all([
+        fetch(API + '/public/alerts?tweeted_only=true&hours=168&limit=200').then(function (r) { return r.ok ? r.json() : {alerts: []}; }),
+        fetch(API + '/public/pickups').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
+      ]).then(function (res) {
+        var alerts = res[0].alerts || [], board = res[1] || {};
+        list.innerHTML = names.map(function (n) {
+          var k = W.key(n), latest = null, inj = null, pick = null;
+          alerts.forEach(function (a) { if (!latest && W.key((a.event || {}).player_name) === k) latest = a; });
+          (board.injuries || []).forEach(function (i) { if (W.key(i.player) === k) inj = i; });
+          (board.pickups || []).forEach(function (p) { if (W.key(p.player) === k) pick = p; });
+          var what, cls = 's-ok', when = '';
+          if (inj) {
+            what = (inj.status === 'DOUBTFUL' ? 'Doubtful' : 'Out') + (inj.duration ? ' (' + esc(inj.duration) + ')' : ''); cls = 's-out';
+            if (latest) when = ago(latest.timestamp);
+          } else if (latest) {
+            var p = F.info(latest) || {};
+            what = esc(p.status || 'News');
+            cls = p.kind === 'out' || p.kind === 'exit' ? 's-out' : p.kind === 'gtd' ? 's-gtd' : 's-ok';
+            when = ago(latest.timestamp);
+          } else what = 'No injury news this week';
+          var extra = pick ? ' · Pickup: +' + pick.fpts_delta.toFixed(1) + ' FPTS/g' : '';
+          return '<li>' + W.star(n) + '<div><div class="who">' + esc(n) + '</div><div class="what"><span class="' + cls + '">' + what + '</span>' + extra + '</div></div>' +
+            (when ? '<span class="when">' + esc(when) + '</span>' : '') + '</li>';
+        }).join('');
+      }).catch(function () { list.innerHTML = '<li class="what">Couldn\'t load your players. Try again in a minute.</li>'; });
+    }
+    renderMine();
+    document.addEventListener('watchchange', function () { setTimeout(renderMine, 50); });
 
     fetch(API + '/public/alerts?tweeted_only=true&hours=168&limit=20')
       .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })

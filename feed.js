@@ -45,6 +45,46 @@
   }
 
 
+  // ── My players: a watchlist kept on this device (no account) ──
+  var KEY = 'naismith.watch';
+  function nkey(n) { return String(n || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z ]/g, '').replace(/\s+/g, ' ').trim(); }
+  var W = {
+    load: function () { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } },
+    save: function (l) { try { localStorage.setItem(KEY, JSON.stringify(l)); } catch (e) {} },
+    key: nkey,
+    has: function (n) { var k = nkey(n); return W.load().some(function (x) { return nkey(x) === k; }); },
+    names: function () { return W.load(); },
+    toggle: function (n) {
+      var k = nkey(n), l = W.load(), i = -1;
+      l.forEach(function (x, j) { if (nkey(x) === k) i = j; });
+      if (i >= 0) l.splice(i, 1); else l.push(n);
+      W.save(l);
+      document.dispatchEvent(new CustomEvent('watchchange', {detail: {player: n, on: i < 0}}));
+      return i < 0;
+    },
+    star: function (n) {
+      var on = W.has(n);
+      return '<button type="button" class="star" data-player="' + esc(n) + '" aria-pressed="' + on + '" aria-label="' +
+        (on ? 'Remove ' : 'Add ') + esc(n) + (on ? ' from' : ' to') + ' my players" title="' + (on ? 'In my players' : 'Add to my players') + '">' +
+        (on ? '★' : '☆') + '</button>';
+    }
+  };
+  // One click handler for every star on the page
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.star');
+    if (!b) return;
+    e.preventDefault(); e.stopPropagation();
+    var n = b.getAttribute('data-player'), on = W.toggle(n);
+    Array.prototype.forEach.call(document.querySelectorAll('.star'), function (s) {
+      if (nkey(s.getAttribute('data-player')) === nkey(n)) {
+        s.setAttribute('aria-pressed', String(on)); s.textContent = on ? '★' : '☆';
+        s.setAttribute('aria-label', (on ? 'Remove ' : 'Add ') + n + (on ? ' from' : ' to') + ' my players');
+        s.title = on ? 'In my players' : 'Add to my players';
+      }
+    });
+  });
+  window.NaismithWatch = W;
+
   // Read a posted tweet back into its parts: headline, news, pickups, source.
   var HEAD = /^(\S+)\s+(.+?)\s+\(([A-Z]{2,4})\)\s+—\s+(.+?)(?:\s+\|\s+(\d+)\s+FPTS\/g)?$/;
   var PICK = /^(🔥|🎯|👀)\s+(.+?)\s+\(\+([\d.]+) FPTS\/g\)\s+—\s+(.+)$/;
@@ -80,11 +120,11 @@
   function structured(a, link, when, linkLabel) {
     return '<article class="acard k-' + a.kind + '">' +
       '<div class="ac-top"><span class="ac-status"><i></i>' + esc(a.status) + '</span><span class="ac-time">' + esc(when) + '</span></div>' +
-      '<div class="ac-player"><span class="ac-name">' + esc(a.player) + '</span><span class="ac-team">' + esc(a.team) + '</span>' +
+      '<div class="ac-player">' + W.star(a.player) + '<span class="ac-name">' + esc(a.player) + '</span><span class="ac-team">' + esc(a.team) + '</span>' +
         (a.fpts ? '<span class="ac-fp">' + esc(a.fpts) + '<small> FPTS/g</small></span>' : '') + '</div>' +
       (a.news.length ? '<p class="ac-news">' + esc(a.news.join(' ')) + '</p>' : '') +
       (a.picks.length ? '<ul class="ac-picks">' + a.picks.map(function (p) {
-        return '<li><span class="ac-pn">' + esc(p.name) + '</span><span class="pill">' + esc(p.icon + ' ' + p.tag) +
+        return '<li>' + W.star(p.name) + '<span class="ac-pn">' + esc(p.name) + '</span><span class="pill">' + esc(p.icon + ' ' + p.tag) +
           '</span><span class="ac-pd">+' + esc(p.delta) + '</span></li>';
       }).join('') + '</ul>' : '') +
       '<div class="ac-foot"><span>' + esc(a.source || '') + '</span>' +

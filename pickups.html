@@ -188,7 +188,7 @@
         <div class="logo">N</div>
         <div class="brand-name">Naismith AI</div>
       </a>
-      <nav class="topnav" aria-label="Main"><a href="/alerts.html">Alerts</a><a href="/pickups.html" aria-current="page">Pickups</a><a href="/recap.html">Recap</a><a href="/app.html#lookup">Lookup</a></nav>
+      <nav class="topnav" aria-label="Main"><a href="/tonight.html">Tonight</a><a href="/alerts.html">Alerts</a><a href="/pickups.html" aria-current="page">Pickups</a><a href="/recap.html">Recap</a><a href="/app.html#lookup">Lookup</a></nav>
       <a class="nav-follow" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
       <a class="back" href="/">Home</a>
     </header>
@@ -198,7 +198,8 @@
         <h1>Today's best pickups</h1>
         <p class="lede">Every player we project to gain from a current injury, ranked by fantasy points per game he should add while the injured player is out.</p>
         <div class="live"><span class="dot" id="dot"></span><span id="updated">Updated every 15 minutes</span></div>
-        <p class="tagkey"><span>🔥 <b>All leagues</b> +8 or more</span><span>🎯 <b>12+ team</b> +5 to +8</span><span>👀 <b>Deep league</b> +3 to +5</span></p>
+        <p class="tagkey"><span>🔥 <b>All leagues</b> +8 or more</span><span>🎯 <b>12+ team</b> +5 to +8</span><span>👀 <b>Deep league</b> +3 to +5</span><span>☆ <b>Star a player</b> to follow him</span></p>
+        <p class="note-scoring">Numbers use points scoring (points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, threes 0.5, turnovers −1). In a category league, read them as a guide to who's getting more minutes. Ownership is the share of ESPN leagues that roster him.</p>
         <div class="chips" role="group" aria-label="League size">
           <button class="chip" data-f="std" aria-pressed="false">10-team</button>
           <button class="chip" data-f="12" aria-pressed="false">12-team</button>
@@ -214,6 +215,12 @@
         <h2 id="inj-h">By injury</h2>
         <p class="sub">Tap a player to see everyone who gains while he's out.</p>
         <div id="injuries"><p class="empty">Loading…</p></div>
+      </section>
+
+      <section id="losing-sec" aria-labelledby="losing-h" hidden>
+        <h2 id="losing-h">Losing minutes</h2>
+        <p class="sub">These players are back. The fill-ins we suggested while they were out lose that bump, so they're the first to consider dropping.</p>
+        <ul class="losing" id="losing"></ul>
       </section>
 
       <section id="record" aria-labelledby="rec-h">
@@ -233,17 +240,21 @@
     <footer>
       <nav>
         <a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a>
+        <a href="/tonight.html">Tonight</a>
         <a href="/alerts.html">Latest alerts</a>
         <a href="/pickups.html">Best pickups</a>
         <a href="/app.html#lookup">Player lookup</a>
+        <a href="mailto:naismithai@gmail.com?subject=Naismith%20AI%20feedback">Feedback</a>
         <a href="/privacy.html">Privacy</a>
       </nav>
       <p>Not affiliated with the NBA.</p>
     </footer>
   </div>
 
+  <script src="/feed.js"></script>
   <script>
   (function () {
+    var W = window.NaismithWatch;
     var API = 'https://naismith-api-production.up.railway.app';
     var SHOW = {std: ['All leagues'], '12': ['All leagues', '12+ team'], deep: ['All leagues', '12+ team', 'Deep league']};
     var filter = 'deep', board = null;
@@ -254,10 +265,7 @@
         return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c];
       });
     }
-    function ago(iso) {
-      var m = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
-      return m < 60 ? m + 'm ago' : Math.round(m / 60) + 'h ago';
-    }
+    function ago(iso) { return window.NaismithFeed.ago(iso); }
     function names(list) {
       var n = list.map(function (b) { return '<b>' + esc(b.player) + '</b>' + (b.duration ? ' (' + esc(b.duration) + ')' : ''); });
       return n.length < 3 ? n.join(' and ') : n.slice(0, -1).join(', ') + ' and ' + n[n.length - 1];
@@ -283,10 +291,11 @@
       var total = picks.length;
       if (!showAll) picks = picks.slice(0, LIMIT);
       list.innerHTML = picks.map(function (p) {
-        return '<li class="pick"><div class="pick-top"><span class="pick-name">' + esc(p.player) + '</span>' +
+        return '<li class="pick"><div class="pick-top">' + W.star(p.player) + '<span class="pick-name">' + esc(p.player) + '</span>' +
           '<span class="pick-meta">' + esc([p.team, p.position].filter(Boolean).join(' · ')) + '</span>' +
           '<span class="pick-gain">+' + p.fpts_delta.toFixed(1) + '<small> FPTS/g</small></span></div>' +
-          '<div class="pick-why">' + why(p.because) + ' Averages ' + p.avg_fpts.toFixed(1) + ' FPTS/g.</div>' +
+          '<div class="pick-why">' + why(p.because) + ' Averages ' + p.avg_fpts.toFixed(1) + ' FPTS/g.' +
+          (p.owned != null ? ' <span class="owned">Owned in ' + fmtOwned(p.owned) + ' of ESPN leagues.</span>' : '') + '</div>' +
           '<span class="pill">' + esc(p.icon + ' ' + p.tag) + '</span></li>';
       }).join('') + (total > picks.length ? '<li><button class="chip" id="more">Show all ' + total + '</button></li>' : '');
       var more = document.getElementById('more');
@@ -301,8 +310,22 @@
           ' · ' + i.avg_fpts.toFixed(1) + ' FPTS/g</span></span></summary><ul>' +
           i.pickups.map(function (p) {
             return '<li><span>' + esc(p.icon) + '</span><span>' + esc(p.player) + ' <span class="inj-meta">' +
-              esc(p.tag) + '</span></span><span>+' + p.fpts_delta.toFixed(1) + '</span></li>';
+              esc(p.tag) + (p.owned != null ? ' · ' + fmtOwned(p.owned) + ' owned' : '') + '</span></span><span>+' + p.fpts_delta.toFixed(1) + '</span></li>';
           }).join('') + '</ul></details>';
+      }).join('');
+    }
+    function fmtOwned(x) { return x < 1 ? 'under 1%' : Math.round(x) + '%'; }
+    function renderLosing() {
+      var L = board.losing || [], sec = document.getElementById('losing-sec');
+      if (!L.length) { sec.hidden = true; return; }
+      sec.hidden = false;
+      document.getElementById('losing').innerHTML = L.map(function (r) {
+        return '<li><div class="back-who">' + esc(r.player) + ' <span class="pick-meta">' + esc(r.team) + '</span></div>' +
+          '<div class="back-when">Back ' + ago(r.back_since) + ' · ' + r.avg_fpts.toFixed(1) + ' FPTS/g</div><ul>' +
+          r.fill_ins.map(function (f) {
+            return '<li>' + W.star(f.player) + '<span>' + esc(f.player) + ' <span class="owned">' + esc(f.team) +
+              (f.owned != null ? ' · ' + fmtOwned(f.owned) + ' owned' : '') + '</span></span><span class="minus">−' + f.fpts_delta.toFixed(1) + '</span></li>';
+          }).join('') + '</ul></li>';
       }).join('');
     }
     function renderRecord(d) {
@@ -351,7 +374,7 @@
             document.getElementById('dot').className = 'dot on';
             document.getElementById('updated').textContent = 'Updated ' + ago(d.generated_at);
           }
-          renderBoard(); renderInjuries();
+          renderBoard(); renderInjuries(); renderLosing();
           if (d.building && !d.pickups.length) setTimeout(load, 20000);
         })
         .catch(function () {

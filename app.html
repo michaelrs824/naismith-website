@@ -1297,6 +1297,10 @@
       .site-header .topnav a[aria-current="page"] { color: #E6EDF3; background: rgba(108,60,225,0.14); }
     }
     .site-footer nav a { display: inline-block; padding: 6px 0; }
+    .star { background: none; border: 0; cursor: pointer; font-size: 1.3rem; color: #848D97; padding: 2px 6px 2px 0; vertical-align: 2px; }
+    .star[aria-pressed="true"] { color: #F2C14E; }
+    .lookup-share { margin-top: 14px; }
+    .lookup-share button { font: inherit; font-size: 0.9rem; font-weight: 600; color: #E6EDF3; background: #161B22; border: 1px solid rgba(139,148,158,.25); border-radius: 10px; padding: 10px 14px; cursor: pointer; }
     /* QA: readable contrast for purple text and muted labels */
     .alert-fpts, .autocomplete-item > span, .lookup-stat-value { color: var(--accent-2) !important; }
     .alert-time.stale { color: #848D97 !important; opacity: 1 !important; }
@@ -1331,7 +1335,7 @@
         <div class="logo">N</div>
         <div class="brand-name">Naismith AI</div>
       </a>
-      <nav class="topnav" aria-label="Main"><a href="/alerts.html">Alerts</a><a href="/pickups.html">Pickups</a><a href="/recap.html">Recap</a><a href="/app.html#lookup" aria-current="page">Lookup</a></nav>
+      <nav class="topnav" aria-label="Main"><a href="/tonight.html">Tonight</a><a href="/alerts.html">Alerts</a><a href="/pickups.html">Pickups</a><a href="/recap.html">Recap</a><a href="/app.html#lookup" aria-current="page">Lookup</a></nav>
       <a class="nav-follow" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
       <a class="back" href="/">Home</a>
     </header>
@@ -1480,14 +1484,17 @@
     <footer class="site-footer">
       <nav>
         <a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a>
+        <a href="/tonight.html">Tonight</a>
         <a href="/alerts.html">Latest alerts</a>
         <a href="/pickups.html">Best pickups</a>
         <a href="/app.html#lookup">Player lookup</a>
+        <a href="mailto:naismithai@gmail.com?subject=Naismith%20AI%20feedback">Feedback</a>
         <a href="/privacy.html">Privacy</a>
       </nav>
       <p>Not affiliated with the NBA.</p>
     </footer>
 
+  <script src="/feed.js"></script>
   <script>
     // ═══════════════════════════════════════════
     //  CONFIG
@@ -2374,7 +2381,7 @@
           <div class="lookup-player-card">
             <div class="lookup-player-header">
               <div>
-                <div class="lookup-player-name">${playerName}</div>
+                <div class="lookup-player-name">${window.NaismithWatch ? window.NaismithWatch.star(playerName) : ''}${playerName}</div>
                 <div class="lookup-player-meta">${team}${position ? ' · ' + position : ''}${status ? ' · <span style="color: ' + statusColor + '; font-weight: 600;">' + status + '</span>' : ''}</div>
               </div>
               <div class="lookup-team-badge">${team}</div>
@@ -2445,8 +2452,17 @@
           </div>`;
         }
 
-        results.innerHTML = html;
+        results.innerHTML = html + `<div class="lookup-share"><button type="button" id="copyLink">Copy link to ${playerName}</button></div>`;
         results.classList.add('visible');
+        // a shareable address for this player: /app.html?player=Devin%20Booker#lookup
+        try { history.replaceState(null, '', '/app.html?player=' + encodeURIComponent(playerName) + '#lookup'); } catch (e) {}
+        const cl = document.getElementById('copyLink');
+        if (cl) cl.addEventListener('click', () => {
+          const url = location.origin + '/app.html?player=' + encodeURIComponent(playerName) + '#lookup';
+          (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(
+            () => { cl.textContent = 'Link copied'; },
+            () => { window.prompt('Copy this link', url); });
+        });
 
       } catch (err) {
         console.error('Lookup error:', err);
@@ -2471,6 +2487,15 @@
       setupAutocomplete('simPlayer', 'acListSim');
     });
     setupLookupAutocomplete();
+    // /app.html?player=Name (homepage search, shared links): open Lookup with that player
+    (function () {
+      const q = new URLSearchParams(location.search).get('player');
+      if (!q) return;
+      const tab = document.querySelector('.nav-tab[data-page="lookup"]');
+      if (tab) tab.click();
+      document.getElementById('lookupInput').value = q;
+      runLookup();
+    })();
 
     // Auto-refresh feed every 2 minutes
     setInterval(() => {

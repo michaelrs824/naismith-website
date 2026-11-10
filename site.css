@@ -237,3 +237,64 @@ footer nav a { display: inline-block; padding: 6px 0; }
 .chips { display: flex; gap: 8px; flex-wrap: wrap; }
 .chip { font: inherit; font-size: 0.9rem; font-weight: 600; padding: 8px 14px; min-height: 40px; border-radius: 999px; cursor: pointer;
   border: 1px solid var(--border); background: var(--surface); color: var(--text-2); }
+
+/* My players: star toggle */
+.star { flex: none; background: none; border: 0; padding: 4px; margin: -4px 2px -4px -4px; cursor: pointer; font-size: 1.15rem; line-height: 1;
+  color: var(--text-3); min-width: 30px; min-height: 30px; border-radius: 8px; }
+.star:hover { color: var(--accent-2); background: var(--accent-bg); }
+.star[aria-pressed="true"] { color: #F2C14E; }
+.ac-player { align-items: center; }
+.ac-picks .star { font-size: 0.95rem; min-width: 26px; min-height: 26px; }
+
+/* Ownership + small notes */
+.owned { color: var(--text-3); font-size: 0.8rem; white-space: nowrap; }
+.note-scoring { color: var(--text-3); font-size: 0.82rem; margin-top: 8px; max-width: 44rem; }
+
+/* Homepage: your players, search */
+.mine { margin-top: 4px; }
+.mine-list { list-style: none; display: grid; gap: 8px; margin-top: 12px; }
+.mine-list li { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+.mine-list .who { font-family: var(--display); font-weight: 700; font-size: 1.15rem; }
+.mine-list .what { color: var(--text-2); font-size: 0.88rem; }
+.mine-list .when { margin-left: auto; color: var(--text-3); font-size: 0.8rem; white-space: nowrap; }
+.mine-list .s-out { color: #FF7B72; font-weight: 700; } .mine-list .s-gtd { color: #E3B341; font-weight: 700; } .mine-list .s-ok { color: #56D364; font-weight: 700; }
+@media (min-width: 760px) { .mine-list { grid-template-columns: repeat(2, 1fr); } }
+.hero-search { display: flex; gap: 8px; margin-top: 18px; max-width: 30rem; }
+.hero-search input { flex: 1; min-width: 0; font: inherit; font-size: 0.95rem; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; min-height: 44px; }
+.hero-search input:focus { outline: none; border-color: var(--accent); }
+.hero-search button { font: inherit; font-weight: 600; color: #fff; background: var(--accent); border: 0; border-radius: 10px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+
+/* Tonight */
+.games { display: grid; gap: 14px; margin-top: 8px; }
+@media (min-width: 760px) { .games { grid-template-columns: repeat(2, 1fr); align-items: start; } }
+.game { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
+.game-head { display: flex; align-items: center; gap: 10px; }
+.game-teams { font-family: var(--display); font-weight: 800; font-size: 1.45rem; letter-spacing: 0.01em; }
+.game-time { margin-left: auto; color: var(--text-2); font-size: 0.85rem; white-space: nowrap; }
+.game-state { font-size: 0.7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; border-radius: 999px; padding: 2px 8px; }
+.game-state.live { background: rgba(248,81,73,.15); color: #FF7B72; } .game-state.final { background: var(--surface); color: var(--text-2); }
+.game-players { list-style: none; margin-top: 10px; }
+.game-players > li { border-top: 1px solid var(--border); padding: 10px 0; }
+.gp-top { display: flex; align-items: center; gap: 8px; }
+.gp-name { font-weight: 700; }
+.gp-team { color: var(--text-2); font-size: 0.8rem; }
+.gp-status { font-size: 0.72rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.gp-status.OUT { color: #FF7B72; } .gp-status.DOUBTFUL { color: #FFA657; } .gp-status.QUESTIONABLE { color: #E3B341; }
+.gp-fp { margin-left: auto; font-family: var(--display); font-weight: 700; color: var(--text); white-space: nowrap; }
+.gp-fp small { font-family: 'Inter', sans-serif; font-weight: 500; font-size: 0.7rem; color: var(--text-2); }
+.gp-picks { color: var(--text-2); font-size: 0.85rem; margin-top: 4px; padding-left: 34px; }
+.gp-picks b { color: var(--text); font-weight: 600; } .gp-picks .d { color: var(--accent-2); font-weight: 700; }
+.game-quiet { color: var(--text-3); font-size: 0.88rem; margin-top: 10px; }
+.mine-row { background: rgba(242,193,78,.06); }
+
+/* Pickups: losing minutes */
+.losing { list-style: none; display: grid; gap: 10px; margin-top: 12px; }
+@media (min-width: 760px) { .losing { grid-template-columns: repeat(2, 1fr); } }
+.losing > li { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
+.losing .back-who { font-family: var(--display); font-weight: 800; font-size: 1.3rem; }
+.losing .back-when { color: var(--text-2); font-size: 0.85rem; }
+.losing ul { list-style: none; margin-top: 8px; }
+.losing ul li { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid var(--border); font-size: 0.93rem; }
+.losing .minus { margin-left: auto; font-family: var(--display); font-weight: 800; font-size: 1.15rem; color: #FF7B72; }
+.tiles { grid-template-columns: repeat(2, 1fr); }
+.tiles .tile { min-height: 96px; }
