@@ -199,10 +199,13 @@
     </header>
 
     <main>
-      <div class="hero">
+      <div class="hero hero-split">
+        <div class="hero-copy">
         <span class="eyebrow">NBA injuries · fantasy pickups</span>
         <h1>Someone's out. <span class="grad">Here's who to pick up.</span></h1>
         <p class="lede">NBA injury news for fantasy basketball, with who to pick up in your league. Free.</p>
+        </div>
+        <div class="hero-actions">
         <nav class="tiles" aria-label="Explore">
           <a class="tile" href="/app.html#lookup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Look up any player</span></a>
           <a class="tile" href="/pickups.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><span>Today's best pickups</span></a>
@@ -213,6 +216,7 @@
           Follow Naismith on X
         </a>
         <div class="live" id="live"><span class="dot" id="live-dot"></span><span id="live-text">No app, no sign-up.</span></div>
+        </div>
       </div>
 
       <section id="alerts" aria-labelledby="alerts-h">
@@ -277,7 +281,7 @@ He went to the locker room with an ankle injury in the second quarter.
         var html = [], seen = {};
         (data.alerts || []).forEach(function (a) {  // newest first
           var ev = a.event || {}, who = ev.player_name;
-          if (html.length >= 5 || seen[who]) return;
+          if (html.length >= 6 || seen[who]) return;  // phones show 5 (site.css)
           seen[who] = true;  // one card per player, his latest news
           // A back-in-game reply reads oddly on its own, and his earlier exit is stale.
           if (ev.event_type === 'INJURY_RETURN') return;
