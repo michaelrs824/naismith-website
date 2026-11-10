@@ -19,7 +19,7 @@
   }
   function card(text, link, when, linkLabel) {
     return '<article class="tweet">' +
-      '<div class="tweet-head"><div class="logo">N</div><div class="tweet-who"><b>Naismith</b><span>@NaismithAIApp</span></div></div>' +
+      '<div class="tweet-head"><div class="logo">N</div><div class="tweet-who"><b>Naismith AI</b><span>@NaismithAIApp</span></div></div>' +
       '<div class="tweet-body">' + body(text) + '</div>' +
       '<div class="tweet-foot"><span>' + esc(when || '') + '</span>' +
       (link ? '<a href="' + link + '" target="_blank" rel="noopener">' + esc(linkLabel || 'View on X') + ' →</a>' : '') +

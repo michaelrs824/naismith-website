@@ -1,6 +1,6 @@
-# Naismith
+# Naismith AI
 
-> @NaismithAIApp (https://x.com/NaismithAIApp) posts NBA injury news from the top insiders on X, together with who to pick up for fantasy basketball, usually within minutes. Each alert shows the injured player's fantasy points per game and up to three pickups, tagged by league size. Free.
+> @NaismithAIApp (https://x.com/NaismithAIApp) posts fast NBA injury news from X together with who to pick up for fantasy basketball. Each alert shows the injured player's fantasy points per game and up to three pickups, tagged by league size. Free.
 
 Last updated: 2026-11-10
 
@@ -9,7 +9,7 @@ Last updated: 2026-11-10
 - Free. No app, no account. Alerts are on X; naismithai.com has a pickups board and a player lookup.
 - Posts when a player is ruled out, listed doubtful or questionable, gets a new timeline, or leaves a game. If he returns within about four hours, it replies under that post.
 - Pickup tags, by projected fantasy points per game gained while the injured player is out: All leagues (+8 or more), 12+ team (+5 to +8), Deep league (+3 to +5). Pickups under +3 aren't listed. Players averaging 32+ aren't suggested.
-- Sources: the official NBA injury report, ESPN, RotoWire, CBS Sports, Bluesky, and NBA insiders and beat writers on X. Shams Charania and Underdog NBA are checked about every 90 seconds, other main insiders every 10 minutes, beat writers about every 50 minutes.
+- Sources: the official NBA injury report, ESPN, RotoWire, CBS Sports, Bluesky, and NBA insiders and beat writers on X. The top insiders are checked about every 90 seconds.
 - An AI model writes each one-line summary. Code checks it against the original report and rejects any team, day, body part or timeline the report doesn't contain. Mistakes still happen.
 - A recap thread follows each night's games: top performers, breakouts and minutes to watch, with full stat lines.
 - Scoring: points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, three-pointers 0.5, turnovers -1.
@@ -21,7 +21,7 @@ Last updated: 2026-11-10
 The team says he'll be re-evaluated in two weeks.
 🔥 Backup Guard (+8.4 FPTS/g) — All leagues
 🎯 Bench Wing (+5.6 FPTS/g) — 12+ team
-📰 Shams Charania
+📰 ESPN Injury Report
 
 ## Links
 
