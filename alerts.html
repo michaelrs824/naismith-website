@@ -76,7 +76,7 @@
     .btn-primary:hover { border-color: #fff; opacity: .92; }
     .btn svg { width: 18px; height: 18px; flex: none; }
     .btn-note { color: var(--text-2); font-size: 0.85rem; text-align: center; margin-top: 6px; }
-    .btn-note a { color: #58A6FF; text-decoration: none; }
+    .btn-note a { color: var(--accent-2); text-decoration: none; }
     .tops { list-style: none; margin-top: 12px; }
     .tops li { display: flex; gap: 10px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--border); }
     .tops .who { font-weight: 600; }
@@ -109,11 +109,11 @@
       color: var(--text-2); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px;
     }
     .tweet-body { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.95rem; }
-    .tweet-body .ht { color: #58A6FF; }
+    .tweet-body .ht { color: var(--accent-2); }
     .tweet-foot { margin-top: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-2); }
-    .tweet-foot a { color: #58A6FF; text-decoration: none; font-weight: 500; }
+    .tweet-foot a { color: var(--accent-2); text-decoration: none; font-weight: 500; }
     .more { margin-top: 14px; font-size: 0.95rem; }
-    .more a { color: #58A6FF; text-decoration: none; font-weight: 500; }
+    .more a { color: var(--accent-2); text-decoration: none; font-weight: 500; }
 
     /* Feature list */
     .features { list-style: none; display: grid; gap: 12px; margin-top: 16px; }
@@ -182,7 +182,7 @@
         <button class="btn" id="more" style="width:100%;margin-top:16px;display:none">Show more</button>
       </section>
       <section class="cta-end" aria-label="Follow on X">
-        <h2>Get the next one as it breaks.</h2>
+        <h2>Get each new injury as it breaks.</h2>
         <a class="btn btn-primary" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           Follow Naismith on X
@@ -193,7 +193,8 @@
     <footer>
       <nav>
         <a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a>
-        <a href="/pickups.html">Today's best pickups</a>
+        <a href="/alerts.html">Latest alerts</a>
+        <a href="/pickups.html">Best pickups</a>
         <a href="/app.html#lookup">Player lookup</a>
         <a href="/help.html">How it works</a>
         <a href="/privacy.html">Privacy</a>

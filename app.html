@@ -3,9 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Naismith — Injury Dashboard</title>
+  <title>Player lookup and injury feed · Naismith</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='68' font-size='60' font-family='Arial' font-weight='800' text-anchor='middle' fill='white'>N</text></svg>">
-  <meta name="description" content="Live NBA injury feed with AI-powered fantasy pickup recommendations.">
+  <meta name="description" content="Look up any NBA player's status and who gains when he's out, or browse the injury alerts we've posted on X.">
+  <link rel="canonical" href="https://naismithai.com/app.html">
+  <link rel="apple-touch-icon" href="/logo.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://naismithai.com/app.html">
+  <meta property="og:title" content="Player lookup and injury feed">
+  <meta property="og:description" content="Look up any NBA player's status and who gains when he's out.">
+  <meta property="og:image" content="https://naismithai.com/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@NaismithAIApp">
+  <meta name="twitter:image" content="https://naismithai.com/og.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1245,6 +1255,21 @@
 
     .mobile-tabs { display: none; }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Match the rest of naismithai.com (site.css isn't loaded here: its generic class names collide with the dashboard's). */
+    :root { --gradient: #6C3CE1; --accent: #6C3CE1; --accent-2: #A487F7; --display: 'Barlow Condensed', 'Inter', system-ui, sans-serif; }
+    .nav-logo-icon { background: var(--accent) !important; }
+    .nav-logo-text { font-family: var(--display); font-weight: 700; font-size: 1.5rem; letter-spacing: 0.01em; }
+    .feed-title, .lookup-title, .compare-title, .sim-title {
+      font-family: var(--display); font-weight: 800; text-transform: uppercase; letter-spacing: 0.005em;
+      font-size: clamp(2.3rem, 10vw, 3.2rem) !important; line-height: 0.95;
+    }
+    .site-footer { max-width: 640px; margin: 0 auto; padding: 24px 16px 96px; color: #6E7681; font-size: 0.85rem; border-top: 1px solid rgba(139,148,158,.16); }
+    .site-footer nav { position: static !important; width: auto !important; padding: 0 !important; background: none !important; border: 0 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; z-index: auto !important; display: flex; justify-content: flex-start !important; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 10px; }
+    .site-footer a { color: #8B949E; text-decoration: none; }
+    .site-footer a:hover { color: #E6EDF3; }
+  </style>
 </head>
 <body>
 
@@ -1284,7 +1309,7 @@
     <div class="page active" id="page-injuries">
       <div class="feed-header">
         <div class="feed-title-row">
-          <h1 class="feed-title">Live Injury Feed</h1>
+          <h1 class="feed-title">Injury feed</h1>
           <div class="feed-stats">
             <div class="feed-stat">
               <div class="feed-stat-value red" id="statOut">—</div>
@@ -1331,7 +1356,7 @@
     <div class="page" id="page-lookup">
       <div class="lookup-container">
         <h1 class="lookup-title">Player Lookup</h1>
-        <p class="lookup-subtitle">Search any NBA player to see their stats, injury status, and who benefits when they're out.</p>
+        <p class="lookup-subtitle">Search any NBA player to see his stats, injury status and who gains when he's out.</p>
 
         <div class="lookup-search-row">
           <div class="autocomplete-wrapper">
@@ -1345,7 +1370,7 @@
 
         <div class="lookup-empty" id="lookupEmpty">
           <div class="lookup-empty-icon">&#128270;</div>
-          <div class="lookup-empty-text">Search for any player to see their fantasy profile,<br>injury history, and beneficiary impact data.</div>
+          <div class="lookup-empty-text">Type a name above to see his status, recent news<br>and who picks up his minutes when he's out.</div>
         </div>
       </div>
     </div>
@@ -1410,6 +1435,18 @@
       </div>
     </div>
   </main>
+
+    <footer class="site-footer">
+      <nav>
+        <a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a>
+        <a href="/alerts.html">Latest alerts</a>
+        <a href="/pickups.html">Best pickups</a>
+        <a href="/app.html#lookup">Player lookup</a>
+        <a href="/help.html">How it works</a>
+        <a href="/privacy.html">Privacy</a>
+      </nav>
+      <p>© 2026 Naismith. Not affiliated with the NBA.</p>
+    </footer>
 
   <script>
     // ═══════════════════════════════════════════
@@ -1504,16 +1541,16 @@
       const feedList = document.getElementById('feedList');
 
       try {
-        const res = await fetch(`${API_BASE}/public/alerts`);
+        const res = await fetch(`${API_BASE}/public/alerts?tweeted_only=true`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
         document.getElementById('statusDot').classList.remove('offline');
         // Show when the last alert went out, so a quiet night doesn't look like a dead feed
         let live = 'Live';
-        if (data.last_alert_at) {
+        if (data.last_alert_at) {  // same wording as the other pages
           const mins = Math.max(0, Math.round((Date.now() - new Date(data.last_alert_at).getTime()) / 60000));
-          live += mins < 60 ? ` · last alert ${mins}m ago` : mins < 1440 ? ` · last alert ${Math.round(mins / 60)}h ago` : ` · last alert ${Math.round(mins / 1440)}d ago`;
+          live = mins < 60 ? `Last alert ${mins}m ago` : mins < 1440 ? `Last alert ${Math.round(mins / 60)}h ago` : `Last alert ${Math.round(mins / 1440)}d ago`;
         }
         document.getElementById('statusText').textContent = live;
 
@@ -2306,7 +2343,7 @@
                 <div class="lookup-stat-label">Games Missed</div>
               </div>` : ''}
             </div>
-            ${dataSource ? `<div class="lookup-source">Source: ${dataSource}</div>` : ''}
+            
           </div>`;
 
         // Latest alerts
@@ -2332,7 +2369,7 @@
 
         // Beneficiaries
         if (beneficiaries.length > 0) {
-          html += `<div class="lookup-section-title"><div class="lookup-section-bar"></div>Who Benefits When ${playerName.split(' ').pop()} Is Out</div>`;
+          html += `<div class="lookup-section-title"><div class="lookup-section-bar"></div>Who gains when ${playerName.split(' ').pop()} is out</div>`;
           beneficiaries.forEach(b => {
             const bName = b.player_name || b.name || '';
             const delta = b.fpts_delta || 0;
