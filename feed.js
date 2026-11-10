@@ -48,13 +48,19 @@
   // Read a posted tweet back into its parts: headline, news, pickups, source.
   var HEAD = /^(\S+)\s+(.+?)\s+\(([A-Z]{2,4})\)\s+—\s+(.+?)(?:\s+\|\s+(\d+)\s+FPTS\/g)?$/;
   var PICK = /^(🔥|🎯|👀)\s+(.+?)\s+\(\+([\d.]+) FPTS\/g\)\s+—\s+(.+)$/;
-  var KIND = {'🚨': 'out', '🔴': 'out', '⚠️': 'gtd', '🚑': 'out', '✅': 'back'};
+  var KIND = {'🚨': 'out', '🔴': 'gtd', '⚠️': 'gtd', '🚑': 'exit', '✅': 'back'};
+  var BACK = /^✅\s+Update:\s+(.+?)(?:\s+\(([A-Z]{2,4})\))?\s+is back\.?$/;
   function parse(text) {
     var lines = text.replace(/(\n\s*)?(#[A-Za-z0-9_]+\s*)+$/, '').trim().split('\n');
-    var m = (lines[0] || '').trim().match(HEAD);
-    if (!m) return null;
-    var a = {kind: KIND[m[1]] || 'info', player: m[2], team: m[3], status: m[4], fpts: m[5] || null,
-             news: [], picks: [], source: null};
+    var first = (lines[0] || '').trim(), m = first.match(HEAD), a;
+    if (m) {
+      a = {kind: KIND[m[1]] || 'info', player: m[2], team: m[3], status: m[4], fpts: m[5] || null,
+           news: [], picks: [], source: null};
+    } else if ((m = first.match(BACK))) {  // back-in-game reply: "✅ Update: Name (TEAM) is back."
+      a = {kind: 'back', player: m[1], team: m[2] || '', status: 'Back in the game', fpts: null, news: [], picks: [], source: null};
+    } else {
+      return null;
+    }
     lines.slice(1).forEach(function (raw) {
       var l = raw.trim(), p;
       if (!l) return;
@@ -81,6 +87,8 @@
 
   window.NaismithFeed = {
     esc: esc, ago: ago, card: card, X: X, parse: parse,
+    // The parsed parts behind a card (also for alerts posted before tweet text was saved)
+    info: function (a) { return parse(a.tweet_text || headline(a) || ''); },
     // One posted alert as a card; null when there's nothing to show.
     alertCard: function (a) {
       var text = a.tweet_text || headline(a);

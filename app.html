@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Player lookup and injury feed · Naismith AI</title>
+  <title>Player lookup · Naismith AI</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='68' font-size='60' font-family='Arial' font-weight='800' text-anchor='middle' fill='white'>N</text></svg>">
-  <meta name="description" content="Look up any NBA player's status and who gains when he's out, or browse the injury alerts we've posted on X.">
+  <meta name="description" content="Look up any NBA player's status and who gains when he's out, compare two players, or simulate an injury.">
   <link rel="canonical" href="https://naismithai.com/app.html">
   <link rel="apple-touch-icon" href="/logo.png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://naismithai.com/app.html">
-  <meta property="og:title" content="Player lookup and injury feed">
+  <meta property="og:title" content="Player lookup">
   <meta property="og:description" content="Look up any NBA player's status and who gains when he's out.">
   <meta property="og:image" content="https://naismithai.com/og.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -1338,8 +1338,7 @@
   </div>
   <div class="app-tabs-bar" role="navigation" aria-label="Dashboard sections">
     <div class="app-tabs">
-      <button class="nav-tab active" data-page="injuries">Injury feed</button>
-      <button class="nav-tab" data-page="lookup">Lookup</button>
+      <button class="nav-tab active" data-page="lookup">Lookup</button>
       <button class="nav-tab" data-page="compare">Compare</button>
       <button class="nav-tab" data-page="simulator">What-If</button>
       <div class="nav-status"><span class="status-dot" id="statusDot"></span><span id="statusText">Connecting...</span></div>
@@ -1348,7 +1347,7 @@
 
   <main>
     <!-- ═══ INJURIES PAGE ═══ -->
-    <div class="page active" id="page-injuries">
+    <div class="page" id="page-injuries">
       <div class="feed-header">
         <div class="feed-title-row">
           <h1 class="feed-title">Injury feed</h1>
@@ -1395,7 +1394,7 @@
     </div>
 
     <!-- ═══ LOOKUP PAGE ═══ -->
-    <div class="page" id="page-lookup">
+    <div class="page active" id="page-lookup">
       <div class="lookup-container">
         <h1 class="lookup-title">Player Lookup</h1>
         <p class="lookup-subtitle">Search any NBA player to see his stats, injury status and who gains when he's out.</p>
@@ -1511,6 +1510,8 @@
       });
     });
 
+    // The injury feed now lives on /alerts.html (same alerts, new cards, with filters and search)
+    if (location.hash === '#injuries') location.replace('/alerts.html');
     // Deep links from the homepage, e.g. /app.html#lookup
     (function () {
       const page = (location.hash || '').slice(1);
@@ -1518,6 +1519,7 @@
       if (tab && document.getElementById(`page-${page}`)) tab.click();
     })();
     window.addEventListener('hashchange', function () {
+      if (location.hash === '#injuries') { location.replace('/alerts.html'); return; }
       const page = (location.hash || '').slice(1);
       const tab = page && document.querySelector(`.nav-tab[data-page="${page}"]`);
       if (tab && document.getElementById(`page-${page}`)) tab.click();

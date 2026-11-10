@@ -216,3 +216,24 @@ footer nav a { display: inline-block; padding: 6px 0; }
 /* Links inside running text are underlined */
 .legal p a, .legal li a { text-decoration: underline; text-underline-offset: 2px; }
 .legal .updated { color: var(--text-2); }
+
+/* Alerts page: filters, search and sort */
+.feed-controls { margin-top: 18px; display: flex; flex-direction: column; gap: 12px; }
+.feed-controls .chips { margin-top: 0; }
+.chip span { margin-left: 4px; font-weight: 500; }
+.feed-tools { display: flex; gap: 10px; }
+.feed-tools input, .feed-tools select {
+  font: inherit; font-size: 0.95rem; color: var(--text); background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 12px; min-height: 44px;
+}
+.feed-tools input { flex: 1; min-width: 0; }
+.feed-tools input:focus, .feed-tools select:focus { outline: none; border-color: var(--accent); }
+.feed-tools select { flex: none; }
+@media (min-width: 760px) {
+  .feed-controls { flex-direction: row; align-items: center; justify-content: space-between; }
+  .feed-tools input { width: 260px; flex: none; }
+}
+.k-exit .ac-status i { background: #F85149; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { font: inherit; font-size: 0.9rem; font-weight: 600; padding: 8px 14px; min-height: 40px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text-2); }

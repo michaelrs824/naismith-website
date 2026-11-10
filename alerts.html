@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Latest NBA injury alerts · Naismith AI</title>
-  <meta name="description" content="Every NBA injury alert we posted on X in the last week, newest first, with fantasy pickups tagged by league size.">
+  <meta name="description" content="Every NBA injury alert we posted on X in the last week, with fantasy pickups. Filter by status, search a player or team, or sort by impact.">
   <link rel="canonical" href="https://naismithai.com/alerts.html">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='68' font-size='60' font-family='Arial' font-weight='800' text-anchor='middle' fill='white'>N</text></svg>">
   <link rel="apple-touch-icon" href="/logo.png">
@@ -176,8 +176,24 @@
     <main>
       <div class="hero" style="padding-bottom:8px">
         <h1>Latest alerts</h1>
-        <p class="lede">Everything we posted on X in the last week, newest first.</p>
+        <p class="lede">Everything we posted on X in the last week. Filter by status, search a player or team, or sort by impact.</p>
         <div class="live"><span class="dot" id="dot"></span><span id="updated">Loading…</span></div>
+        <div class="feed-controls">
+          <div class="chips" id="filters" role="group" aria-label="Status">
+            <button class="chip" data-k="all" aria-pressed="true">All <span></span></button>
+            <button class="chip" data-k="out" aria-pressed="false">Out <span></span></button>
+            <button class="chip" data-k="gtd" aria-pressed="false">Questionable <span></span></button>
+            <button class="chip" data-k="exit" aria-pressed="false">Left game <span></span></button>
+            <button class="chip" data-k="back" aria-pressed="false">Back <span></span></button>
+          </div>
+          <div class="feed-tools">
+            <input type="search" id="q" placeholder="Player or team" aria-label="Search player or team" autocomplete="off">
+            <select id="sort" aria-label="Sort">
+              <option value="new">Newest first</option>
+              <option value="impact">Biggest impact</option>
+            </select>
+          </div>
+        </div>
       </div>
       <section aria-label="Alerts" style="border-top:0;padding-top:0">
         <div id="list"><p class="empty">Loading alerts…</p></div>
@@ -208,7 +224,9 @@
   <script>
   (function () {
     var API = 'https://naismith-api-production.up.railway.app';
-    var F = window.NaismithFeed, PAGE = 20, shown = 0, cards = [];
+    var F = window.NaismithFeed, PAGE = 20, shown = 0, all = [], view = [];
+    var state = {k: 'all', q: '', sort: 'new'};
+    try { var saved = JSON.parse(localStorage.getItem('alertsView') || '{}'); if (saved.k) state.k = saved.k; if (saved.sort) state.sort = saved.sort; } catch (e) {}
 
     function dayLabel(iso) {
       var d = new Date(iso), today = new Date(), y = new Date();
@@ -217,34 +235,79 @@
       if (d.toDateString() === y.toDateString()) return 'Yesterday';
       return d.toLocaleDateString(undefined, {weekday: 'short', month: 'short', day: 'numeric'});
     }
+    function norm(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+
+    function apply() {
+      var q = norm(state.q.trim());
+      view = all.filter(function (c) {
+        if (state.k !== 'all' && c.kind !== state.k) return false;
+        return !q || c.hay.indexOf(q) >= 0;
+      });
+      if (state.sort === 'impact') view = view.slice().sort(function (a, b) { return b.fpts - a.fpts || (a.ts < b.ts ? 1 : -1); });
+      shown = 0;
+      render();
+      try { localStorage.setItem('alertsView', JSON.stringify({k: state.k, sort: state.sort})); } catch (e) {}
+    }
     function render() {
-      shown = Math.min(cards.length, shown + PAGE);
+      shown = Math.min(view.length, shown + PAGE);
       var html = [], last = null;
-      cards.slice(0, shown).forEach(function (c) {
-        var day = dayLabel(c.ts);
-        if (day !== last) { html.push('<h2 class="day">' + F.esc(day) + '</h2>'); last = day; }
+      view.slice(0, shown).forEach(function (c) {
+        if (state.sort === 'new') {
+          var day = dayLabel(c.ts);
+          if (day !== last) { html.push('<h2 class="day">' + F.esc(day) + '</h2>'); last = day; }
+        }
         html.push(c.html);
       });
-      document.getElementById('list').innerHTML = '<div class="feed" style="margin-top:0">' + html.join('') + '</div>';
+      document.getElementById('list').innerHTML = view.length
+        ? '<div class="feed" style="margin-top:0">' + html.join('') + '</div>'
+        : '<p class="empty">No alerts match. Try another filter or name.</p>';
       var more = document.getElementById('more');
-      more.style.display = shown < cards.length ? 'flex' : 'none';
-      more.textContent = 'Show more (' + (cards.length - shown) + ' left)';
+      more.style.display = shown < view.length ? 'flex' : 'none';
+      more.textContent = 'Show more (' + (view.length - shown) + ' left)';
     }
+    function counts() {
+      var n = {all: all.length, out: 0, gtd: 0, exit: 0, back: 0};
+      all.forEach(function (c) { if (n[c.kind] !== undefined) n[c.kind]++; });
+      Array.prototype.forEach.call(document.querySelectorAll('#filters .chip'), function (b) {
+        b.querySelector('span').textContent = n[b.dataset.k] || 0;
+        b.hidden = b.dataset.k !== 'all' && !n[b.dataset.k] && b.dataset.k !== state.k;  // no empty filters
+        b.setAttribute('aria-pressed', String(b.dataset.k === state.k));
+      });
+      var today = all.filter(function (c) { return dayLabel(c.ts) === 'Today'; }).length;
+      return today;
+    }
+
     document.getElementById('more').addEventListener('click', render);
+    Array.prototype.forEach.call(document.querySelectorAll('#filters .chip'), function (b) {
+      b.addEventListener('click', function () { state.k = b.dataset.k; counts(); apply(); });
+    });
+    var qTimer;
+    document.getElementById('q').addEventListener('input', function (e) {
+      clearTimeout(qTimer); var v = e.target.value; qTimer = setTimeout(function () { state.q = v; apply(); }, 120);
+    });
+    var sortEl = document.getElementById('sort');
+    sortEl.value = state.sort;
+    sortEl.addEventListener('change', function () { state.sort = sortEl.value; apply(); });
 
     fetch(API + '/public/alerts?tweeted_only=true&hours=168&limit=200')
       .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
       .then(function (data) {
-        if (data.last_alert_at) {
-          document.getElementById('dot').className = 'dot on';
-          document.getElementById('updated').textContent = 'Last alert ' + F.ago(data.last_alert_at);
-        }
         (data.alerts || []).forEach(function (a) {
           var h = F.alertCard(a);
-          if (h) cards.push({ts: a.timestamp, html: h});
+          if (!h) return;
+          var p = F.info(a) || {}, ev = a.event || {};
+          var kind = p.kind || (ev.event_type === 'INJURY_RETURN' ? 'back' : ev.event_type === 'INJURY_OUT' ? 'out' : 'gtd');
+          var picks = (p.picks || []).map(function (x) { return x.name; }).join(' ');
+          all.push({ts: a.timestamp, html: h, kind: kind, fpts: +(p.fpts || a.avg_fpts || 0),
+                    hay: norm([ev.player_name, ev.player_team, picks].join(' '))});
         });
-        if (!cards.length) { document.getElementById('list').innerHTML = '<p class="empty">No alerts in the last week.</p>'; return; }
-        render();
+        var today = counts();
+        if (data.last_alert_at) {
+          document.getElementById('dot').className = 'dot on';
+          document.getElementById('updated').textContent = 'Last alert ' + F.ago(data.last_alert_at) + ' · ' + today + ' today';
+        }
+        if (!all.length) { document.getElementById('list').innerHTML = '<p class="empty">No alerts in the last week.</p>'; return; }
+        apply();
       })
       .catch(function () {
         document.getElementById('list').innerHTML = '<p class="empty">Couldn\'t load alerts. Try again in a minute.</p>';
