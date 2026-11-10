@@ -106,6 +106,7 @@
     .btn-primary { background: #fff; color: #0D1117; border-color: #fff; }
     .btn-primary:hover { border-color: #fff; opacity: .92; }
     .btn svg { width: 18px; height: 18px; flex: none; }
+    .btn-note { color: var(--text-2); font-size: 0.85rem; text-align: center; margin-top: 6px; }
     .live {
       display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;
       color: var(--text-2); font-size: 0.85rem;
@@ -198,8 +199,9 @@
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
             Follow @NaismithAIApp
           </a>
-          <a class="btn" href="/app.html">Look up a player</a>
+          <a class="btn" href="/app.html#lookup">Look up any player</a>
         </div>
+        <p class="btn-note">Status, recent news, and who gains when he's out.</p>
         <div class="live" id="live"><span class="dot" id="live-dot"></span><span id="live-text">No app, no sign-up.</span></div>
       </div>
 
@@ -292,7 +294,8 @@ Top performers:
       });
     }
     function body(text) {
-      return esc(text).replace(/(^|\s)(#[A-Za-z0-9_]+)/g, '$1<span class="ht">$2</span>');
+      // Hashtags are for X; on the site they're clutter.
+      return esc(text.replace(/(\n\s*)?(#[A-Za-z0-9_]+\s*)+$/, '').trim());
     }
     function ago(iso) {
       var m = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
@@ -338,7 +341,7 @@ Top performers:
         var html = [], seen = {};
         (data.alerts || []).forEach(function (a) {  // newest first
           var ev = a.event || {}, who = ev.player_name;
-          if (html.length >= 3 || seen[who]) return;
+          if (html.length >= 2 || seen[who]) return;
           seen[who] = true;  // one card per player, his latest news
           // A back-in-game reply reads oddly on its own, and his earlier exit is stale.
           if (ev.event_type === 'INJURY_RETURN') return;

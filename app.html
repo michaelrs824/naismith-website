@@ -1431,6 +1431,13 @@
       });
     });
 
+    // Deep links from the homepage, e.g. /app.html#lookup
+    (function () {
+      const page = (location.hash || '').slice(1);
+      const tab = page && document.querySelector(`.nav-tab[data-page="${page}"]`);
+      if (tab && document.getElementById(`page-${page}`)) tab.click();
+    })();
+
     // ═══════════════════════════════════════════
     //  INJURY FEED
     // ═══════════════════════════════════════════
