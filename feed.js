@@ -65,10 +65,17 @@
       var l = raw.trim(), p;
       if (!l) return;
       if ((p = l.match(PICK))) a.picks.push({icon: p[1], name: p[2], delta: p[3], tag: p[4]});
-      else if (/^📰/.test(l)) a.source = l.replace(/^📰\s*/, '');
+      else if (/^📰/.test(l)) a.source = cleanSource(l.replace(/^📰\s*/, ''));
       else a.news.push(l);
     });
     return a;
+  }
+  // "Underdog NBA (Underdog)" -> "Underdog NBA"; "RotoWire RSS" -> "RotoWire"
+  function cleanSource(src) {
+    src = String(src || '').trim();
+    var m = src.match(/^(.*?)\s*\(([^)]+)\)$/);
+    if (m && m[1].toLowerCase().indexOf(m[2].toLowerCase()) >= 0) src = m[1];
+    return src.replace(/\s+RSS$/, '');
   }
   function structured(a, link, when, linkLabel) {
     return '<article class="acard k-' + a.kind + '">' +
@@ -95,6 +102,7 @@
       if (!text) return null;
       var link = a.tweet_id ? X + a.tweet_id : null, label = a.tweet_text ? 'View on X' : 'Pickups on X';
       var parts = parse(text);
+      if (parts && !parts.source) parts.source = cleanSource((a.event || {}).source);  // the tweet had no room for it, or predates saved text
       return parts ? structured(parts, link, ago(a.timestamp), label) : card(text, link, ago(a.timestamp), label);
     }
   };
