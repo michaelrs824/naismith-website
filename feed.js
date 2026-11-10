@@ -1,4 +1,4 @@
-/* Shared by the homepage and /alerts.html: render posted alerts the way they read on X. */
+/* Shared by the homepage and /alerts.html: posted alerts as site cards (read back from the tweet text). */
 (function () {
   var X = 'https://x.com/NaismithAIApp/status/';
   function esc(s) {
@@ -45,13 +45,49 @@
   }
 
 
+  // Read a posted tweet back into its parts: headline, news, pickups, source.
+  var HEAD = /^(\S+)\s+(.+?)\s+\(([A-Z]{2,4})\)\s+—\s+(.+?)(?:\s+\|\s+(\d+)\s+FPTS\/g)?$/;
+  var PICK = /^(🔥|🎯|👀)\s+(.+?)\s+\(\+([\d.]+) FPTS\/g\)\s+—\s+(.+)$/;
+  var KIND = {'🚨': 'out', '🔴': 'out', '⚠️': 'gtd', '🚑': 'out', '✅': 'back'};
+  function parse(text) {
+    var lines = text.replace(/(\n\s*)?(#[A-Za-z0-9_]+\s*)+$/, '').trim().split('\n');
+    var m = (lines[0] || '').trim().match(HEAD);
+    if (!m) return null;
+    var a = {kind: KIND[m[1]] || 'info', player: m[2], team: m[3], status: m[4], fpts: m[5] || null,
+             news: [], picks: [], source: null};
+    lines.slice(1).forEach(function (raw) {
+      var l = raw.trim(), p;
+      if (!l) return;
+      if ((p = l.match(PICK))) a.picks.push({icon: p[1], name: p[2], delta: p[3], tag: p[4]});
+      else if (/^📰/.test(l)) a.source = l.replace(/^📰\s*/, '');
+      else a.news.push(l);
+    });
+    return a;
+  }
+  function structured(a, link, when, linkLabel) {
+    return '<article class="acard k-' + a.kind + '">' +
+      '<div class="ac-top"><span class="ac-status"><i></i>' + esc(a.status) + '</span><span class="ac-time">' + esc(when) + '</span></div>' +
+      '<div class="ac-player"><span class="ac-name">' + esc(a.player) + '</span><span class="ac-team">' + esc(a.team) + '</span>' +
+        (a.fpts ? '<span class="ac-fp">' + esc(a.fpts) + '<small> FPTS/g</small></span>' : '') + '</div>' +
+      (a.news.length ? '<p class="ac-news">' + esc(a.news.join(' ')) + '</p>' : '') +
+      (a.picks.length ? '<ul class="ac-picks">' + a.picks.map(function (p) {
+        return '<li><span class="ac-pn">' + esc(p.name) + '</span><span class="pill">' + esc(p.icon + ' ' + p.tag) +
+          '</span><span class="ac-pd">+' + esc(p.delta) + '</span></li>';
+      }).join('') + '</ul>' : '') +
+      '<div class="ac-foot"><span>' + esc(a.source || '') + '</span>' +
+        (link ? '<a href="' + link + '" target="_blank" rel="noopener">' + esc(linkLabel) + ' →</a>' : '') + '</div>' +
+      '</article>';
+  }
+
   window.NaismithFeed = {
-    esc: esc, ago: ago, card: card, X: X,
+    esc: esc, ago: ago, card: card, X: X, parse: parse,
     // One posted alert as a card; null when there's nothing to show.
     alertCard: function (a) {
       var text = a.tweet_text || headline(a);
       if (!text) return null;
-      return card(text, a.tweet_id ? X + a.tweet_id : null, ago(a.timestamp), a.tweet_text ? 'View on X' : 'Pickups on X');
+      var link = a.tweet_id ? X + a.tweet_id : null, label = a.tweet_text ? 'View on X' : 'Pickups on X';
+      var parts = parse(text);
+      return parts ? structured(parts, link, ago(a.timestamp), label) : card(text, link, ago(a.timestamp), label);
     }
   };
 })();

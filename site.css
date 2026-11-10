@@ -107,3 +107,82 @@ section { border-top: 0; }
   .toc .jump a { border-radius: 10px; padding: 10px 14px; font-size: 0.95rem; }
   .cta-end { padding: 48px 0; }
 }
+
+/* ── Professional pass (layout + components) ───────────────── */
+
+/* Header: brand, main nav and Follow on wider screens; brand + Home on phones */
+.site-header { display: flex; align-items: center; gap: 28px; padding: 20px 0 8px; }
+.site-header .back { margin-left: auto; }
+.topnav, .nav-follow { display: none; }
+@media (min-width: 760px) {
+  .site-header { padding: 22px 0 10px; border-bottom: 1px solid var(--border); }
+  .topnav { display: flex; gap: 4px; margin-left: 8px; }
+  .topnav a { color: var(--text-2); text-decoration: none; font-size: 0.92rem; font-weight: 500; padding: 8px 12px; border-radius: 8px; }
+  .topnav a:hover { color: var(--text); background: var(--surface); }
+  .topnav a[aria-current="page"] { color: var(--text); background: var(--accent-bg); }
+  .nav-follow { display: inline-flex; margin-left: auto; align-items: center; padding: 9px 16px; border-radius: 10px;
+    background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+  .nav-follow:hover { filter: brightness(1.08); }
+  .site-header .back { display: none; }
+}
+
+/* Section header with a "See all" link on the right */
+.sec-head { display: flex; align-items: center; gap: 16px; }
+.sec-head h2 { flex: 1; }
+.sec-link { color: var(--accent-2); text-decoration: none; font-weight: 600; font-size: 0.92rem; white-space: nowrap; }
+@media (min-width: 600px) { .see-all { display: none !important; } }
+
+/* Alert cards: structured, equal height in the grid */
+.acard { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+.ac-top { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; }
+.ac-status { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text); }
+.ac-status i { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); }
+.k-out .ac-status i { background: #F85149; }
+.k-gtd .ac-status i { background: #D29922; }
+.k-back .ac-status i { background: #3FB950; }
+.ac-time { margin-left: auto; color: var(--text-3); white-space: nowrap; }
+.ac-player { display: flex; align-items: baseline; gap: 8px; margin-top: 10px; }
+.ac-name { font-family: var(--display); font-weight: 800; font-size: 1.55rem; line-height: 1.05; }
+.ac-team { color: var(--text-2); font-size: 0.85rem; font-weight: 600; }
+.ac-fp { margin-left: auto; font-family: var(--display); font-weight: 700; font-size: 1.25rem; white-space: nowrap; color: var(--text); }
+.ac-fp small { font-family: 'Inter', sans-serif; font-weight: 500; font-size: 0.72rem; color: var(--text-2); }
+.ac-news { color: var(--text-2); font-size: 0.93rem; margin-top: 8px; }
+.ac-picks { list-style: none; margin-top: 12px; border-top: 1px solid var(--border); }
+.ac-picks li { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.93rem; }
+.ac-pn { font-weight: 600; }
+.ac-picks .pill { margin-top: 0; font-size: 0.7rem; white-space: nowrap; }
+.ac-pd { margin-left: auto; font-family: var(--display); font-weight: 800; font-size: 1.15rem; color: var(--accent-2); }
+.ac-foot { margin-top: auto; padding-top: 12px; display: flex; justify-content: space-between; gap: 10px; font-size: 0.82rem; color: var(--text-3); }
+.ac-foot a { color: var(--accent-2); text-decoration: none; font-weight: 600; white-space: nowrap; }
+#feed, #list .feed { align-items: stretch !important; }
+
+/* Homepage tiles: three across on phones; a list with descriptions on laptops */
+.tile-text { display: flex; flex-direction: column; gap: 4px; }
+.tile-desc { display: none; }
+@media (min-width: 1000px) {
+  .hero-split { align-items: center; padding: 56px 0 40px; }
+  .hero-split h1 { font-size: 4.2rem; }
+  .hero-split .tiles { grid-template-columns: 1fr; gap: 10px; }
+  .hero-split .tile { flex-direction: row; justify-content: flex-start; text-align: left; min-height: 0; padding: 16px 18px; gap: 16px; }
+  .hero-split .tile svg { width: 26px; height: 26px; flex: none; }
+  .hero-split .tile::after { content: "→"; margin-left: auto; color: var(--text-3); font-size: 1.1rem; }
+  .hero-split .tile:hover::after { color: var(--accent-2); }
+  .tile-desc { display: block; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--text-2); text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .tile-text > span { font-size: 1.2rem; }
+}
+
+/* Buttons that shouldn't stretch edge to edge on wide screens */
+@media (min-width: 600px) {
+  .cta-end .btn, #more { max-width: 380px; margin-left: auto; margin-right: auto; }
+  #thread { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 600px) {
+  #on-x { max-width: 380px; margin-left: auto; margin-right: auto; }
+  .picks { align-items: stretch !important; }
+  .pick { display: flex; flex-direction: column; }
+  .pick .pill { align-self: flex-start; margin-top: auto; padding-top: 1px; }
+  .pick-why { margin-bottom: 8px; }
+}
+@media (min-width: 1000px) {
+  .legend { grid-template-columns: repeat(3, 1fr); }
+}

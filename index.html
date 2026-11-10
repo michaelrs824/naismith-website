@@ -191,11 +191,13 @@
 </head>
 <body>
   <div class="wrap">
-    <header>
+    <header class="site-header">
       <a class="brand" href="/" aria-label="Naismith home">
         <div class="logo">N</div>
         <div class="brand-name">Naismith</div>
       </a>
+      <nav class="topnav" aria-label="Main"><a href="/alerts.html">Alerts</a><a href="/pickups.html">Pickups</a><a href="/recap.html">Recap</a><a href="/app.html#lookup">Lookup</a><a href="/help.html">How it works</a></nav>
+      <a class="nav-follow" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
     </header>
 
     <main>
@@ -207,9 +209,9 @@
         </div>
         <div class="hero-actions">
         <nav class="tiles" aria-label="Explore">
-          <a class="tile" href="/app.html#lookup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Look up any player</span></a>
-          <a class="tile" href="/pickups.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><span>Today's best pickups</span></a>
-          <a class="tile" href="/recap.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Last night's recap</span></a>
+          <a class="tile" href="/app.html#lookup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="tile-text"><span>Look up any player</span><small class="tile-desc">Status, recent news and who gains when he's out</small></span></a>
+          <a class="tile" href="/pickups.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><span class="tile-text"><span>Today's best pickups</span><small class="tile-desc">Ranked across every injury, by league size</small></span></a>
+          <a class="tile" href="/recap.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span class="tile-text"><span>Last night's recap</span><small class="tile-desc">Top performers, breakouts and minutes to watch</small></span></a>
         </nav>
         <a class="btn btn-primary follow-bar" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
@@ -220,7 +222,7 @@
       </div>
 
       <section id="alerts" aria-labelledby="alerts-h">
-        <h2 id="alerts-h">Latest alerts</h2>
+        <div class="sec-head"><h2 id="alerts-h">Latest alerts</h2><a class="sec-link" href="/alerts.html">See all →</a></div>
         <div class="feed" id="feed">
           <!-- Shown until live alerts load (and to readers without JavaScript). -->
           <article class="tweet">
@@ -239,7 +241,7 @@ He went to the locker room with an ankle injury in the second quarter.
 👀 Reserve Big (+3.9 FPTS/g) — Deep league</div>
           </article>
         </div>
-        <a class="btn" href="/alerts.html" style="margin-top:14px">See all latest alerts</a>
+        <a class="btn see-all" href="/alerts.html" style="margin-top:14px">See all latest alerts</a>
       </section>
 
       <section class="cta-end" aria-label="Follow on X">
