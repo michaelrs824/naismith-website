@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Today's best NBA fantasy pickups · Naismith</title>
+  <meta name="description" content="Every player we project to gain from a current NBA injury, ranked by fantasy points per game and tagged by league size. Updated every 15 minutes. Plus how our past pickups played.">
+  <link rel="canonical" href="https://naismithai.com/pickups.html">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='68' font-size='60' font-family='Arial' font-weight='800' text-anchor='middle' fill='white'>N</text></svg>">
+  <link rel="apple-touch-icon" href="/logo.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://naismithai.com/pickups.html">
+  <meta property="og:title" content="Today's best NBA fantasy pickups">
+  <meta property="og:description" content="Every player we project to gain from a current injury, tagged by league size. Updated every 15 minutes.">
+  <meta property="og:image" content="https://naismithai.com/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@NaismithAIApp">
+  <meta name="twitter:image" content="https://naismithai.com/og.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0D1117;
+      --surface: #161B22;
+      --card: #1C2129;
+      --border: rgba(139, 148, 158, 0.16);
+      --text: #E6EDF3;
+      --text-2: #8B949E;
+      --text-3: #6E7681;
+      --purple: #6C3CE1;
+      --blue: #2E75B6;
+      --green: #3FB950;
+      --gradient: linear-gradient(135deg, #6C3CE1 0%, #2E75B6 100%);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    .wrap { max-width: 640px; margin: 0 auto; padding: 0 16px; }
+
+    /* Header */
+    header { padding: 20px 0 8px; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo {
+      width: 34px; height: 34px; border-radius: 9px; background: var(--gradient);
+      display: grid; place-items: center; font-weight: 800; color: #fff; font-size: 1.1rem;
+    }
+    .brand-name { font-weight: 700; font-size: 1.1rem; }
+    .brand-handle { color: var(--text-2); font-size: 0.9rem; margin-left: auto; text-decoration: none; }
+
+    /* Hero */
+    .hero { padding: 36px 0 28px; }
+    h1 {
+      font-size: clamp(1.9rem, 7vw, 2.6rem); line-height: 1.12; font-weight: 800;
+      letter-spacing: -0.02em; text-wrap: balance;
+    }
+    h1 .grad { background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lede { color: var(--text-2); font-size: 1.05rem; margin-top: 14px; max-width: 34em; }
+    .ctas { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      min-height: 52px; padding: 0 20px; border-radius: 12px; text-decoration: none;
+      font-weight: 600; font-size: 1rem; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); transition: border-color .15s, transform .15s;
+    }
+    .btn:hover { border-color: rgba(139,148,158,.4); }
+    .btn:active { transform: scale(.99); }
+    .btn-primary { background: #fff; color: #0D1117; border-color: #fff; }
+    .btn-primary:hover { border-color: #fff; opacity: .92; }
+    .btn svg { width: 18px; height: 18px; flex: none; }
+    .btn-note { color: var(--text-2); font-size: 0.85rem; text-align: center; margin-top: 6px; }
+    .live {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;
+      color: var(--text-2); font-size: 0.85rem;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); }
+    .dot.on { background: var(--green); box-shadow: 0 0 0 4px rgba(63,185,80,.15); }
+
+    /* Sections */
+    section { padding: 28px 0; border-top: 1px solid var(--border); }
+    h2 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+    .sub { color: var(--text-2); font-size: 0.95rem; margin-top: 4px; }
+
+    /* Tweet cards */
+    .feed { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+    .tweet {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px;
+    }
+    .tweet-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .tweet-head .logo { width: 28px; height: 28px; font-size: .9rem; border-radius: 7px; }
+    .tweet-who { font-size: 0.9rem; line-height: 1.25; }
+    .tweet-who b { display: block; }
+    .tweet-who span { color: var(--text-2); }
+    .tag {
+      margin-left: auto; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--text-2); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px;
+    }
+    .tweet-body { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.95rem; }
+    .tweet-body .ht { color: #58A6FF; }
+    .tweet-foot { margin-top: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-2); }
+    .tweet-foot a { color: #58A6FF; text-decoration: none; font-weight: 500; }
+    .more { margin-top: 14px; font-size: 0.95rem; }
+    .more a { color: #58A6FF; text-decoration: none; font-weight: 500; }
+
+    /* Feature list */
+    .features { list-style: none; display: grid; gap: 12px; margin-top: 16px; }
+    .features li {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+    }
+    .features b { display: block; font-size: 0.98rem; }
+    .features span { color: var(--text-2); font-size: 0.92rem; }
+    @media (min-width: 560px) { .features { grid-template-columns: 1fr 1fr; } }
+
+    /* Tags legend */
+    .legend { display: grid; gap: 8px; margin-top: 16px; }
+    .legend div {
+      display: grid; grid-template-columns: 2rem 1fr; gap: 4px 8px; align-items: baseline;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px;
+    }
+    .legend .ico { font-size: 1.2rem; grid-column: 1; grid-row: 1 / span 2; }
+    .legend b { font-size: 0.98rem; grid-column: 2; grid-row: 1; }
+    .legend span:not(.ico) { color: var(--text-2); font-size: 0.9rem; grid-column: 2; grid-row: 2; }
+
+    /* FAQ */
+    details { border-bottom: 1px solid var(--border); padding: 14px 0; }
+    details:first-of-type { margin-top: 8px; }
+    summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--text-2); font-weight: 400; font-size: 1.2rem; line-height: 1; }
+    details[open] summary::after { content: "−"; }
+    details p { color: var(--text-2); margin-top: 8px; font-size: 0.95rem; }
+
+    .h3 { font-size: 1rem; font-weight: 700; margin-top: 24px; }
+    .note { color: var(--text-2); font-size: 0.9rem; margin-top: 10px; }
+    .cta-end { text-align: center; }
+    .cta-end .btn { margin-top: 16px; }
+    #alerts { border-top: 0; padding-top: 4px; }
+    .how p { color: var(--text-2); font-size: 0.95rem; margin-top: 12px; }
+    .how b { color: var(--text); font-weight: 600; }
+    footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--text-3); font-size: 0.85rem; }
+    footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 10px; }
+    footer a { color: var(--text-2); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    .chip { font: inherit; font-size: 0.9rem; font-weight: 600; padding: 8px 14px; border-radius: 999px; cursor: pointer;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text-2); }
+    .chip[aria-pressed="true"] { background: #fff; color: #0D1117; border-color: #fff; }
+    .picks { list-style: none; display: grid; gap: 10px; margin-top: 16px; }
+    .pick { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
+    .pick-top { display: flex; align-items: baseline; gap: 10px; }
+    .pick-name { font-weight: 700; font-size: 1.02rem; }
+    .pick-meta { color: var(--text-2); font-size: 0.85rem; }
+    .pick-gain { margin-left: auto; font-weight: 800; color: var(--green); white-space: nowrap; }
+    .pick-gain small { font-weight: 500; font-size: 0.75rem; color: var(--text-2); }
+    .pick-why { color: var(--text-2); font-size: 0.9rem; margin-top: 6px; }
+    .pick-why b { color: var(--text); font-weight: 600; }
+    .pill { display: inline-block; font-size: 0.75rem; font-weight: 600; border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; margin-top: 6px; color: var(--text-2); }
+    .empty { color: var(--text-2); margin-top: 16px; }
+    .inj summary { padding: 2px 0; }
+    .inj .inj-meta { color: var(--text-2); font-weight: 400; font-size: 0.9rem; }
+    .inj ul { list-style: none; margin-top: 8px; }
+    .inj li { display: flex; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border); font-size: 0.93rem; }
+    .inj li span:last-child { margin-left: auto; color: var(--green); font-weight: 700; white-space: nowrap; }
+    .stat { font-size: 1.05rem; margin-top: 14px; }
+    .stat b { font-size: 1.6rem; display: block; line-height: 1.2; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem; }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border); }
+    th { color: var(--text-2); font-weight: 600; font-size: 0.8rem; }
+    td.num, th.num { text-align: right; white-space: nowrap; }
+    .pos { color: var(--green); } .neg { color: #F85149; }
+    .back { color: var(--text-2); text-decoration: none; font-size: 0.9rem; margin-left: auto; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header style="display:flex;align-items:center">
+      <a class="brand" href="/" aria-label="Naismith home">
+        <div class="logo">N</div>
+        <div class="brand-name">Naismith</div>
+      </a>
+      <a class="back" href="/">Home</a>
+    </header>
+
+    <main>
+      <div class="hero" style="padding-bottom:8px">
+        <h1>Today's best pickups</h1>
+        <p class="lede">Every player we project to gain from a current injury, ranked by fantasy points per game he should add while the injured player is out.</p>
+        <div class="live"><span class="dot" id="dot"></span><span id="updated">Updated every 15 minutes</span></div>
+        <div class="chips" role="group" aria-label="League size">
+          <button class="chip" data-f="std" aria-pressed="false">10-team</button>
+          <button class="chip" data-f="12" aria-pressed="false">12-team</button>
+          <button class="chip" data-f="deep" aria-pressed="true">Deep</button>
+        </div>
+      </div>
+
+      <section id="board" aria-label="Pickups" style="border-top:0;padding-top:0">
+        <ul class="picks" id="picks"><li class="empty">Loading pickups…</li></ul>
+      </section>
+
+      <section aria-labelledby="inj-h">
+        <h2 id="inj-h">By injury</h2>
+        <p class="sub">Tap a player to see everyone who gains while he's out.</p>
+        <div id="injuries"><p class="empty">Loading…</p></div>
+      </section>
+
+      <section id="record" aria-labelledby="rec-h">
+        <h2 id="rec-h">How our pickups did</h2>
+        <div id="record-body"><p class="empty">Loading…</p></div>
+      </section>
+
+      <section class="cta-end" aria-label="Follow on X">
+        <h2>Get each new injury as it breaks.</h2>
+        <a class="btn btn-primary" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Follow @NaismithAIApp
+        </a>
+      </section>
+    </main>
+
+    <footer>
+      <nav>
+        <a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a>
+        <a href="/app.html#lookup">Player lookup</a>
+        <a href="/privacy.html">Privacy</a>
+      </nav>
+      <p>© 2026 Naismith. Not affiliated with the NBA.</p>
+    </footer>
+  </div>
+
+  <script>
+  (function () {
+    var API = 'https://naismith-api-production.up.railway.app';
+    var SHOW = {std: ['All leagues'], '12': ['All leagues', '12+ team'], deep: ['All leagues', '12+ team', 'Deep league']};
+    var filter = 'deep', board = null;
+    try { filter = localStorage.getItem('pickupsLeague') || 'deep'; } catch (e) {}
+
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c];
+      });
+    }
+    function ago(iso) {
+      var m = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+      return m < 60 ? m + 'm ago' : Math.round(m / 60) + 'h ago';
+    }
+    function names(list) {
+      var n = list.map(function (b) { return '<b>' + esc(b.player) + '</b>' + (b.duration ? ' (' + esc(b.duration) + ')' : ''); });
+      return n.length < 3 ? n.join(' and ') : n.slice(0, -1).join(', ') + ' and ' + n[n.length - 1];
+    }
+    function why(because) {
+      var out = because.filter(function (b) { return b.status !== 'DOUBTFUL'; });
+      var doubt = because.filter(function (b) { return b.status === 'DOUBTFUL'; });
+      var parts = [];
+      if (out.length) parts.push(names(out) + ' out');
+      if (doubt.length) parts.push(names(doubt) + ' doubtful');
+      return 'With ' + parts.join(', and ') + '.';
+    }
+    var LIMIT = 25, showAll = false;
+    function renderBoard() {
+      var list = document.getElementById('picks');
+      if (!board) return;
+      var picks = board.pickups.filter(function (p) { return SHOW[filter].indexOf(p.tag) >= 0; });
+      if (!picks.length) {
+        list.innerHTML = '<li class="empty">' + (board.building ? 'Updating the board…' :
+          'No pickups at this league size right now.') + '</li>';
+        return;
+      }
+      var total = picks.length;
+      if (!showAll) picks = picks.slice(0, LIMIT);
+      list.innerHTML = picks.map(function (p) {
+        return '<li class="pick"><div class="pick-top"><span class="pick-name">' + esc(p.player) + '</span>' +
+          '<span class="pick-meta">' + esc([p.team, p.position].filter(Boolean).join(' · ')) + '</span>' +
+          '<span class="pick-gain">+' + p.fpts_delta.toFixed(1) + '<small> FPTS/g</small></span></div>' +
+          '<div class="pick-why">' + why(p.because) + ' Averages ' + p.avg_fpts.toFixed(1) + ' FPTS/g.</div>' +
+          '<span class="pill">' + esc(p.icon + ' ' + p.tag) + '</span></li>';
+      }).join('') + (total > picks.length ? '<li><button class="chip" id="more">Show all ' + total + '</button></li>' : '');
+      var more = document.getElementById('more');
+      if (more) more.addEventListener('click', function () { showAll = true; renderBoard(); });
+    }
+    function renderInjuries() {
+      var el = document.getElementById('injuries');
+      if (!board.injuries.length) { el.innerHTML = '<p class="empty">No injuries with pickups right now.</p>'; return; }
+      el.innerHTML = board.injuries.map(function (i) {
+        return '<details class="inj"><summary><span>' + esc(i.player) + ' <span class="inj-meta">' +
+          esc(i.team) + ' · ' + (i.status === 'DOUBTFUL' ? 'Doubtful' : 'Out') + (i.duration ? ' ' + esc(i.duration) : '') +
+          ' · ' + i.avg_fpts.toFixed(1) + ' FPTS/g</span></span></summary><ul>' +
+          i.pickups.map(function (p) {
+            return '<li><span>' + esc(p.icon) + '</span><span>' + esc(p.player) + ' <span class="inj-meta">' +
+              esc(p.tag) + '</span></span><span>+' + p.fpts_delta.toFixed(1) + '</span></li>';
+          }).join('') + '</ul></details>';
+      }).join('');
+    }
+    function renderRecord(d) {
+      var el = document.getElementById('record-body');
+      var o = d && d.overall;
+      if (!d || d.status !== 'ok' || !o) {
+        el.innerHTML = '<p class="sub">We\'re still collecting enough finished games to grade our pickups. Check back soon.</p>';
+        return;
+      }
+      var tags = ['All leagues', '12+ team', 'Deep league'].filter(function (t) { return d.by_tag[t]; });
+      el.innerHTML =
+        '<p class="sub">Every pickup we posted on X for a player ruled out in the last ' + d.window_days + ' days, graded on ' +
+        'his fantasy points per game while the injured player was out (up to ' + d.eval_days + ' days, ' + d.min_games +
+        '+ games), compared with his previous 10 games.</p>' +
+        '<p class="stat"><b>' + (o.avg_actual >= 0 ? '+' : '') + o.avg_actual.toFixed(1) + ' FPTS/g</b>average gain across ' +
+        o.count + ' pickups (we projected +' + o.avg_projected.toFixed(1) + '). ' + o.gained + ' of ' + o.count + ' improved.</p>' +
+        '<table><thead><tr><th>Tag</th><th class="num">Pickups</th><th class="num">Projected</th><th class="num">Actual</th></tr></thead><tbody>' +
+        tags.map(function (t) { var s = d.by_tag[t]; return '<tr><td>' + esc(t) + '</td><td class="num">' + s.count +
+          '</td><td class="num">+' + s.avg_projected.toFixed(1) + '</td><td class="num ' + (s.avg_actual >= 0 ? 'pos' : 'neg') + '">' +
+          (s.avg_actual >= 0 ? '+' : '') + s.avg_actual.toFixed(1) + '</td></tr>'; }).join('') + '</tbody></table>' +
+        '<details style="margin-top:12px"><summary>Every graded pickup</summary><table><thead><tr><th>Pickup</th><th>With … out</th>' +
+        '<th class="num">Proj.</th><th class="num">Actual</th></tr></thead><tbody>' +
+        d.pickups.map(function (r) { return '<tr><td>' + esc(r.player) + '<div class="inj-meta">' + esc(r.date) + ' · ' + r.games +
+          ' games</div></td><td>' + esc(r.injured) + '</td><td class="num">+' + r.projected.toFixed(1) + '</td><td class="num ' +
+          (r.actual >= 0 ? 'pos' : 'neg') + '">' + (r.actual >= 0 ? '+' : '') + r.actual.toFixed(1) + '</td></tr>'; }).join('') +
+        '</tbody></table></details>';
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll('.chip'), function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.f === filter));
+      b.addEventListener('click', function () {
+        filter = b.dataset.f;
+        try { localStorage.setItem('pickupsLeague', filter); } catch (e) {}
+        Array.prototype.forEach.call(document.querySelectorAll('.chip'), function (c) {
+          c.setAttribute('aria-pressed', String(c === b));
+        });
+        renderBoard();
+      });
+    });
+
+    function load() {
+      fetch(API + '/public/pickups').then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+        .then(function (d) {
+          board = d;
+          if (d.generated_at) {
+            document.getElementById('dot').className = 'dot on';
+            document.getElementById('updated').textContent = 'Updated ' + ago(d.generated_at);
+          }
+          renderBoard(); renderInjuries();
+          if (d.building && !d.pickups.length) setTimeout(load, 20000);
+        })
+        .catch(function () {
+          document.getElementById('picks').innerHTML = '<li class="empty">Couldn\'t load pickups. Try again in a minute.</li>';
+        });
+    }
+    load();
+    fetch(API + '/public/track-record').then(function (r) { return r.ok ? r.json() : null; })
+      .then(renderRecord).catch(function () { renderRecord(null); });
+  })();
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

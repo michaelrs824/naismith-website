@@ -6,7 +6,7 @@ Last updated: 2026-11-10
 
 ## Facts
 
-- Free. No app, no account. Alerts are on X; naismithai.com has a player-lookup dashboard.
+- Free. No app, no account. Alerts are on X; naismithai.com has a pickups board and a player lookup.
 - Posts when a player is ruled out, listed doubtful or questionable, gets a new timeline, or leaves a game. If he returns within about four hours, it replies under that post.
 - Pickup tags, by projected fantasy points per game gained while the injured player is out: All leagues (+8 or more), 12+ team (+5 to +8), Deep league (+3 to +5). Pickups under +3 aren't listed. Players averaging 32+ aren't suggested.
 - Sources: the official NBA injury report, ESPN, RotoWire, CBS Sports, Bluesky, and NBA insiders and beat writers on X. Shams Charania and Underdog NBA are checked about every 90 seconds, other main insiders every 10 minutes, beat writers about every 50 minutes.
@@ -26,5 +26,6 @@ The team says he'll be re-evaluated in two weeks.
 ## Links
 
 - [X account](https://x.com/NaismithAIApp)
+- [Today's best pickups](https://naismithai.com/pickups.html): every player projected to gain from a current injury, by league size, updated every 15 minutes, plus how past pickups played
 - [Player lookup](https://naismithai.com/app.html)
 - [Privacy](https://naismithai.com/privacy.html)

@@ -107,6 +107,12 @@
     .btn-primary:hover { border-color: #fff; opacity: .92; }
     .btn svg { width: 18px; height: 18px; flex: none; }
     .btn-note { color: var(--text-2); font-size: 0.85rem; text-align: center; margin-top: 6px; }
+    .btn-note a { color: #58A6FF; text-decoration: none; }
+    .tops { list-style: none; margin-top: 12px; }
+    .tops li { display: flex; gap: 10px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .tops .who { font-weight: 600; }
+    .tops .why { display: block; color: var(--text-2); font-size: 0.85rem; font-weight: 400; }
+    .tops .gain { margin-left: auto; color: var(--green); font-weight: 800; white-space: nowrap; }
     .live {
       display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;
       color: var(--text-2); font-size: 0.85rem;
@@ -199,9 +205,9 @@
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
             Follow @NaismithAIApp
           </a>
-          <a class="btn" href="/app.html#lookup">Look up any player</a>
+          <a class="btn" href="/pickups.html">See today's best pickups</a>
         </div>
-        <p class="btn-note">Status, recent news, and who gains when he's out.</p>
+        <p class="btn-note">Ranked across every current injury, by league size. Or <a href="/app.html#lookup">look up any player</a>.</p>
         <div class="live" id="live"><span class="dot" id="live-dot"></span><span id="live-text">No app, no sign-up.</span></div>
       </div>
 
@@ -226,6 +232,12 @@ He went to the locker room with an ankle injury in the second quarter.
           </article>
         </div>
         <p class="more"><a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X →</a></p>
+      </section>
+
+      <section id="top-pickups" aria-labelledby="top-h">
+        <h2 id="top-h">Best pickups right now</h2>
+        <ul class="tops" id="tops"><li class="sub">Loading…</li></ul>
+        <p class="more"><a href="/pickups.html">All pickups, by league size →</a></p>
       </section>
 
       <section aria-labelledby="tags-h">
@@ -353,6 +365,21 @@ Top performers:
         if (html.length) document.getElementById('feed').innerHTML = html.join('');
       })
       .catch(function () { /* keep the examples */ });
+
+    fetch(API + '/public/pickups')
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (d) {
+        var el = document.getElementById('tops');
+        if (!d.pickups || !d.pickups.length) { document.getElementById('top-pickups').style.display = 'none'; return; }
+        el.innerHTML = d.pickups.slice(0, 3).map(function (p) {
+          var b = p.because[0];
+          return '<li><span>' + esc(p.icon) + '</span><span class="who">' + esc(p.player) + ' <span class="why">' +
+            esc(p.tag) + ' · with ' + esc(b.player) + (b.status === 'DOUBTFUL' ? ' doubtful' : ' out') +
+            (b.duration ? ' (' + esc(b.duration) + ')' : '') + '</span></span><span class="gain">+' +
+            p.fpts_delta.toFixed(1) + '</span></li>';
+        }).join('');
+      })
+      .catch(function () { document.getElementById('top-pickups').style.display = 'none'; });
 
     fetch(API + '/public/recap')
       .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
