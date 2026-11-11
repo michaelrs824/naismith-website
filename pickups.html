@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Today's best NBA fantasy pickups · Naismith AI</title>
-  <meta name="description" content="Every player we project to gain from a current NBA injury, ranked by fantasy points per game and tagged by league size. Updated every 15 minutes. Plus how our past pickups played.">
+  <meta name="description" content="Every player we project to gain from a current NBA injury, ranked by fantasy points per game and tagged by league size. Updated every 15 minutes.">
   <link rel="canonical" href="https://naismithai.com/pickups.html">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='68' font-size='60' font-family='Arial' font-weight='800' text-anchor='middle' fill='white'>N</text></svg>">
   <link rel="apple-touch-icon" href="/logo.png">
@@ -223,10 +223,6 @@
         <ul class="losing" id="losing"></ul>
       </section>
 
-      <section id="record" aria-labelledby="rec-h">
-        <h2 id="rec-h">How our pickups did</h2>
-        <div id="record-body"><p class="empty">Loading…</p></div>
-      </section>
 
       <section class="cta-end" aria-label="Follow on X">
         <h2>Get each new injury as it breaks.</h2>
@@ -383,8 +379,9 @@
         });
     }
     load();
-    fetch(API + '/public/track-record').then(function (r) { return r.ok ? r.json() : null; })
-      .then(renderRecord).catch(function () { renderRecord(null); });
+    // Track record section held until calibrated pickups have been graded (Michael, 2026-11-11).
+    // To bring it back: restore the #record section and call
+    // fetch(API + '/public/track-record').then(r => r.json()).then(renderRecord)
   })();
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
