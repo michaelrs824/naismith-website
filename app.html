@@ -2417,7 +2417,7 @@
             html += `<div class="lookup-alert-card">
               <div class="lookup-alert-status" style="color: ${alertColor};">${alertStatus}</div>
               <div class="lookup-alert-detail">${detail}</div>
-              <div class="lookup-alert-time">${timeStr}${evt.source ? ' · ' + evt.source : ''}</div>
+              <div class="lookup-alert-time">${timeStr}${evt.source ? ' · ' + (window.NaismithFeed ? NaismithFeed.cleanSource(evt.source) : evt.source) : ''}</div>
             </div>`;
           });
           html += '<div style="height: 1rem;"></div>';

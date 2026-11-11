@@ -136,7 +136,7 @@
   }
 
   window.NaismithFeed = {
-    esc: esc, ago: ago, card: card, X: X, parse: parse,
+    esc: esc, ago: ago, card: card, X: X, parse: parse, cleanSource: cleanSource,
     // Tag cutoffs on the published (calibrated) scale: the model tags at +8 / +5 / +3,
     // and every gain we show is multiplied by the nightly calibration factor.
     setTagKeys: function (cal) {
