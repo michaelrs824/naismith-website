@@ -26,8 +26,8 @@ The team says he'll be re-evaluated in two weeks.
 ## Links
 
 - [X account](https://x.com/NaismithAIApp)
-- [Today's best pickups](https://naismithai.com/pickups.html): every player projected to gain from a current injury, by league size, updated every 15 minutes
-- [Latest alerts](https://naismithai.com/alerts.html): everything posted on X in the last week
-- [Last night's recap](https://naismithai.com/recap.html)
-- [Player lookup](https://naismithai.com/app.html)
-- [Privacy](https://naismithai.com/privacy.html)
+- [Today's best pickups](https://www.naismithai.com/pickups.html): every player projected to gain from a current injury, by league size, updated every 15 minutes
+- [Latest alerts](https://www.naismithai.com/alerts.html): everything posted on X in the last week
+- [Last night's recap](https://www.naismithai.com/recap.html)
+- [Player lookup](https://www.naismithai.com/app.html)
+- [Privacy](https://www.naismithai.com/privacy.html)

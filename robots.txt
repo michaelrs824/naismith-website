@@ -29,4 +29,4 @@ Allow: /
 User-agent: Applebot-Extended
 Allow: /
 
-Sitemap: https://naismithai.com/sitemap.xml
+Sitemap: https://www.naismithai.com/sitemap.xml
