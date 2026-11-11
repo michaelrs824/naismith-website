@@ -45,6 +45,9 @@
   }
 
 
+  // Published gains are calibrated from 2026-11-11 (server calibration.py); the factor comes with each API response
+  var CAL = {factor: null, since: '2026-11-11T06:19:00'};
+
   // ── My players: a watchlist kept on this device (no account) ──
   var KEY = 'naismith.watch';
   function nkey(n) { return String(n || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z ]/g, '').replace(/\s+/g, ' ').trim(); }
@@ -138,6 +141,7 @@
     // and every gain we show is multiplied by the nightly calibration factor.
     setTagKeys: function (cal) {
       if (!cal || cal <= 0) return;
+      CAL.factor = cal;
       var f = function (x) { return '+' + (Math.round(x * cal * 10) / 10).toFixed(1); };
       var txt = {all: f(8) + ' or more', '12': f(5) + ' to ' + f(8), deep: f(3) + ' to ' + f(5)};
       Array.prototype.forEach.call(document.querySelectorAll('.tagkey [data-t] i'), function (i) {
@@ -152,6 +156,10 @@
       if (!text) return null;
       var link = a.tweet_id ? X + a.tweet_id : null, label = a.tweet_text ? 'View on X' : 'Pickups on X';
       var parts = parse(text);
+      // Posts from before calibration went out on the model's raw scale: show them on today's scale
+      if (parts && CAL.factor && a.timestamp && a.timestamp < CAL.since) {
+        parts.picks.forEach(function (p) { p.delta = (Math.round(parseFloat(p.delta) * CAL.factor * 10) / 10).toFixed(1); });
+      }
       if (parts && !parts.source) parts.source = cleanSource((a.event || {}).source);  // the tweet had no room for it, or predates saved text
       return parts ? structured(parts, link, ago(a.timestamp), label) : card(text, link, ago(a.timestamp), label);
     }

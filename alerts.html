@@ -300,6 +300,7 @@
     fetch(API + '/public/alerts?tweeted_only=true&hours=168&limit=200')
       .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
       .then(function (data) {
+        F.setTagKeys(data.calibration);
         (data.alerts || []).forEach(function (a) {
           var h = F.alertCard(a);
           if (!h) return;
@@ -311,7 +312,6 @@
                     mine: function () { return people.some(function (x) { return window.NaismithWatch.has(x); }); },
                     hay: norm([ev.player_name, ev.player_team, picks].join(' '))});
         });
-        F.setTagKeys(data.calibration);
         var today = counts();
         if (data.last_alert_at) {
           document.getElementById('dot').className = 'dot on';
