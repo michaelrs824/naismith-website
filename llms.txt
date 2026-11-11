@@ -8,7 +8,7 @@ Last updated: 2026-11-10
 
 - Free. No app, no account. Alerts are on X; naismithai.com has a pickups board and a player lookup.
 - Posts when a player is ruled out, listed doubtful or questionable, gets a new timeline, or leaves a game. If he returns within about four hours, it replies under that post.
-- Pickup tags, by projected fantasy points per game gained while the injured player is out: All leagues (+8 or more), 12+ team (+5 to +8), Deep league (+3 to +5). Pickups under +3 aren't listed. Players averaging 32+ aren't suggested.
+- Each pickup shows a projected fantasy-points-per-game gain, calibrated nightly against how past pickups actually played, and a tag from strongest to weakest: All leagues, 12+ team, Deep league. Players averaging 32+ aren't suggested.
 - Sources: the official NBA injury report, ESPN, RotoWire, CBS Sports, Bluesky, and NBA insiders and beat writers on X. The top insiders are checked about every 90 seconds.
 - An AI model writes each one-line summary. Code checks it against the original report and rejects any team, day, body part or timeline the report doesn't contain. Mistakes still happen.
 - A recap thread follows each night's games: top performers, breakouts and minutes to watch, with full stat lines.

@@ -239,7 +239,7 @@
 
       <section id="alerts" aria-labelledby="alerts-h">
         <div class="sec-head"><h2 id="alerts-h">Latest alerts</h2><a class="sec-link" href="/alerts.html">See all →</a></div>
-        <p class="tagkey"><span>🔥 <b>All leagues</b> +8 or more</span><span>🎯 <b>12+ team</b> +5 to +8</span><span>👀 <b>Deep league</b> +3 to +5</span><span>☆ <b>Star a player</b> to follow him under Your players</span></p>
+        <p class="tagkey"><span data-t="all">🔥 <b>All leagues</b> <i>+8 or more</i></span><span data-t="12">🎯 <b>12+ team</b> <i>+5 to +8</i></span><span data-t="deep">👀 <b>Deep league</b> <i>+3 to +5</i></span><span>☆ <b>Star a player</b> to follow him under Your players</span></p>
         <div class="feed" id="feed">
           <!-- Shown until live alerts load (and to readers without JavaScript). -->
           <article class="tweet">
@@ -330,6 +330,7 @@ He went to the locker room with an ankle injury in the second quarter.
     fetch(API + '/public/alerts?tweeted_only=true&hours=168&limit=20')
       .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
       .then(function (data) {
+        F.setTagKeys(data.calibration);
         if (data.last_alert_at) {
           document.getElementById('live-dot').className = 'dot on';
           document.getElementById('live-text').textContent = 'Last alert ' + ago(data.last_alert_at);

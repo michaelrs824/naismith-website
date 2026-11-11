@@ -178,7 +178,7 @@
         <h1>Latest alerts</h1>
         <p class="lede">Everything we posted on X in the last week. Filter by status, search a player or team, or sort by impact.</p>
         <div class="live"><span class="dot" id="dot"></span><span id="updated">Loading…</span></div>
-        <p class="tagkey"><span>🔥 <b>All leagues</b> +8 or more</span><span>🎯 <b>12+ team</b> +5 to +8</span><span>👀 <b>Deep league</b> +3 to +5</span><span>☆ <b>Star a player</b> to follow him</span></p>
+        <p class="tagkey"><span data-t="all">🔥 <b>All leagues</b> <i>+8 or more</i></span><span data-t="12">🎯 <b>12+ team</b> <i>+5 to +8</i></span><span data-t="deep">👀 <b>Deep league</b> <i>+3 to +5</i></span><span>☆ <b>Star a player</b> to follow him</span></p>
         <div class="feed-controls">
           <div class="chips" id="filters" role="group" aria-label="Status">
             <button class="chip" data-k="mine" aria-pressed="false">★ My players <span></span></button>
@@ -311,6 +311,7 @@
                     mine: function () { return people.some(function (x) { return window.NaismithWatch.has(x); }); },
                     hay: norm([ev.player_name, ev.player_team, picks].join(' '))});
         });
+        F.setTagKeys(data.calibration);
         var today = counts();
         if (data.last_alert_at) {
           document.getElementById('dot').className = 'dot on';

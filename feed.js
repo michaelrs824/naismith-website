@@ -134,6 +134,16 @@
 
   window.NaismithFeed = {
     esc: esc, ago: ago, card: card, X: X, parse: parse,
+    // Tag cutoffs on the published (calibrated) scale: the model tags at +8 / +5 / +3,
+    // and every gain we show is multiplied by the nightly calibration factor.
+    setTagKeys: function (cal) {
+      if (!cal || cal <= 0) return;
+      var f = function (x) { return '+' + (Math.round(x * cal * 10) / 10).toFixed(1); };
+      var txt = {all: f(8) + ' or more', '12': f(5) + ' to ' + f(8), deep: f(3) + ' to ' + f(5)};
+      Array.prototype.forEach.call(document.querySelectorAll('.tagkey [data-t] i'), function (i) {
+        i.textContent = txt[i.parentNode.getAttribute('data-t')];
+      });
+    },
     // The parsed parts behind a card (also for alerts posted before tweet text was saved)
     info: function (a) { return parse(a.tweet_text || headline(a) || ''); },
     // One posted alert as a card; null when there's nothing to show.

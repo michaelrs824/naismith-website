@@ -198,8 +198,8 @@
         <h1>Today's best pickups</h1>
         <p class="lede">Every player we project to gain from a current injury, ranked by fantasy points per game he should add while the injured player is out.</p>
         <div class="live"><span class="dot" id="dot"></span><span id="updated">Updated every 15 minutes</span></div>
-        <p class="tagkey"><span>🔥 <b>All leagues</b> +8 or more</span><span>🎯 <b>12+ team</b> +5 to +8</span><span>👀 <b>Deep league</b> +3 to +5</span><span>☆ <b>Star a player</b> to follow him</span></p>
-        <p class="note-scoring">Numbers use points scoring (points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, threes 0.5, turnovers −1). In a category league, read them as a guide to who's getting more minutes. Ownership is the share of ESPN leagues that roster him.</p>
+        <p class="tagkey"><span data-t="all">🔥 <b>All leagues</b> <i>+8 or more</i></span><span data-t="12">🎯 <b>12+ team</b> <i>+5 to +8</i></span><span data-t="deep">👀 <b>Deep league</b> <i>+3 to +5</i></span><span>☆ <b>Star a player</b> to follow him</span></p>
+        <p class="note-scoring">Projected gains are calibrated each night against how our past pickups actually played. Numbers use points scoring (points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, threes 0.5, turnovers −1). In a category league, read them as a guide to who's getting more minutes. Ownership is the share of ESPN leagues that roster him.</p>
         <div class="chips" role="group" aria-label="League size">
           <button class="chip" data-f="std" aria-pressed="false">10-team</button>
           <button class="chip" data-f="12" aria-pressed="false">12-team</button>
@@ -370,6 +370,7 @@
       fetch(API + '/public/pickups').then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
         .then(function (d) {
           board = d;
+          window.NaismithFeed.setTagKeys(d.calibration);
           if (d.generated_at) {
             document.getElementById('dot').className = 'dot on';
             document.getElementById('updated').textContent = 'Updated ' + ago(d.generated_at);
