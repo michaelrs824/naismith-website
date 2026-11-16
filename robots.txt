@@ -30,3 +30,4 @@ User-agent: Applebot-Extended
 Allow: /
 
 Sitemap: https://www.naismithai.com/sitemap.xml
+Sitemap: https://www.naismithai.com/sitemap-players.xml

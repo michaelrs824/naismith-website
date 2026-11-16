@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    {
+      "source": "/injuries",
+      "destination": "https://naismith-api-production.up.railway.app/public/site/injuries"
+    },
+    {
+      "source": "/players",
+      "destination": "https://naismith-api-production.up.railway.app/public/site/players"
+    },
+    {
+      "source": "/players/:slug",
+      "destination": "https://naismith-api-production.up.railway.app/public/site/players/:slug"
+    },
+    {
+      "source": "/sitemap-players.xml",
+      "destination": "https://naismith-api-production.up.railway.app/public/site/sitemap.xml"
+    }
+  ]
+}
