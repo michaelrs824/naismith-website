@@ -15,6 +15,14 @@
     {
       "source": "/sitemap-players.xml",
       "destination": "https://naismith-api-production.up.railway.app/public/site/sitemap.xml"
+    },
+    {
+      "source": "/mcp",
+      "destination": "https://naismith-api-production.up.railway.app/mcp"
+    },
+    {
+      "source": "/mcp/v1",
+      "destination": "https://naismith-api-production.up.railway.app/mcp/v1"
     }
   ]
 }
