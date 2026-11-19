@@ -24,5 +24,16 @@
       "source": "/mcp/v1",
       "destination": "https://naismith-api-production.up.railway.app/mcp/v1"
     }
+  ],
+  "headers": [
+    {
+      "source": "/.well-known/openai-apps-challenge",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        }
+      ]
+    }
   ]
 }
