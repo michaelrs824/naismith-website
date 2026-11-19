@@ -33,6 +33,7 @@ The team says he'll be re-evaluated in two weeks.
 - [Injured players](https://www.naismithai.com/players): one page per player at /players/<name>, e.g. /players/stephen-curry: status, timeline, latest report, who gains
 - [Player lookup](https://www.naismithai.com/app.html)
 - [Privacy](https://www.naismithai.com/privacy.html)
+- [Terms of Use](https://www.naismithai.com/terms.html)
 
 ## Connector
 - [Naismith AI connector](https://www.naismithai.com/connector.html): MCP server at https://www.naismithai.com/mcp/v1 (no auth, Streamable HTTP) with live NBA injury status, timelines and pickups for AI assistants
