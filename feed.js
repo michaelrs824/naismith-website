@@ -65,7 +65,7 @@
   function nkey(n) { return String(n || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z ]/g, '').replace(/\s+/g, ' ').trim(); }
   var W = {
     load: function () { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } },
-    save: function (l) { try { localStorage.setItem(KEY, JSON.stringify(l)); } catch (e) {} },
+    save: function (l) { try { localStorage.setItem(KEY, JSON.stringify(l)); return true; } catch (e) { return false; } },
     key: nkey,
     has: function (n) { var k = nkey(n); return W.load().some(function (x) { return nkey(x) === k; }); },
     names: function () { return W.load(); },
@@ -73,14 +73,15 @@
       var k = nkey(n), l = W.load(), i = -1;
       l.forEach(function (x, j) { if (nkey(x) === k) i = j; });
       if (i >= 0) l.splice(i, 1); else l.push(n);
-      W.save(l);
+      if (!W.save(l)) return i >= 0;  // storage blocked: the star keeps its old state (website QA L-20)
       document.dispatchEvent(new CustomEvent('watchchange', {detail: {player: n, on: i < 0}}));
       return i < 0;
     },
     star: function (n) {
       var on = W.has(n);
+      // one fixed name; aria-pressed carries the state (website QA SA-16)
       return '<button type="button" class="star" data-player="' + esc(n) + '" aria-pressed="' + on + '" aria-label="' +
-        (on ? 'Remove ' : 'Add ') + esc(n) + (on ? ' from' : ' to') + ' my players" title="' + (on ? 'In my players' : 'Add to my players') + '">' +
+        esc(n) + ' in my players" title="' + (on ? 'In my players' : 'Add to my players') + '">' +
         (on ? '★' : '☆') + '</button>';
     }
   };
@@ -93,7 +94,7 @@
     Array.prototype.forEach.call(document.querySelectorAll('.star'), function (s) {
       if (nkey(s.getAttribute('data-player')) === nkey(n)) {
         s.setAttribute('aria-pressed', String(on)); s.textContent = on ? '★' : '☆';
-        s.setAttribute('aria-label', (on ? 'Remove ' : 'Add ') + n + (on ? ' from' : ' to') + ' my players');
+        s.setAttribute('aria-label', n + ' in my players');  // fixed name; aria-pressed carries the state (SA-16)
         s.title = on ? 'In my players' : 'Add to my players';
       }
     });

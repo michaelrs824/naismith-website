@@ -174,8 +174,9 @@
 </head>
 <body>
   <div class="wrap">
+    <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header">
-      <a class="brand" href="/" aria-label="Naismith AI home"><div class="logo">N</div><div class="brand-name">Naismith AI</div></a>
+      <a class="brand" href="/"><div class="logo" aria-hidden="true">N</div><div class="brand-name">Naismith AI</div></a>
       <nav class="topnav" aria-label="Main">
         <a href="/tonight.html">Tonight</a>
         <a href="/alerts.html">Alerts</a>
@@ -196,7 +197,7 @@
       <a class="nav-follow" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
     </header>
 
-    <main>
+    <main id="main">
       <div class="hero" style="padding-bottom:8px">
         <h1>Last night's recap</h1>
         <p class="lede" id="recap-sub">Top performers, breakouts and minutes to watch from last night's games.</p>
@@ -320,5 +321,6 @@
   })();
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/nav.js"></script>
 </body>
 </html>

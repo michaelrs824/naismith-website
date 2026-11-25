@@ -941,6 +941,11 @@
       margin-right: 0.5rem;
     }
 
+    .skip-link { position: absolute; left: -9999px; top: 8px; z-index: 1000; background: #6C3CE1; color: #fff; padding: 10px 14px; border-radius: 8px; font-weight: 600; text-decoration: none; }
+    .skip-link:focus { left: 8px; }
+    /* iOS zooms into inputs under 16px (website QA L-09) */
+    input, select, textarea { font-size: 16px !important; }
+
     /* ── Loading / Empty States ──────────────── */
     .loading-state, .empty-state, .error-state {
       text-align: center;
@@ -1406,8 +1411,9 @@
 
   <!-- Nav -->
   <div class="wrap">
+    <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header">
-      <a class="brand" href="/" aria-label="Naismith AI home"><div class="logo">N</div><div class="brand-name">Naismith AI</div></a>
+      <a class="brand" href="/"><div class="logo" aria-hidden="true">N</div><div class="brand-name">Naismith AI</div></a>
       <nav class="topnav" aria-label="Main">
         <a href="/tonight.html">Tonight</a>
         <a href="/alerts.html">Alerts</a>
@@ -1437,12 +1443,12 @@
     </div>
   </div>
 
-  <main>
+  <main id="main">
     <!-- ═══ INJURIES PAGE ═══ -->
     <div class="page" id="page-injuries">
       <div class="feed-header">
         <div class="feed-title-row">
-          <h1 class="feed-title">Injury feed</h1>
+          <h2 class="feed-title">Injury feed</h2>
           <div class="feed-stats">
             <div class="feed-stat">
               <div class="feed-stat-value red" id="statOut">—</div>
@@ -1493,7 +1499,7 @@
 
         <div class="lookup-search-row">
           <div class="autocomplete-wrapper">
-            <input type="text" class="lookup-input" id="lookupInput" placeholder="e.g. LeBron James, KAT, Wemby" autocomplete="off">
+            <input type="text" class="lookup-input" id="lookupInput" aria-label="Player name" placeholder="e.g. LeBron James, KAT, Wemby" autocomplete="off">
             <div class="autocomplete-list" id="acListLookup"></div>
           </div>
           <button class="lookup-btn" id="lookupBtn" onclick="runLookup()">Look Up</button>
@@ -1511,14 +1517,14 @@
     <!-- ═══ COMPARE PAGE ═══ -->
     <div class="page" id="page-compare">
       <div class="compare-container">
-        <h1 class="compare-title">Head-to-Head Waiver Compare</h1>
+        <h2 class="compare-title">Head-to-Head Waiver Compare</h2>
         <p class="compare-subtitle">Compare two players side by side on fantasy points, minutes and box-score averages.</p>
 
         <div class="compare-input-row">
           <div class="compare-input-group">
             <label>Player A</label>
             <div class="autocomplete-wrapper">
-              <input type="text" class="compare-input" id="comparePlayerA" placeholder="e.g. Cam Thomas" autocomplete="off">
+              <input type="text" class="compare-input" id="comparePlayerA" aria-label="Player A" placeholder="e.g. Cam Thomas" autocomplete="off">
               <div class="autocomplete-list" id="acListA"></div>
             </div>
           </div>
@@ -1526,7 +1532,7 @@
           <div class="compare-input-group">
             <label>Player B</label>
             <div class="autocomplete-wrapper">
-              <input type="text" class="compare-input" id="comparePlayerB" placeholder="e.g. Jalen Green" autocomplete="off">
+              <input type="text" class="compare-input" id="comparePlayerB" aria-label="Player B" placeholder="e.g. Jalen Green" autocomplete="off">
               <div class="autocomplete-list" id="acListB"></div>
             </div>
           </div>
@@ -1540,20 +1546,20 @@
     <!-- ═══ SIMULATOR PAGE ═══ -->
     <div class="page" id="page-simulator">
       <div class="sim-container">
-        <h1 class="sim-title">What-If Injury Simulator</h1>
+        <h2 class="sim-title">What-If Injury Simulator</h2>
         <p class="sim-subtitle">Simulate what happens to a team's fantasy landscape if a player goes down. See the ripple effects and top pickups.</p>
 
         <div class="sim-input-row">
           <div class="sim-input-group">
             <label>Player</label>
             <div class="autocomplete-wrapper">
-              <input type="text" class="sim-input" id="simPlayer" placeholder="e.g. LeBron James" autocomplete="off">
+              <input type="text" class="sim-input" id="simPlayer" aria-label="Player" placeholder="e.g. LeBron James" autocomplete="off">
               <div class="autocomplete-list" id="acListSim"></div>
             </div>
           </div>
           <div class="sim-input-group">
             <label>Injury Duration</label>
-            <select class="sim-input" id="simDuration">
+            <select class="sim-input" id="simDuration" aria-label="How long he is out">
               <option value="tonight">Out tonight</option>
               <option value="1-2games">1-2 games</option>
               <option value="1-2weeks" selected>1-2 weeks</option>
@@ -1636,22 +1642,27 @@
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(`page-${page}`).classList.add('active');
         // keep the address in step, so the top menu's Lookup link always switches back here
-        if (location.hash !== '#' + page) history.replaceState(null, '', '#' + page);
+        if (location.hash !== '#' + page) history.replaceState(null, '', location.search + '#' + page);
+        // the top menu's "Lookup" is only current on the Lookup tab (website QA L-16)
+        document.querySelectorAll('a[href="/app.html#lookup"]').forEach(a => {
+          if (page === 'lookup') a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+        });
         window.scrollTo(0, 0);
       });
     });
 
     // The injury feed now lives on /alerts.html (same alerts, new cards, with filters and search)
     if (location.hash === '#injuries') location.replace('/alerts.html');
-    // Deep links from the homepage, e.g. /app.html#lookup
+    // Deep links from the homepage, e.g. /app.html#lookup; #whatif and #what-if open What-If (L-13)
+    const tabFor = h => ({'whatif': 'simulator', 'what-if': 'simulator'}[h.toLowerCase()] || h.toLowerCase());
     (function () {
-      const page = (location.hash || '').slice(1);
+      const page = tabFor((location.hash || '').slice(1));
       const tab = page && document.querySelector(`.nav-tab[data-page="${page}"]`);
       if (tab && document.getElementById(`page-${page}`)) tab.click();
     })();
     window.addEventListener('hashchange', function () {
       if (location.hash === '#injuries') { location.replace('/alerts.html'); return; }
-      const page = (location.hash || '').slice(1);
+      const page = tabFor((location.hash || '').slice(1));
       const tab = page && document.querySelector(`.nav-tab[data-page="${page}"]`);
       if (tab && document.getElementById(`page-${page}`)) tab.click();
     });
@@ -2090,6 +2101,8 @@
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(async () => {
           const matches = await searchPlayers(q);
+          // a late answer for an input that's no longer focused or has changed stays closed (L-08)
+          if (document.activeElement !== input || input.value.trim() !== q) return;
 
           if (matches.length === 0) { list.classList.remove('visible'); return; }
 
@@ -2097,8 +2110,8 @@
             const statusBadge = p.status && p.status !== 'ACTIVE'
               ? `<span style="color: var(--accent-red); font-size: 0.7rem; font-weight: 600; margin-left: 4px;">${p.status}</span>`
               : '';
-            return `<div class="autocomplete-item" data-name="${p.name}" data-team="${p.team}">
-              ${p.name} <span class="autocomplete-item-team">${p.team}${p.position ? ' · ' + p.position : ''}</span>${statusBadge}
+            return `<div class="autocomplete-item" data-name="${escH(p.name)}" data-team="${escH(p.team)}">
+              ${escH(p.name)} <span class="autocomplete-item-team">${escH(p.team)}${p.position ? ' · ' + p.position : ''}</span>${statusBadge}
             </div>`;
           }).join('');
 
@@ -2229,7 +2242,7 @@
         avg_stl: ri.avg_stl || 0,
         avg_blk: ri.avg_blk || 0,
         stocks: (ri.avg_stl || 0) + (ri.avg_blk || 0),
-        games_played: ri.games_played || 0,
+        games_played: ri.games_played_current ?? ri.games_played ?? 0,  // this season (L-11)
       };
     }
 
@@ -2321,10 +2334,10 @@
             if (!teamRecs.find(x => x.player === r.player)) teamRecs.push(r);
           });
         });
-        beneficiaries = teamRecs.slice(0, 6).map(r => ({
+        beneficiaries = teamRecs.filter(r => r.fpts_delta).slice(0, 6).map(r => ({
           name: r.player,
           position: '',
-          estimated_boost: Math.abs(r.fpts_delta || 3),
+          estimated_boost: Math.abs(r.fpts_delta),  // no made-up +3 when there's no number (K-02)
           confidence: 0,
           reason: 'Identified from recent injury alerts',
         }));
@@ -2346,7 +2359,7 @@
       const impactLabel = avgFpts >= 35 ? 'High Impact' : avgFpts >= 20 ? 'Moderate Impact' : 'Low Impact';
 
       // Scale boosts by duration (longer absence = more certainty of sustained boost)
-      const durationScale = dur.games >= 11 ? 1.0 : dur.games >= 5 ? 0.85 : dur.games >= 2 ? 0.7 : 0.5;
+      const durationScale = 1;  // a per-game gain doesn't depend on how long he's out (website QA L-12)
 
       results.classList.add('visible');
       results.innerHTML = `
@@ -2415,13 +2428,14 @@
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(async () => {
           const matches = await searchPlayers(q);
+          if (document.activeElement !== input || input.value.trim() !== q) return;  // L-08
           if (matches.length === 0) { list.classList.remove('visible'); return; }
           list.innerHTML = matches.map(p => {
             const statusBadge = p.status && p.status !== 'ACTIVE'
               ? `<span style="color: var(--accent-red); font-size: 0.7rem; font-weight: 600; margin-left: 4px;">${p.status}</span>`
               : '';
-            return `<div class="autocomplete-item" data-name="${p.name}" data-team="${p.team}">
-              ${p.name} <span class="autocomplete-item-team">${p.team}${p.position ? ' · ' + p.position : ''}</span>${statusBadge}
+            return `<div class="autocomplete-item" data-name="${escH(p.name)}" data-team="${escH(p.team)}">
+              ${escH(p.name)} <span class="autocomplete-item-team">${escH(p.team)}${p.position ? ' · ' + p.position : ''}</span>${statusBadge}
               <span style="margin-left: auto; font-size: 0.75rem; color: var(--accent-purple); font-weight: 600;">${p.avg_fpts.toFixed(1)} FP</span>
             </div>`;
           }).join('');
@@ -2447,6 +2461,7 @@
       });
     }
 
+    let lookupSeq = 0;
     async function runLookup() {
       const input = document.getElementById('lookupInput');
       const results = document.getElementById('lookupResults');
@@ -2454,6 +2469,9 @@
       const btn = document.getElementById('lookupBtn');
       const query = input.value.trim();
       if (!query) return;
+      const mySeq = ++lookupSeq;  // a slower earlier lookup can't overwrite this one (L-05)
+      document.querySelectorAll('.autocomplete-list').forEach(l => l.classList.remove('visible'));  // L-08
+      try { history.replaceState(null, '', '?player=' + encodeURIComponent(query) + '#lookup'); } catch (e) {}  // L-18
 
       btn.disabled = true;
       btn.textContent = 'Loading...';
@@ -2467,6 +2485,7 @@
           fetchT(`${API_BASE}/public/alerts?tweeted_only=true`).catch(() => null),  // its news is extra (L-06)
         ]);
 
+        if (mySeq !== lookupSeq) return;
         if (!lookupRes.ok && lookupRes.status !== 404) throw new Error('HTTP ' + lookupRes.status);  // busy or down: not "not found" (L-02)
         if (!lookupRes.ok) {
           results.innerHTML = `<div class="lookup-empty">
@@ -2481,6 +2500,7 @@
 
         const data = await lookupRes.json();
         const alertsData = (alertsRes && alertsRes.ok) ? await alertsRes.json().catch(() => ({alerts: []})) : {alerts: []};
+        if (mySeq !== lookupSeq) return;  // a newer lookup started meanwhile (L-05)
 
         // Filter alerts for this player
         const playerName = data.player || query;
@@ -2593,6 +2613,7 @@
         });
 
       } catch (err) {
+        if (mySeq !== lookupSeq) return;
         console.error('Lookup error:', err);
         results.innerHTML = `<div class="lookup-empty">
           <div class="lookup-empty-icon">&#9888;&#65039;</div>
@@ -2619,6 +2640,9 @@
     (function () {
       const q = new URLSearchParams(location.search).get('player');
       if (!q) return;
+      // ?player=Name#compare keeps the Compare tab; only Lookup (or no tab) runs the lookup (L-13)
+      const h = tabFor((location.hash || '').slice(1));
+      if (h && h !== 'lookup' && document.getElementById(`page-${h}`)) return;
       const tab = document.querySelector('.nav-tab[data-page="lookup"]');
       if (tab) tab.click();
       document.getElementById('lookupInput').value = q;
@@ -2632,5 +2656,6 @@
   </script>
 
   <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/nav.js"></script>
 </body>
 </html>

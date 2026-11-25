@@ -162,8 +162,9 @@
 </head>
 <body>
   <div class="wrap">
+    <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header">
-      <a class="brand" href="/" aria-label="Naismith AI home"><div class="logo">N</div><div class="brand-name">Naismith AI</div></a>
+      <a class="brand" href="/"><div class="logo" aria-hidden="true">N</div><div class="brand-name">Naismith AI</div></a>
       <nav class="topnav" aria-label="Main">
         <a href="/tonight.html" aria-current="page">Tonight</a>
         <a href="/alerts.html">Alerts</a>
@@ -184,7 +185,7 @@
       <a class="nav-follow" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
     </header>
 
-    <main>
+    <main id="main">
       <div class="hero" style="padding-bottom:8px">
         <h1>Tonight</h1>
         <p class="lede" id="t-sub">Every game on tonight's slate, with each team's injury news and who to pick up if a player sits.</p>
@@ -292,6 +293,9 @@
       }).join('');
     }
     function chips() {
+      if (view === 'mine' && !W.names().length) {  // last star removed: back to All games (website QA DP-09)
+        view = 'all'; try { localStorage.setItem('tonightView', view); } catch (e) {}
+      }
       Array.prototype.forEach.call(document.querySelectorAll('.chip[data-v]'), function (b) {
         b.setAttribute('aria-pressed', String(b.dataset.v === view));
         if (b.dataset.v === 'mine') b.hidden = !W.names().length;
@@ -300,7 +304,7 @@
     Array.prototype.forEach.call(document.querySelectorAll('.chip[data-v]'), function (b) {
       b.addEventListener('click', function () { view = b.dataset.v; try { localStorage.setItem('tonightView', view); } catch (e) {} chips(); render(); });
     });
-    document.addEventListener('watchchange', function () { chips(); if (view === 'mine') render(); });
+    document.addEventListener('watchchange', function () { var was = view; chips(); if (view === 'mine' || was !== view) render(); });
     chips();
 
     function load() {
@@ -324,5 +328,6 @@
   })();
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/nav.js"></script>
 </body>
 </html>

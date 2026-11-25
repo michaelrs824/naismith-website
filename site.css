@@ -74,7 +74,7 @@ section { border-top: 0; }
   text-transform: uppercase; letter-spacing: 0.03em; }
 
 /* Homepage: 5 alerts on a phone, 6 on wider screens so the grid fills evenly */
-@media (max-width: 599px) { #feed > .tweet:nth-child(6) { display: none; } }
+@media (max-width: 599px) { #feed > .tweet:nth-child(6), #feed > .acard:nth-child(6) { display: none; } }  /* live cards too (website QA DP-10) */
 
 /* ── Wider screens ─────────────────────────────────────────────
    Phones keep the single column. From tablet width the container
@@ -373,3 +373,10 @@ section { border-top: 0; }
 .losing .minus { margin-left: auto; font-family: var(--display); font-weight: 800; font-size: 1.15rem; color: #FF7B72; }
 .tiles { grid-template-columns: repeat(2, 1fr); }
 .tiles .tile { min-height: 96px; }
+
+/* Skip link (website QA SA-14) */
+.skip-link { position: absolute; left: -9999px; top: 8px; z-index: 1000; background: #6C3CE1; color: #fff; padding: 10px 14px; border-radius: 8px; font-weight: 600; text-decoration: none; }
+.skip-link:focus { left: 8px; }
+
+/* Long addresses wrap on narrow phones instead of running off-screen (website QA SA-08) */
+code { overflow-wrap: anywhere; word-break: break-word; }

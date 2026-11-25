@@ -162,8 +162,9 @@
 </head>
 <body>
   <div class="wrap">
+    <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header">
-      <a class="brand" href="/" aria-label="Naismith AI home"><div class="logo">N</div><div class="brand-name">Naismith AI</div></a>
+      <a class="brand" href="/"><div class="logo" aria-hidden="true">N</div><div class="brand-name">Naismith AI</div></a>
       <nav class="topnav" aria-label="Main">
         <a href="/tonight.html">Tonight</a>
         <a href="/alerts.html" aria-current="page">Alerts</a>
@@ -184,7 +185,7 @@
       <a class="nav-follow" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
     </header>
 
-    <main>
+    <main id="main">
       <div class="hero" style="padding-bottom:8px">
         <h1>Latest alerts</h1>
         <p class="lede">Everything we posted on X in the last week. Filter by status, search a player or team, or sort by impact.</p>
@@ -285,7 +286,14 @@
         else if (state.k !== 'all' && c.kind !== state.k) return false;
         return !q || c.hay.indexOf(q) >= 0;
       });
-      if (state.sort === 'impact') view = view.slice().sort(function (a, b) { return b.fpts - a.fpts || (a.ts < b.ts ? 1 : -1); });
+      if (state.sort === 'impact') {
+        // fantasy impact = the biggest pickup gain the alert names, one card per player (his latest)
+        // (website QA DP-05: it ranked by the injured player's own FPTS, Wembanyama x3 with no pickups)
+        var latest = {};
+        view.forEach(function (c) { if (!latest[c.who] || c.ts > latest[c.who].ts) latest[c.who] = c; });
+        view = Object.keys(latest).map(function (k) { return latest[k]; })
+          .sort(function (a, b) { return b.gain - a.gain || b.fpts - a.fpts || (a.ts < b.ts ? 1 : -1); });
+      }
       shown = 0;
       render();
       try { localStorage.setItem('alertsView', JSON.stringify({k: state.k, sort: state.sort})); } catch (e) {}
@@ -345,7 +353,8 @@
           var kind = p.kind || (ev.event_type === 'INJURY_RETURN' ? 'back' : ev.event_type === 'INJURY_OUT' ? 'out' : 'gtd');
           var picks = (p.picks || []).map(function (x) { return x.name; }).join(' ');
           var people = [ev.player_name].concat((p.picks || []).map(function (x) { return x.name; }));
-          all.push({ts: a.timestamp, html: h, kind: kind, fpts: +(p.fpts || a.avg_fpts || 0),
+          var gain = Math.max.apply(null, [0].concat((a.recommendations || []).map(function (r) { return +r.fpts_delta || 0; })));
+          all.push({ts: a.timestamp, html: h, kind: kind, fpts: +(p.fpts || a.avg_fpts || 0), gain: gain, who: F.esc(ev.player_name || ''),
                     mine: function () { return people.some(function (x) { return window.NaismithWatch.has(x); }); },
                     hay: norm([ev.player_name, ev.player_team, picks].join(' '))});
         });
@@ -364,5 +373,6 @@
   })();
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/nav.js"></script>
 </body>
 </html>
