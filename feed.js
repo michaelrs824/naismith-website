@@ -1,4 +1,16 @@
 /* Shared by the homepage and /alerts.html: posted alerts as site cards (read back from the tweet text). */
+// Calls to the Naismith API give up after 15 s, so a hung request ends in each page's existing
+// "Couldn't load…" message instead of "Loading…" forever (website QA DP-08, L-07).
+(function () {
+  var f = window.fetch;
+  if (!f || !window.AbortController) return;
+  window.fetch = function (url, opts) {
+    var u = String((url && url.url) || url);
+    if ((opts && opts.signal) || u.indexOf('naismith-api-production') < 0) return f.apply(this, arguments);
+    var c = new AbortController(), t = setTimeout(function () { c.abort(); }, 15000);
+    return f.call(this, url, Object.assign({}, opts || {}, {signal: c.signal})).finally(function () { clearTimeout(t); });
+  };
+})();
 (function () {
   var X = 'https://x.com/NaismithAIApp/status/';
   function esc(s) {

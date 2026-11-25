@@ -413,6 +413,7 @@
         })
         .catch(function () {
           document.getElementById('picks').innerHTML = '<li class="empty">Couldn\'t load pickups. Try again in a minute.</li>';
+          document.getElementById('injuries').innerHTML = '<p class="empty">Couldn\'t load pickups. Try again in a minute.</p>';  // DP-07
         });
     }
     load();
