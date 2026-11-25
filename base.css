@@ -155,4 +155,3 @@
     th { color: var(--text-2); font-weight: 600; font-size: 0.8rem; }
     td.num, th.num { text-align: right; white-space: nowrap; }
     .pos { color: var(--green); } .neg { color: #F85149; }
-    .back { color: var(--text-2); text-decoration: none; font-size: 0.9rem; margin-left: auto; }

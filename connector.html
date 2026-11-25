@@ -154,7 +154,6 @@
     footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 10px; }
     footer a { color: var(--text-2); text-decoration: none; }
     footer a:hover { color: var(--text); }
-    .back { color: var(--text-2); text-decoration: none; font-size: 0.9rem; margin-left: auto; }
     .empty { color: var(--text-2); margin-top: 16px; }
     .how h2 + p { margin-top: 8px; }
     .legal h1 { margin-bottom: 4px; }
@@ -171,13 +170,25 @@
 <body>
   <div class="wrap">
     <header class="site-header">
-      <a class="brand" href="/" aria-label="Naismith AI home">
-        <div class="logo">N</div>
-        <div class="brand-name">Naismith AI</div>
-      </a>
-      <nav class="topnav" aria-label="Main"><a href="/tonight.html">Tonight</a><a href="/alerts.html">Alerts</a><a href="/pickups.html">Pickups</a><a href="/recap.html">Recap</a><a href="/app.html#lookup">Lookup</a></nav>
+      <a class="brand" href="/" aria-label="Naismith AI home"><div class="logo">N</div><div class="brand-name">Naismith AI</div></a>
+      <nav class="topnav" aria-label="Main">
+        <a href="/tonight.html">Tonight</a>
+        <a href="/alerts.html">Alerts</a>
+        <a href="/pickups.html">Pickups</a>
+        <a href="/app.html#lookup">Lookup</a>
+        <a class="nav-ai" href="/connector.html" aria-current="page">Use with AI</a>
+        <details class="nav-more">
+          <summary>More</summary>
+          <div class="nav-more-menu">
+            <a href="/recap.html">Recap</a>
+            <a href="/injuries">Injury report</a>
+            <a href="/players">Injuries by player</a>
+            <a href="/help.html">Help</a>
+            <a class="nav-more-x" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
+          </div>
+        </details>
+      </nav>
       <a class="nav-follow" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
-      <a class="back" href="/">Home</a>
     </header>
 
     <main>
@@ -210,6 +221,7 @@
         <li>"Who's out tonight for the Lakers and Celtics?"</li>
         <li>"Is Jalen Brunson playing tonight?"</li>
       </ul>
+      <p><a href="/ai-fantasy-nba.html">AI for fantasy NBA</a></p>
 
       <h2>What it can look up</h2>
       <ul>
@@ -228,21 +240,43 @@
       <p>Questions or problems: <a href="mailto:naismithai@gmail.com?subject=Naismith%20AI%20connector">naismithai@gmail.com</a> or <a href="https://x.com/NaismithAIApp">@NaismithAIApp</a> on X. Not affiliated with the NBA.</p>
     </main>
 
-    <footer>
-      <nav>
-        <a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a>
-        <a href="/tonight.html">Tonight</a>
-        <a href="/alerts.html">Latest alerts</a>
-        <a href="/pickups.html">Best pickups</a>
-        <a href="/app.html#lookup">Player lookup</a>
-        <a href="/injuries">Injury report</a>
-        <a href="/players">Injured players</a>
-        <a href="/connector.html">Use with your AI</a>
-        <a href="mailto:naismithai@gmail.com?subject=Naismith%20AI%20feedback">Feedback</a>
-        <a href="/privacy.html">Privacy</a>
-        <a href="/terms.html">Terms</a>
+    <footer class="site-footer">
+      <nav class="foot-nav" aria-label="Site">
+        <div class="foot-group">
+          <h2 class="foot-h">Today</h2>
+          <ul>
+            <li><a href="/tonight.html">Tonight</a></li>
+            <li><a href="/alerts.html">Latest alerts</a></li>
+            <li><a href="/pickups.html">Best pickups</a></li>
+            <li><a href="/recap.html">Recap</a></li>
+          </ul>
+        </div>
+        <div class="foot-group">
+          <h2 class="foot-h">Players</h2>
+          <ul>
+            <li><a href="/app.html#lookup">Player lookup</a></li>
+            <li><a href="/injuries">Injury report</a></li>
+            <li><a href="/players">Injuries by player</a></li>
+          </ul>
+        </div>
+        <div class="foot-group">
+          <h2 class="foot-h">Help &amp; more</h2>
+          <ul>
+            <li><a href="/connector.html" aria-current="page">Use with AI</a></li>
+            <li><a href="/help.html">Help</a></li>
+            <li><a href="mailto:naismithai@gmail.com?subject=Naismith%20AI%20feedback">Feedback</a></li>
+            <li><a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a></li>
+          </ul>
+        </div>
+        <div class="foot-group">
+          <h2 class="foot-h">Legal</h2>
+          <ul>
+            <li><a href="/privacy.html">Privacy</a></li>
+            <li><a href="/terms.html">Terms</a></li>
+          </ul>
+        </div>
       </nav>
-      <p>Not affiliated with the NBA.</p>
+      <p class="foot-note">Not affiliated with the NBA.</p>
     </footer>
   </div>
   <script defer src="/_vercel/insights/script.js"></script>

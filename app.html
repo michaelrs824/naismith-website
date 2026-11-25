@@ -1265,38 +1265,115 @@
       font-family: var(--display); font-weight: 800; text-transform: uppercase; letter-spacing: 0.005em;
       font-size: clamp(2.3rem, 10vw, 3.2rem) !important; line-height: 0.95;
     }
-    .site-footer { max-width: 640px; margin: 0 auto; padding: 24px 16px 96px; color: #6E7681; font-size: 0.85rem; border-top: 1px solid rgba(139,148,158,.16); }
-    .site-footer nav { position: static !important; width: auto !important; padding: 0 !important; background: none !important; border: 0 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; z-index: auto !important; display: flex; justify-content: flex-start !important; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 10px; }
-    .site-footer a { color: #8B949E; text-decoration: none; }
-    .site-footer a:hover { color: #E6EDF3; }
 
     /* Shared site header (same as the other pages) */
     .wrap { max-width: 640px; margin: 0 auto; padding: 0 16px; }
-    .site-header { display: flex; align-items: center; gap: 28px; padding: 20px 0 8px; }
     .site-header .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
     .site-header .logo { width: 34px; height: 34px; border-radius: 9px; background: #6C3CE1; display: grid; place-items: center; font-weight: 800; color: #fff; font-size: 1.1rem; }
     .site-header .brand-name { font-family: var(--display); font-weight: 700; font-size: 1.5rem; letter-spacing: 0.01em; }
-    .site-header .back { margin-left: auto; color: #8B949E; text-decoration: none; font-size: 0.9rem; }
-    .site-header .topnav, .site-header .nav-follow { display: none; }
     @media (min-width: 600px) { .wrap { max-width: 920px; padding: 0 24px; } }
+    /* Shared header + footer (Nov 2026). Copied from site.css (this page does not load it);
+       the var() fallbacks cover the variables this page lacks. Selectors are
+       .site-header / .site-footer scoped so they beat the per-page inline
+       header/details/summary/footer rules. */
+
+    /* Header: brand + Follow on X on one row; nav row under it on phones */
+    .site-header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 28px; padding: 20px 0 8px; }
+    .site-header .topnav {
+      order: 3; display: flex; align-items: stretch; justify-content: space-between;
+      width: 100%; gap: 0; margin: 0; padding: 0; position: static;
+      background: none; border: 0; overflow: visible;
+      /* Phone type size scales with the screen so the 6 items always fit on one row
+         (sized for the "Use with AI" label: 13.1px at 375px, capped at 0.92rem). */
+      --nav-fs: 3.5vw;
+    }
+    .site-header .topnav > a,
+    .site-header .nav-more > summary {
+      display: flex; align-items: center; min-height: 44px; padding: 0 4px;
+      color: var(--text-2, #8B949E); text-decoration: none; font-size: clamp(11px, var(--nav-fs), 0.92rem); font-weight: 500;
+      line-height: 1.2; white-space: nowrap; border-radius: 8px;
+    }
+    .site-header .topnav > a:first-child { margin-left: -4px; }   /* line the first label up with the logo */
+    .site-header .topnav > a:hover,
+    .site-header .nav-more > summary:hover { color: var(--text, #E6EDF3); background: var(--surface, #161B22); }
+    .site-header .topnav a[aria-current="page"] { color: var(--text, #E6EDF3); background: var(--accent-bg, rgba(108,60,225,0.14)); }
+    /* Own rule: a browser without :has() drops only this one (More just isn't highlighted) */
+    .site-header .nav-more:has(a[aria-current="page"]) > summary { color: var(--text, #E6EDF3); background: var(--accent-bg, rgba(108,60,225,0.14)); }
+    .site-header .topnav a:focus-visible,
+    .site-header .nav-more > summary:focus-visible { outline: 2px solid var(--accent-2, #A487F7); outline-offset: -2px; }
+
+    /* "More": native <details>, no script */
+    .site-header .nav-more { position: relative; border: 0; padding: 0; margin: 0; }
+    .site-header .nav-more > summary { cursor: pointer; list-style: none; gap: 4px; justify-content: flex-start; font-weight: 500; margin-right: -4px; }
+    .site-header .nav-more > summary::-webkit-details-marker { display: none; }
+    .site-header .nav-more > summary::after {
+      content: ""; width: 5px; height: 5px; margin-top: -3px;
+      border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg);
+      font-size: 0; line-height: 0; color: inherit;
+    }
+    .site-header .nav-more[open] > summary { color: var(--text, #E6EDF3); }
+    .site-header .nav-more[open] > summary::after { content: ""; transform: rotate(-135deg); margin-top: 3px; }
+    .site-header .nav-more-menu {
+      position: absolute; right: 0; top: calc(100% + 6px); z-index: 50;
+      min-width: 200px; padding: 6px; border-radius: 12px;
+      background: var(--surface, #161B22); border: 1px solid var(--border, rgba(139,148,158,0.16));
+      box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+    }
+    .site-header .nav-more-menu a {
+      display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px;
+      color: var(--text, #E6EDF3); text-decoration: none; font-size: 0.95rem; font-weight: 500; white-space: nowrap;
+    }
+    .site-header .nav-more-menu a:hover { background: var(--accent-bg, rgba(108,60,225,0.14)); }
+    .site-header .nav-more-menu a[aria-current="page"] { color: var(--text, #E6EDF3); background: var(--accent-bg, rgba(108,60,225,0.14)); }
+
+    .site-header .nav-follow { display: none; }
+
+    /* Small tablets: nav row stays under the logo but packs left instead of spreading out */
+    @media (min-width: 600px) and (max-width: 759px) {
+      .site-header .topnav { justify-content: flex-start; gap: 4px; }
+      .site-header .topnav > a, .site-header .nav-more > summary { padding: 0 10px; }
+      .site-header .topnav > a:first-child { margin-left: -10px; }
+      .site-header .nav-more-menu { right: auto; left: 0; }
+    }
+
+    /* Tablet and up: a normal horizontal nav next to the logo, Follow on X on the right */
     @media (min-width: 760px) {
-      .site-header { padding: 22px 0 10px; border-bottom: 1px solid rgba(139,148,158,.16); }
-      .site-header .topnav { display: flex; gap: 4px; margin-left: 8px; position: static; width: auto; padding: 0; background: none; border: 0; backdrop-filter: none; }
-      .site-header .topnav a { color: #8B949E; text-decoration: none; font-size: 0.92rem; font-weight: 500; padding: 8px 12px; border-radius: 8px; }
-      .site-header .topnav a:hover { color: #E6EDF3; background: #161B22; }
-      .site-header .topnav a[aria-current="page"] { color: #E6EDF3; background: rgba(108,60,225,0.14); }
-      .site-header .nav-follow { display: inline-flex; margin-left: auto; align-items: center; padding: 9px 16px; border-radius: 10px; background: #6C3CE1; color: #fff; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
-      .site-header .back { display: none; }
+      .site-header { flex-wrap: nowrap; padding: 22px 0 10px; border-bottom: 1px solid var(--border, rgba(139,148,158,0.16)); }
+      .site-header .topnav { order: 0; width: auto; justify-content: flex-start; gap: 4px; margin-left: 8px; }
+      .site-header .topnav > a, .site-header .nav-more > summary { padding: 0 12px; font-size: 0.92rem; }
+      .site-header .topnav > a:first-child { margin-left: 0; }
+      .site-header .nav-more > summary { margin-right: 0; }
+      .site-header .nav-more-menu { right: auto; left: 0; }
+      .site-header .nav-more-menu .nav-more-x { display: none; }   /* the visible button covers it */
+      .site-header .nav-follow {
+        display: inline-flex; margin-left: auto; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 10px;
+        background: var(--accent, #6C3CE1); color: #fff; text-decoration: none; font-weight: 600; font-size: 0.9rem; white-space: nowrap;
+      }
+      .site-header .nav-follow:hover { filter: brightness(1.08); }
     }
-    @media (min-width: 1000px) { .wrap { max-width: 1180px; padding: 0 40px; } .site-header { padding-top: 28px; } }
-    @media (max-width: 759px) {
-      .site-header { flex-wrap: wrap; row-gap: 10px; }
-      .site-header .back { display: none; }
-      .site-header .topnav { display: flex; order: 3; width: 100%; gap: 4px; overflow-x: auto; position: static; padding: 0; background: none; border: 0; backdrop-filter: none; margin: 0 -8px; }
-      .site-header .topnav a { color: #8B949E; text-decoration: none; font-size: 0.92rem; font-weight: 500; padding: 8px 10px; border-radius: 8px; white-space: nowrap; }
-      .site-header .topnav a[aria-current="page"] { color: #E6EDF3; background: rgba(108,60,225,0.14); }
+    @media (min-width: 1000px) { .site-header { padding-top: 28px; } }
+
+    /* Footer: 4 short groups, 2 columns on phones, 4 from 760px */
+    .site-footer { border-top: 1px solid var(--border, rgba(139,148,158,0.16)); padding: 24px 0 40px; margin-top: 8px; color: var(--text-3, #848D97); font-size: 0.9rem; }
+    .site-footer .foot-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 16px; margin: 0 0 16px; padding: 0; position: static; background: none; border: 0; }
+    .site-footer .foot-h {
+      font-family: var(--display, 'Barlow Condensed', 'Inter', system-ui, sans-serif); font-size: 0.8rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.12em; line-height: 1.2; color: var(--text-3, #848D97); margin: 0 0 2px;
     }
-    .site-footer nav a { display: inline-block; padding: 6px 0; }
+    .site-footer ul { list-style: none; margin: 0; padding: 0; }
+    .site-footer li a {
+      display: flex; align-items: center; min-height: 44px; padding: 0;
+      color: var(--text-2, #8B949E); text-decoration: none; overflow-wrap: anywhere; line-height: 1.25;
+    }
+    .site-footer li a:hover { color: var(--text, #E6EDF3); }
+    .site-footer li a[aria-current="page"] { color: var(--text, #E6EDF3); }
+    .site-footer .foot-note { color: var(--text-3, #848D97); font-size: 0.85rem; margin: 0; }
+    @media (min-width: 760px) {
+      .site-footer .foot-nav { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px 28px; }
+      .site-footer li a { min-height: 36px; }   /* pointer screens; phones keep 44px */
+    }
+    @media (min-width: 760px) and (pointer: coarse) { .site-footer li a { min-height: 44px; } }
+    @media (min-width: 1000px) { .wrap { max-width: 1180px; padding: 0 40px; } }
     .star { background: none; border: 0; cursor: pointer; font-size: 1.3rem; color: #848D97; padding: 2px 6px 2px 0; vertical-align: 2px; }
     .star[aria-pressed="true"] { color: #F2C14E; }
     .lookup-share { margin-top: 14px; }
@@ -1331,13 +1408,25 @@
   <!-- Nav -->
   <div class="wrap">
     <header class="site-header">
-      <a class="brand" href="/" aria-label="Naismith AI home">
-        <div class="logo">N</div>
-        <div class="brand-name">Naismith AI</div>
-      </a>
-      <nav class="topnav" aria-label="Main"><a href="/tonight.html">Tonight</a><a href="/alerts.html">Alerts</a><a href="/pickups.html">Pickups</a><a href="/recap.html">Recap</a><a href="/app.html#lookup" aria-current="page">Lookup</a></nav>
+      <a class="brand" href="/" aria-label="Naismith AI home"><div class="logo">N</div><div class="brand-name">Naismith AI</div></a>
+      <nav class="topnav" aria-label="Main">
+        <a href="/tonight.html">Tonight</a>
+        <a href="/alerts.html">Alerts</a>
+        <a href="/pickups.html">Pickups</a>
+        <a href="/app.html#lookup" aria-current="page">Lookup</a>
+        <a class="nav-ai" href="/connector.html">Use with AI</a>
+        <details class="nav-more">
+          <summary>More</summary>
+          <div class="nav-more-menu">
+            <a href="/recap.html">Recap</a>
+            <a href="/injuries">Injury report</a>
+            <a href="/players">Injuries by player</a>
+            <a href="/help.html">Help</a>
+            <a class="nav-more-x" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
+          </div>
+        </details>
+      </nav>
       <a class="nav-follow" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
-      <a class="back" href="/">Home</a>
     </header>
   </div>
   <div class="app-tabs-bar" role="navigation" aria-label="Dashboard sections">
@@ -1481,22 +1570,46 @@
     </div>
   </main>
 
+  <div class="wrap">
     <footer class="site-footer">
-      <nav>
-        <a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a>
-        <a href="/tonight.html">Tonight</a>
-        <a href="/alerts.html">Latest alerts</a>
-        <a href="/pickups.html">Best pickups</a>
-        <a href="/app.html#lookup">Player lookup</a>
-        <a href="/injuries">Injury report</a>
-        <a href="/players">Injured players</a>
-        <a href="/connector.html">Use with your AI</a>
-        <a href="mailto:naismithai@gmail.com?subject=Naismith%20AI%20feedback">Feedback</a>
-        <a href="/privacy.html">Privacy</a>
-        <a href="/terms.html">Terms</a>
+      <nav class="foot-nav" aria-label="Site">
+        <div class="foot-group">
+          <h2 class="foot-h">Today</h2>
+          <ul>
+            <li><a href="/tonight.html">Tonight</a></li>
+            <li><a href="/alerts.html">Latest alerts</a></li>
+            <li><a href="/pickups.html">Best pickups</a></li>
+            <li><a href="/recap.html">Recap</a></li>
+          </ul>
+        </div>
+        <div class="foot-group">
+          <h2 class="foot-h">Players</h2>
+          <ul>
+            <li><a href="/app.html#lookup" aria-current="page">Player lookup</a></li>
+            <li><a href="/injuries">Injury report</a></li>
+            <li><a href="/players">Injuries by player</a></li>
+          </ul>
+        </div>
+        <div class="foot-group">
+          <h2 class="foot-h">Help &amp; more</h2>
+          <ul>
+            <li><a href="/connector.html">Use with AI</a></li>
+            <li><a href="/help.html">Help</a></li>
+            <li><a href="mailto:naismithai@gmail.com?subject=Naismith%20AI%20feedback">Feedback</a></li>
+            <li><a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a></li>
+          </ul>
+        </div>
+        <div class="foot-group">
+          <h2 class="foot-h">Legal</h2>
+          <ul>
+            <li><a href="/privacy.html">Privacy</a></li>
+            <li><a href="/terms.html">Terms</a></li>
+          </ul>
+        </div>
       </nav>
-      <p>Not affiliated with the NBA.</p>
+      <p class="foot-note">Not affiliated with the NBA.</p>
     </footer>
+  </div>
 
   <script src="/feed.js"></script>
   <script>

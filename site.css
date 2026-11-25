@@ -90,7 +90,6 @@ section { border-top: 0; }
   #thread { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 0 28px; align-items: start; }
   #injuries { columns: 2; column-gap: 28px; }
   #injuries details { break-inside: avoid; }
-  footer nav { gap: 8px 28px; }
 }
 
 @media (min-width: 1000px) {
@@ -111,21 +110,107 @@ section { border-top: 0; }
 
 /* ── Professional pass (layout + components) ───────────────── */
 
-/* Header: brand, main nav and Follow on wider screens; brand + Home on phones */
-.site-header { display: flex; align-items: center; gap: 28px; padding: 20px 0 8px; }
-.site-header .back { margin-left: auto; }
-.topnav, .nav-follow { display: none; }
-@media (min-width: 760px) {
-  .site-header { padding: 22px 0 10px; border-bottom: 1px solid var(--border); }
-  .topnav { display: flex; gap: 4px; margin-left: 8px; }
-  .topnav a { color: var(--text-2); text-decoration: none; font-size: 0.92rem; font-weight: 500; padding: 8px 12px; border-radius: 8px; }
-  .topnav a:hover { color: var(--text); background: var(--surface); }
-  .topnav a[aria-current="page"] { color: var(--text); background: var(--accent-bg); }
-  .nav-follow { display: inline-flex; margin-left: auto; align-items: center; padding: 9px 16px; border-radius: 10px;
-    background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
-  .nav-follow:hover { filter: brightness(1.08); }
-  .site-header .back { display: none; }
+/* Shared header + footer (Nov 2026). Same rules are pasted into app.html, which
+   does not load site.css; the var() fallbacks are for that page. Selectors are
+   .site-header / .site-footer scoped so they beat the per-page inline
+   header/details/summary/footer rules. */
+
+/* Header: brand + Follow on X on one row; nav row under it on phones */
+.site-header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 28px; padding: 20px 0 8px; }
+.site-header .topnav {
+  order: 3; display: flex; align-items: stretch; justify-content: space-between;
+  width: 100%; gap: 0; margin: 0; padding: 0; position: static;
+  background: none; border: 0; overflow: visible;
+  /* Phone type size scales with the screen so the 6 items always fit on one row
+     (sized for the "Use with AI" label: 13.1px at 375px, capped at 0.92rem). */
+  --nav-fs: 3.5vw;
 }
+.site-header .topnav > a,
+.site-header .nav-more > summary {
+  display: flex; align-items: center; min-height: 44px; padding: 0 4px;
+  color: var(--text-2, #8B949E); text-decoration: none; font-size: clamp(11px, var(--nav-fs), 0.92rem); font-weight: 500;
+  line-height: 1.2; white-space: nowrap; border-radius: 8px;
+}
+.site-header .topnav > a:first-child { margin-left: -4px; }   /* line the first label up with the logo */
+.site-header .topnav > a:hover,
+.site-header .nav-more > summary:hover { color: var(--text, #E6EDF3); background: var(--surface, #161B22); }
+.site-header .topnav a[aria-current="page"] { color: var(--text, #E6EDF3); background: var(--accent-bg, rgba(108,60,225,0.14)); }
+/* Own rule: a browser without :has() drops only this one (More just isn't highlighted) */
+.site-header .nav-more:has(a[aria-current="page"]) > summary { color: var(--text, #E6EDF3); background: var(--accent-bg, rgba(108,60,225,0.14)); }
+.site-header .topnav a:focus-visible,
+.site-header .nav-more > summary:focus-visible { outline: 2px solid var(--accent-2, #A487F7); outline-offset: -2px; }
+
+/* "More": native <details>, no script */
+.site-header .nav-more { position: relative; border: 0; padding: 0; margin: 0; }
+.site-header .nav-more > summary { cursor: pointer; list-style: none; gap: 4px; justify-content: flex-start; font-weight: 500; margin-right: -4px; }
+.site-header .nav-more > summary::-webkit-details-marker { display: none; }
+.site-header .nav-more > summary::after {
+  content: ""; width: 5px; height: 5px; margin-top: -3px;
+  border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg);
+  font-size: 0; line-height: 0; color: inherit;
+}
+.site-header .nav-more[open] > summary { color: var(--text, #E6EDF3); }
+.site-header .nav-more[open] > summary::after { content: ""; transform: rotate(-135deg); margin-top: 3px; }
+.site-header .nav-more-menu {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 50;
+  min-width: 200px; padding: 6px; border-radius: 12px;
+  background: var(--surface, #161B22); border: 1px solid var(--border, rgba(139,148,158,0.16));
+  box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+}
+.site-header .nav-more-menu a {
+  display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px;
+  color: var(--text, #E6EDF3); text-decoration: none; font-size: 0.95rem; font-weight: 500; white-space: nowrap;
+}
+.site-header .nav-more-menu a:hover { background: var(--accent-bg, rgba(108,60,225,0.14)); }
+.site-header .nav-more-menu a[aria-current="page"] { color: var(--text, #E6EDF3); background: var(--accent-bg, rgba(108,60,225,0.14)); }
+
+.site-header .nav-follow { display: none; }
+
+/* Small tablets: nav row stays under the logo but packs left instead of spreading out */
+@media (min-width: 600px) and (max-width: 759px) {
+  .site-header .topnav { justify-content: flex-start; gap: 4px; }
+  .site-header .topnav > a, .site-header .nav-more > summary { padding: 0 10px; }
+  .site-header .topnav > a:first-child { margin-left: -10px; }
+  .site-header .nav-more-menu { right: auto; left: 0; }
+}
+
+/* Tablet and up: a normal horizontal nav next to the logo, Follow on X on the right */
+@media (min-width: 760px) {
+  .site-header { flex-wrap: nowrap; padding: 22px 0 10px; border-bottom: 1px solid var(--border, rgba(139,148,158,0.16)); }
+  .site-header .topnav { order: 0; width: auto; justify-content: flex-start; gap: 4px; margin-left: 8px; }
+  .site-header .topnav > a, .site-header .nav-more > summary { padding: 0 12px; font-size: 0.92rem; }
+  .site-header .topnav > a:first-child { margin-left: 0; }
+  .site-header .nav-more > summary { margin-right: 0; }
+  .site-header .nav-more-menu { right: auto; left: 0; }
+  .site-header .nav-more-menu .nav-more-x { display: none; }   /* the visible button covers it */
+  .site-header .nav-follow {
+    display: inline-flex; margin-left: auto; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 10px;
+    background: var(--accent, #6C3CE1); color: #fff; text-decoration: none; font-weight: 600; font-size: 0.9rem; white-space: nowrap;
+  }
+  .site-header .nav-follow:hover { filter: brightness(1.08); }
+}
+@media (min-width: 1000px) { .site-header { padding-top: 28px; } }
+
+/* Footer: 4 short groups, 2 columns on phones, 4 from 760px */
+.site-footer { border-top: 1px solid var(--border, rgba(139,148,158,0.16)); padding: 24px 0 40px; margin-top: 8px; color: var(--text-3, #848D97); font-size: 0.9rem; }
+.site-footer .foot-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 16px; margin: 0 0 16px; padding: 0; position: static; background: none; border: 0; }
+.site-footer .foot-h {
+  font-family: var(--display, 'Barlow Condensed', 'Inter', system-ui, sans-serif); font-size: 0.8rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.12em; line-height: 1.2; color: var(--text-3, #848D97); margin: 0 0 2px;
+}
+.site-footer ul { list-style: none; margin: 0; padding: 0; }
+.site-footer li a {
+  display: flex; align-items: center; min-height: 44px; padding: 0;
+  color: var(--text-2, #8B949E); text-decoration: none; overflow-wrap: anywhere; line-height: 1.25;
+}
+.site-footer li a:hover { color: var(--text, #E6EDF3); }
+.site-footer li a[aria-current="page"] { color: var(--text, #E6EDF3); }
+.site-footer .foot-note { color: var(--text-3, #848D97); font-size: 0.85rem; margin: 0; }
+@media (min-width: 760px) {
+  .site-footer .foot-nav { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px 28px; }
+  .site-footer li a { min-height: 36px; }   /* pointer screens; phones keep 44px */
+}
+@media (min-width: 760px) and (pointer: coarse) { .site-footer li a { min-height: 44px; } }
 
 /* Section header with a "See all" link on the right */
 .sec-head { display: flex; align-items: center; gap: 16px; }
@@ -201,18 +286,9 @@ section { border-top: 0; }
 .tagkey b { color: var(--text); font-weight: 600; }
 
 /* ── QA fixes (Nov 2026) ── */
-/* Phones: the main menu as a scrollable row under the logo (it was hidden, leaving only "Home") */
-@media (max-width: 759px) {
-  .site-header { flex-wrap: wrap; row-gap: 10px; }
-  .site-header .back { display: none; }
-  .topnav { display: flex; order: 3; width: 100%; gap: 4px; overflow-x: auto; margin: 0 -8px; scrollbar-width: none; }
-  .topnav::-webkit-scrollbar { display: none; }
-  .topnav a { color: var(--text-2); text-decoration: none; font-size: 0.92rem; font-weight: 500; padding: 8px 10px; border-radius: 8px; white-space: nowrap; }
-  .topnav a[aria-current="page"] { color: var(--text); background: var(--accent-bg); }
-}
 /* Bigger tap targets */
 .ac-foot a, .sec-link { display: inline-block; padding: 6px 0; margin: -6px 0; }
-footer nav a { display: inline-block; padding: 6px 0; }
+.cta-end .note a { display: inline-block; padding: 12px 0; }
 /* Links inside running text are underlined */
 .legal p a, .legal li a { text-decoration: underline; text-underline-offset: 2px; }
 .legal .updated { color: var(--text-2); }
@@ -265,7 +341,7 @@ footer nav a { display: inline-block; padding: 6px 0; }
 .hero-search button { font: inherit; font-weight: 600; color: #fff; background: var(--accent); border: 0; border-radius: 10px; padding: 0 16px; min-height: 44px; cursor: pointer; }
 
 /* Tonight */
-.games { display: grid; gap: 14px; margin-top: 8px; }
+.games { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 8px; }
 @media (min-width: 760px) { .games { grid-template-columns: repeat(2, 1fr); align-items: start; } }
 .game { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
 .game-head { display: flex; align-items: center; gap: 10px; }
@@ -275,8 +351,8 @@ footer nav a { display: inline-block; padding: 6px 0; }
 .game-state.live { background: rgba(248,81,73,.15); color: #FF7B72; } .game-state.final { background: var(--surface); color: var(--text-2); }
 .game-players { list-style: none; margin-top: 10px; }
 .game-players > li { border-top: 1px solid var(--border); padding: 10px 0; }
-.gp-top { display: flex; align-items: center; gap: 8px; }
-.gp-name { font-weight: 700; }
+.gp-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.gp-name { font-weight: 700; min-width: 0; }
 .gp-team { color: var(--text-2); font-size: 0.8rem; }
 .gp-status { font-size: 0.72rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
 .gp-status.OUT { color: #FF7B72; } .gp-status.DOUBTFUL { color: #FFA657; } .gp-status.QUESTIONABLE { color: #E3B341; }
