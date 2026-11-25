@@ -380,3 +380,6 @@ section { border-top: 0; }
 
 /* Long addresses wrap on narrow phones instead of running off-screen (website QA SA-08) */
 code { overflow-wrap: anywhere; word-break: break-word; }
+
+/* A pickup and its gain stay on one line (website QA DP-11) */
+.gp-picks .pk { white-space: nowrap; }

@@ -258,7 +258,8 @@
     try { view = localStorage.getItem('tonightView') || 'all'; } catch (e) {}
     if (view === 'mine' && !W.names().length) view = 'all';
 
-    function time(iso) { return iso ? new Date(iso).toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'}) : ''; }
+    // "2:00 PM" never splits across lines (website QA DP-11)
+    function time(iso) { return iso ? new Date(iso).toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'}).replace(/ /g, '\u00a0') : ''; }
     function owned(x) { return x == null ? '' : ' · ' + (x < 1 ? 'under 1%' : Math.round(x) + '%') + ' owned'; }
     function label(s) { return s === 'OUT' ? 'Out' : s === 'DOUBTFUL' ? 'Doubtful' : 'Questionable'; }
 
@@ -287,7 +288,7 @@
               '<span class="gp-name">' + esc(p.player) + '</span><span class="gp-team">' + esc(p.team) + (p.duration ? ' · ' + esc(p.duration) : '') + '</span>' +
               '<span class="gp-fp">' + p.avg_fpts.toFixed(0) + '<small> FPTS/g</small></span></div>' +
               (p.pickups.length ? '<div class="gp-picks">If he sits: ' + p.pickups.map(function (k) {
-                return '<b>' + esc(k.player) + '</b> <span class="d">+' + k.fpts_delta.toFixed(1) + '</span><span class="owned">' + owned(k.owned) + '</span>';
+                return '<span class="pk"><b>' + esc(k.player) + '</b> <span class="d">+' + k.fpts_delta.toFixed(1) + '</span></span><span class="owned">' + owned(k.owned) + '</span>';
               }).join(', ') + '</div>' : '') + '</li>';
           }).join('') + '</ul>' : '<p class="game-quiet">No injury news for either team.</p>') + '</article>';
       }).join('');
