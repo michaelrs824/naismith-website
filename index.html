@@ -360,8 +360,8 @@ He went to the locker room with an ankle injury in the second quarter.
             if (LABEL[st.status]) {
               what = LABEL[st.status] + (st.status === 'out' || st.status === 'doubtful' ? tl : '');
               cls = st.status === 'out' || st.status === 'doubtful' ? 's-out' : st.status === 'probable' ? 's-ok' : 's-gtd';
+              if (latest) when = ago(latest.timestamp);
             } else what = st.status === 'available' ? 'Available' : (latest ? 'No current news' : 'No injury news this week');
-            if (latest) when = ago(latest.timestamp);
           } else if (inj) {
             what = (inj.status === 'DOUBTFUL' ? 'Doubtful' : 'Out') + (inj.duration ? ' (' + esc(inj.duration) + ')' : ''); cls = 's-out';
             if (latest) when = ago(latest.timestamp);
