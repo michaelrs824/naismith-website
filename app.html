@@ -1329,15 +1329,14 @@
     .site-header .nav-follow { display: none; }
 
     /* Small tablets: nav row stays under the logo but packs left instead of spreading out */
-    @media (min-width: 600px) and (max-width: 759px) {
+    @media (min-width: 600px) and (max-width: 879px) {
       .site-header .topnav { justify-content: flex-start; gap: 4px; }
       .site-header .topnav > a, .site-header .nav-more > summary { padding: 0 10px; }
       .site-header .topnav > a:first-child { margin-left: -10px; }
-      .site-header .nav-more-menu { right: auto; left: 0; }
     }
 
-    /* Tablet and up: a normal horizontal nav next to the logo, Follow on X on the right */
-    @media (min-width: 760px) {
+    /* 880px and up (logo, six items and Follow on X need about 820px): a normal horizontal nav next to the logo, Follow on X on the right */
+    @media (min-width: 880px) {
       .site-header { flex-wrap: nowrap; padding: 22px 0 10px; border-bottom: 1px solid var(--border, rgba(139,148,158,0.16)); }
       .site-header .topnav { order: 0; width: auto; justify-content: flex-start; gap: 4px; margin-left: 8px; }
       .site-header .topnav > a, .site-header .nav-more > summary { padding: 0 12px; font-size: 0.92rem; }
