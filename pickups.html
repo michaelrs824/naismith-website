@@ -179,6 +179,47 @@
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/site.css">
+  <style>
+    /* Pickups page layout (draft, Nov 2026). After site.css so it wins at equal specificity. */
+    @media (max-width: 599px) { .hero { padding-top: 24px; } .lede { margin-top: 10px; } }
+    .live-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px; margin-top: 16px; }
+    .live-row .live { margin-top: 0; }
+    .onpage { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; font-size: 0.9rem; color: var(--text-2); }
+    .onpage a { color: var(--accent-2); text-decoration: none; font-weight: 600; padding: 6px 0; }
+    .onpage a[hidden] { display: none; }
+    .hero .chips { margin-top: 8px; }
+    .chip-note { color: var(--text-2); font-size: 0.85rem; margin-top: 8px; }
+    ul.tagkey { list-style: none; display: grid; gap: 2px; margin-top: 12px; line-height: 1.45; }
+    .tagkey a { color: var(--accent-2); }
+    .key-cat { color: var(--text); }
+    .star-note { color: var(--text-2); font-size: 0.85rem; margin-top: 14px; }
+    .star-note b { color: var(--text); font-weight: 600; }
+    .star-note a { color: var(--accent-2); }
+    .how-rank { margin-top: 2px; padding: 6px 0 8px; }
+    .how-rank summary { font-size: 0.92rem; }
+    .how-rank ul { margin: 8px 0 0 1.1em; color: var(--text-2); font-size: 0.88rem; display: grid; gap: 4px; }
+    #by-injury, #losing-sec { scroll-margin-top: 12px; }
+    .how-rank { max-width: 44rem; }
+    @media (min-width: 760px) { ul.tagkey { grid-template-rows: repeat(3, auto); grid-auto-flow: column; grid-template-columns: auto minmax(0, 1fr); column-gap: 32px; max-width: 60rem; } }
+    /* Cards: never wider than the screen; name stays whole where it fits */
+    .picks > li, .losing > li { min-width: 0; }
+    @media (max-width: 599px) { .picks { grid-template-columns: minmax(0, 1fr); } }
+    .pick-top { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: baseline; gap: 0 8px; }
+    .pick-top .star { align-self: center; }
+    .pick-who { min-width: 0; overflow-wrap: break-word; }
+    .pick-name { margin-right: 6px; }
+    .pick-meta { white-space: nowrap; display: inline-block; }
+    .pick-gain { margin-left: 0; }
+    .pick-why { overflow-wrap: break-word; }
+    .inj li > span:nth-child(2), .losing ul li > span:not(.minus) { min-width: 0; overflow-wrap: break-word; }
+    .inj summary > span { min-width: 0; }
+    .next-links { list-style: none; display: grid; gap: 10px; margin-top: 14px; }
+    .next-links a { display: block; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; text-decoration: none; }
+    .next-links a:hover { border-color: var(--accent); }
+    .next-links b { display: block; color: var(--accent-2); }
+    .next-links span { display: block; color: var(--text-2); font-size: 0.9rem; margin-top: 2px; }
+    @media (min-width: 600px) { .next-links { grid-template-columns: 1fr 1fr; } }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -207,22 +248,42 @@
     <main>
       <div class="hero" style="padding-bottom:8px">
         <h1>Today's best pickups</h1>
-        <p class="lede">Every player we project to gain from a current injury, ranked by fantasy points per game he should add while the injured player is out.</p>
-        <div class="live"><span class="dot" id="dot"></span><span id="updated">Updated every 15 minutes</span></div>
-        <p class="tagkey"><span data-t="all">🔥 <b>All leagues</b> <i>+8 or more</i></span><span data-t="12">🎯 <b>12+ team</b> <i>+5 to +8</i></span><span data-t="deep">👀 <b>Deep league</b> <i>+3 to +5</i></span><span>☆ <b>Star a player</b> to follow him</span></p>
-        <p class="note-scoring">Projected gains lean on what each pickup actually did in the games the injured player already missed; with little history they're a conservative model projection. Numbers use points scoring (points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, threes 0.5, turnovers −1). In a category league, read them as a guide to who's getting more minutes. Ownership is the share of ESPN leagues that roster him.</p>
+        <p class="lede">Every player we project to gain from a current injury, ranked by fantasy points per game (FPTS/g) he should add while the injured player is out.</p>
+        <div class="live-row">
+          <div class="live"><span class="dot" id="dot"></span><span id="updated">Updated every 15 minutes</span></div>
+          <nav class="onpage" aria-label="On this page"><a href="#by-injury">By injury</a><a href="#losing-sec" id="jump-losing">Losing minutes</a></nav>
+        </div>
         <div class="chips" role="group" aria-label="League size">
           <button class="chip" data-f="std" aria-pressed="false">10-team</button>
           <button class="chip" data-f="12" aria-pressed="false">12-team</button>
           <button class="chip" data-f="deep" aria-pressed="true">Deep</button>
         </div>
+        <p class="chip-note">10-team shows All leagues picks only.</p>
+        <ul class="tagkey" aria-label="What the tags mean">
+          <li>🔥 <b>All leagues:</b> worth adding in any league</li>
+          <li>🎯 <b>12+ team:</b> worth adding in 12+ team leagues</li>
+          <li>👀 <b>Deep league:</b> only worth adding in 14+ team leagues</li>
+          <li><b>+5.3</b> (example): extra FPTS/g while the injured player is out</li>
+          <li class="key-cat">Category league? Read the numbers as a guide to who's getting more minutes.</li>
+        </ul>
+        <details class="how-rank">
+          <summary>How we rank these</summary>
+          <ul>
+            <li>Players are ranked by the extra fantasy points per game we project while the injured player is out.</li>
+            <li>If the injured player has already missed games, the number leans on what each pickup actually did in those games.</li>
+            <li>With little history, it's a conservative model projection.</li>
+            <li>Numbers use points scoring: points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, threes 0.5, turnovers −1.</li>
+            <li>Owned is the share of ESPN leagues that roster him.</li>
+          </ul>
+        </details>
       </div>
 
       <section id="board" aria-label="Pickups" style="border-top:0;padding-top:0">
         <ul class="picks" id="picks"><li class="empty">Loading pickups…</li></ul>
+        <p class="star-note">☆ <b>Star a player</b> to save him on this device. Find him under Your players on the <a href="/">home page</a> and My players on <a href="/tonight.html">Tonight</a>.</p>
       </section>
 
-      <section aria-labelledby="inj-h">
+      <section id="by-injury" aria-labelledby="inj-h">
         <h2 id="inj-h">By injury</h2>
         <p class="sub">Tap a player to see everyone who gains while he's out.</p>
         <div id="injuries"><p class="empty">Loading…</p></div>
@@ -234,6 +295,13 @@
         <ul class="losing" id="losing"></ul>
       </section>
 
+      <section class="next" aria-labelledby="next-h">
+        <h2 id="next-h">Next</h2>
+        <ul class="next-links">
+          <li><a href="/tonight.html"><b>Tonight</b><span>Every game on tonight's slate, with each team's injury news and who to pick up if a player sits.</span></a></li>
+          <li><a href="/connector.html"><b>Use with AI</b><span>Add Naismith AI to Claude, ChatGPT or Gemini, then ask about NBA injuries in plain words.</span></a></li>
+        </ul>
+      </section>
 
       <section class="cta-end" aria-label="Follow on X">
         <h2>Get each new injury as it breaks.</h2>
@@ -324,8 +392,8 @@
       var total = picks.length;
       if (!showAll) picks = picks.slice(0, LIMIT);
       list.innerHTML = picks.map(function (p) {
-        return '<li class="pick"><div class="pick-top">' + W.star(p.player) + '<span class="pick-name">' + esc(p.player) + '</span>' +
-          '<span class="pick-meta">' + esc([p.team, p.position].filter(Boolean).join(' · ')) + '</span>' +
+        return '<li class="pick"><div class="pick-top">' + W.star(p.player) + '<span class="pick-who"><span class="pick-name">' + esc(p.player) + '</span> ' +
+          '<span class="pick-meta">' + esc([p.team, p.position].filter(Boolean).join(' · ')) + '</span></span>' +
           '<span class="pick-gain">+' + p.fpts_delta.toFixed(1) + '<small> FPTS/g</small></span></div>' +
           '<div class="pick-why">' + why(p.because) + ' Averages ' + p.avg_fpts.toFixed(1) + ' FPTS/g.' +
           (p.owned != null ? ' <span class="owned">Owned in ' + fmtOwned(p.owned) + ' of ESPN leagues.</span>' : '') + '</div>' +
@@ -350,6 +418,7 @@
     function fmtOwned(x) { return x < 1 ? 'under 1%' : Math.round(x) + '%'; }
     function renderLosing() {
       var L = board.losing || [], sec = document.getElementById('losing-sec');
+      document.getElementById('jump-losing').hidden = !L.length;
       if (!L.length) { sec.hidden = true; return; }
       sec.hidden = false;
       document.getElementById('losing').innerHTML = L.map(function (r) {
@@ -413,7 +482,11 @@
         })
         .catch(function () {
           document.getElementById('picks').innerHTML = '<li class="empty">Couldn\'t load pickups. Try again in a minute.</li>';
-          document.getElementById('injuries').innerHTML = '<p class="empty">Couldn\'t load pickups. Try again in a minute.</p>';  // DP-07
+          document.getElementById('injuries').innerHTML = '<p class="empty">Couldn\'t load the injury list. Try again in a minute.</p>';
+          document.getElementById('losing-sec').hidden = true;
+          document.getElementById('jump-losing').hidden = true;
+          document.getElementById('dot').className = 'dot';
+          document.getElementById('updated').textContent = 'Couldn\'t get the latest update';
         });
     }
     load();
