@@ -310,7 +310,7 @@ section { border-top: 0; }
 }
 .k-exit .ac-status i { background: #F85149; }
 .chips { display: flex; gap: 8px; flex-wrap: wrap; }
-.chip { font: inherit; font-size: 0.9rem; font-weight: 600; padding: 8px 14px; min-height: 40px; border-radius: 999px; cursor: pointer;
+.chip { font: inherit; font-size: 0.9rem; font-weight: 600; padding: 8px 14px; min-height: 44px; border-radius: 999px; cursor: pointer;
   border: 1px solid var(--border); background: var(--surface); color: var(--text-2); }
 
 /* My players: star toggle */
@@ -383,3 +383,9 @@ code { overflow-wrap: anywhere; word-break: break-word; }
 
 /* A pickup and its gain stay on one line (website QA DP-11) */
 .gp-picks .pk { white-space: nowrap; }
+.gp-picks .pick { display: inline-block; }
+
+/* Bigger tap area for the star without changing its look (website QA SA-12) */
+.star { position: relative; }
+.star::before { content: ""; position: absolute; inset: -7px; }
+.ac-picks .star::before { inset: -9px; }

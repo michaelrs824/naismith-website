@@ -287,9 +287,11 @@
               '<span class="gp-status ' + p.status + '">' + label(p.status) + '</span>' +
               '<span class="gp-name">' + esc(p.player) + '</span><span class="gp-team">' + esc(p.team) + (p.duration ? ' · ' + esc(p.duration) : '') + '</span>' +
               '<span class="gp-fp">' + p.avg_fpts.toFixed(0) + '<small> FPTS/g</small></span></div>' +
-              (p.pickups.length ? '<div class="gp-picks">If he sits: ' + p.pickups.map(function (k) {
-                return '<span class="pk"><b>' + esc(k.player) + '</b> <span class="d">+' + k.fpts_delta.toFixed(1) + '</span></span><span class="owned">' + owned(k.owned) + '</span>';
-              }).join(', ') + '</div>' : '') + '</li>';
+              (p.pickups.length ? '<div class="gp-picks">If he sits: ' + p.pickups.map(function (k, i) {
+                // each pick wraps as one unit, so a line never starts with "· 1% owned" (website QA DP-11)
+                return '<span class="pick"><span class="pk"><b>' + esc(k.player) + '</b> <span class="d">+' + k.fpts_delta.toFixed(1) + '</span></span><wbr><span class="owned">' + owned(k.owned) + '</span>' +
+                  (i < p.pickups.length - 1 ? ',' : '') + '</span>';
+              }).join(' ') + '</div>' : '') + '</li>';
           }).join('') + '</ul>' : '<p class="game-quiet">No injury news for either team.</p>') + '</article>';
       }).join('');
     }

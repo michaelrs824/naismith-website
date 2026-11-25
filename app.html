@@ -1398,11 +1398,13 @@
       .lookup-container > *, .compare-container > *, .sim-container > * { max-width: 820px; }
     }
     .app-tabs { display: flex; align-items: center; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .app-tabs .nav-tab { white-space: nowrap; }
+    .app-tabs .nav-tab { white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center; }
     .app-tabs .nav-status { margin-left: auto; white-space: nowrap; padding-left: 12px; }
     @media (max-width: 768px) {
       .app-tabs-bar { padding: 10px 16px 0; }
       .app-tabs .nav-status { display: none; }
+      /* Phones still see "Offline" when the feed is down (website QA L-17) */
+      .app-tabs .nav-status:has(.status-dot.offline) { display: flex; }
       main { padding-bottom: 0 !important; }
     }
   </style>
