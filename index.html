@@ -340,17 +340,29 @@ He went to the locker room with an ankle injury in the second quarter.
       var list = document.getElementById('mine-list');
       if (!list.children.length) list.innerHTML = '<li class="what">Loading…</li>';
       Promise.all([
-        fetch(API + '/public/alerts?tweeted_only=true&hours=168&limit=200').then(function (r) { return r.ok ? r.json() : {alerts: []}; }),
-        fetch(API + '/public/pickups').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
+        // an error is an error, not "no injury news" (website QA DP-02)
+        fetch(API + '/public/alerts?tweeted_only=true&hours=168&limit=200').then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); }),
+        fetch(API + '/public/pickups').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }),
+        // each player's status now, the same answer as his page and the connector (DP-01)
+        fetch(API + '/public/status?players=' + encodeURIComponent(names.join(','))).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
       ]).then(function (res) {
-        var alerts = res[0].alerts || [], board = res[1] || {};
+        var alerts = res[0].alerts || [], board = res[1] || {}, now = {};
+        ((res[2] || {}).players || []).forEach(function (p) { now[W.key(p.player)] = p; if (p.matched_from) now[W.key(p.matched_from)] = p; });
+        var LABEL = {out: 'Out', doubtful: 'Doubtful', questionable: 'Questionable', probable: 'Probable'};
         list.innerHTML = names.map(function (n) {
-          var k = W.key(n), latest = null, inj = null, pick = null;
+          var k = W.key(n), latest = null, inj = null, pick = null, st = now[k];
           alerts.forEach(function (a) { if (!latest && W.key((a.event || {}).player_name) === k) latest = a; });
           (board.injuries || []).forEach(function (i) { if (W.key(i.player) === k) inj = i; });
           (board.pickups || []).forEach(function (p) { if (W.key(p.player) === k) pick = p; });
           var what, cls = 's-ok', when = '';
-          if (inj) {
+          if (st) {
+            var tl = st.timeline && st.timeline !== 'none reported' ? ' (' + esc(st.timeline) + ')' : '';
+            if (LABEL[st.status]) {
+              what = LABEL[st.status] + (st.status === 'out' || st.status === 'doubtful' ? tl : '');
+              cls = st.status === 'out' || st.status === 'doubtful' ? 's-out' : st.status === 'probable' ? 's-ok' : 's-gtd';
+            } else what = st.status === 'available' ? 'Available' : (latest ? 'No current news' : 'No injury news this week');
+            if (latest) when = ago(latest.timestamp);
+          } else if (inj) {
             what = (inj.status === 'DOUBTFUL' ? 'Doubtful' : 'Out') + (inj.duration ? ' (' + esc(inj.duration) + ')' : ''); cls = 's-out';
             if (latest) when = ago(latest.timestamp);
           } else if (latest) {

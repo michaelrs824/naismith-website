@@ -1616,6 +1616,14 @@
     //  CONFIG
     // ═══════════════════════════════════════════
     const API_BASE = 'https://naismith-api-production.up.railway.app';
+    // Text typed by a visitor is shown as text, never as HTML (website QA L-04).
+    const escH = (v) => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+    // Every request gives up after 15 s, so a hung server can't leave "Loading..." forever (L-07).
+    const fetchT = (url, ms = 15000) => {
+      const ctl = new AbortController();
+      const t = setTimeout(() => ctl.abort(), ms);
+      return fetch(url, {signal: ctl.signal}).finally(() => clearTimeout(t));
+    };
 
     // ═══════════════════════════════════════════
     //  TAB NAVIGATION
@@ -1714,7 +1722,7 @@
       const feedList = document.getElementById('feedList');
 
       try {
-        const res = await fetch(`${API_BASE}/public/alerts?tweeted_only=true`);
+        const res = await fetchT(`${API_BASE}/public/alerts?tweeted_only=true`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
@@ -2039,7 +2047,7 @@
     async function searchPlayers(query) {
       if (!query || query.trim().length < 2) return [];
       try {
-        const res = await fetch(`${API_BASE}/public/search?q=${encodeURIComponent(query.trim())}&limit=8`);
+        const res = await fetchT(`${API_BASE}/public/search?q=${encodeURIComponent(query.trim())}&limit=8`);
         if (!res.ok) return [];
         const data = await res.json();
         return (data.results || []).map(p => ({
@@ -2058,8 +2066,10 @@
 
     async function fetchPlayerData(name) {
       try {
-        const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-        const res = await fetch(`${API_BASE}/public/player/${encodeURIComponent(slug)}`);
+        // apostrophes are dropped, not turned into '-' ("De'Aaron" -> "deaaron"; L-03, L-14)
+        const slug = name.toLowerCase().replace(/['\u2018\u2019\u02bc]/g, '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        const res = await fetchT(`${API_BASE}/public/player/${encodeURIComponent(slug)}`);
         if (!res.ok) return null;
         return await res.json();
       } catch (e) {
@@ -2208,8 +2218,8 @@
         ? apiData.roster_index : {};
 
       return {
-        name: ri.name || name,
-        team: ri.team || apiData?.roster_index_team || '',
+        name: escH(ri.name || name),
+        team: escH(ri.team || apiData?.roster_index_team || ''),
         position: ri.position || '',
         avg_fpts: ri.avg_fpts || 0,
         avg_min: ri.avg_min || 0,
@@ -2250,7 +2260,7 @@
       let apiData = null;
       try {
         const [lookupRes, playerRes] = await Promise.all([
-          fetch(`${API_BASE}/public/lookup/${encodeURIComponent(name)}`).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetchT(`${API_BASE}/public/lookup/${encodeURIComponent(name)}`).then(r => r.ok ? r.json() : null).catch(() => null),
           fetchPlayerData(name),
         ]);
         lookupData = lookupRes;
@@ -2265,14 +2275,14 @@
       const team = lookupData?.team || ri.team || apiData?.roster_index_team || '';
       const avgFpts = lookupData?.avg_fpts || ri.avg_fpts || 0;
       const position = ri.position || '';
-      const playerNameDisplay = lookupData?.player || ri.name || name;
+      const playerNameDisplay = escH(lookupData?.player || ri.name || name);
 
       // Error state: player not found at all
       if (!lookupData && !ri.team) {
         results.classList.add('visible');
         results.innerHTML = `
           <div class="empty-state" style="padding: 2rem; margin-top: 1rem;">
-            <p>Could not find "<strong>${name}</strong>". Check the spelling or try the autocomplete suggestions.</p>
+            <p>Could not find "<strong>${escH(name)}</strong>". Check the spelling or try the autocomplete suggestions.</p>
           </div>`;
         btn.disabled = false;
         btn.textContent = 'Simulate';
@@ -2453,10 +2463,11 @@
       try {
         // Fetch lookup data and player alerts in parallel
         const [lookupRes, alertsRes] = await Promise.all([
-          fetch(`${API_BASE}/public/lookup/${encodeURIComponent(query)}`),
-          fetch(`${API_BASE}/public/alerts?tweeted_only=true`),
+          fetchT(`${API_BASE}/public/lookup/${encodeURIComponent(query)}`),
+          fetchT(`${API_BASE}/public/alerts?tweeted_only=true`).catch(() => null),  // its news is extra (L-06)
         ]);
 
+        if (!lookupRes.ok && lookupRes.status !== 404) throw new Error('HTTP ' + lookupRes.status);  // busy or down: not "not found" (L-02)
         if (!lookupRes.ok) {
           results.innerHTML = `<div class="lookup-empty">
             <div class="lookup-empty-icon">&#128533;</div>
@@ -2469,7 +2480,7 @@
         }
 
         const data = await lookupRes.json();
-        const alertsData = await alertsRes.json();
+        const alertsData = (alertsRes && alertsRes.ok) ? await alertsRes.json().catch(() => ({alerts: []})) : {alerts: []};
 
         // Filter alerts for this player
         const playerName = data.player || query;
@@ -2497,7 +2508,7 @@
           <div class="lookup-player-card">
             <div class="lookup-player-header">
               <div>
-                <div class="lookup-player-name">${window.NaismithWatch ? window.NaismithWatch.star(playerName) : ''}${playerName}</div>
+                <div class="lookup-player-name">${window.NaismithWatch ? window.NaismithWatch.star(playerName) : ''}${escH(playerName)}</div>
                 <div class="lookup-player-meta">${team}${position ? ' · ' + position : ''}${status ? ' · <span style="color: ' + statusColor + '; font-weight: 600;">' + status + '</span>' : ''}</div>
               </div>
               <div class="lookup-team-badge">${team}</div>
@@ -2569,7 +2580,7 @@
         }
 
         const slug = playerName.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-        results.innerHTML = html + `<div class="lookup-share"><button type="button" id="copyLink">Copy link to ${playerName}</button> <a href="/players/${slug}" style="margin-left:12px;color:var(--accent-2)">${playerName}'s page</a></div>`;
+        results.innerHTML = html + `<div class="lookup-share"><button type="button" id="copyLink">Copy link to ${escH(playerName)}</button> <a href="/players/${slug}" style="margin-left:12px;color:var(--accent-2)">${escH(playerName)}'s page</a></div>`;
         results.classList.add('visible');
         // a shareable address for this player: /app.html?player=Devin%20Booker#lookup
         try { history.replaceState(null, '', '/app.html?player=' + encodeURIComponent(playerName) + '#lookup'); } catch (e) {}
