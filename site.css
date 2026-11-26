@@ -325,9 +325,10 @@ section { border-top: 0; }
 .mine-list .s-out { color: #FF7B72; font-weight: 700; } .mine-list .s-gtd { color: #E3B341; font-weight: 700; } .mine-list .s-ok { color: #56D364; font-weight: 700; }
 @media (min-width: 760px) { .mine-list { grid-template-columns: repeat(2, 1fr); } }
 .hero-search { display: flex; gap: 8px; margin-top: 18px; max-width: 30rem; }
-.hero-search input { flex: 1; min-width: 0; font: inherit; font-size: 0.95rem; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; min-height: 44px; }
+.hero-search input { flex: 1; min-width: 0; width: 100%; font: inherit; font-size: 1rem; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; min-height: 44px; }
 .hero-search input:focus { outline: none; border-color: var(--accent); }
 .hero-search button { font: inherit; font-weight: 600; color: #fff; background: var(--accent); border: 0; border-radius: 10px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+.hero-search button:disabled { opacity: 0.7; cursor: progress; }
 
 /* Tonight */
 .games { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 8px; }
@@ -419,3 +420,22 @@ details.key-d { margin-top: 8px; padding: 0 0 4px; border-bottom: 0; }
 .ac-name { overflow-wrap: anywhere; }
 .ac-top, .ac-foot, .feed-tools { flex-wrap: wrap; }
 .feed-tools select { max-width: 100%; min-width: 0; }
+
+/* Player search suggestions (search.js). Mirrored in app.html's inline CSS (it doesn't load this file). */
+.ps-form { position: relative; }
+/* the list spans the whole form, under the box and the button, so it never covers the button */
+.ps-wrap { position: static; flex: 1; min-width: 0; display: flex; }
+.ps-wrap > input { flex: 1; min-width: 0; }
+.ps-list { position: absolute; z-index: 60; top: calc(100% + 4px); left: 0; right: 0; list-style: none; margin: 0; padding: 4px 0;
+  background: var(--card, #1C2129); border: 1px solid rgba(139, 148, 158, 0.32); border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45); max-height: min(22rem, 52vh); overflow-y: auto; overscroll-behavior: contain; }
+.ps-list[hidden] { display: none; }
+.ps-list li { display: flex; flex-wrap: wrap; align-items: center; column-gap: 0; min-height: 44px; padding: 8px 12px;
+  cursor: pointer; color: var(--text, #E6EDF3); font-size: 1rem; line-height: 1.3; text-align: left; }
+.ps-list li:hover, .ps-list li.on { background: rgba(108, 60, 225, 0.22); }
+.ps-list li.on { outline: 2px solid var(--accent-2, #A487F7); outline-offset: -2px; }
+.ps-list .ps-name { font-weight: 600; }
+.ps-list .ps-team { color: var(--text-2, #8B949E); white-space: pre; }
+.ps-list .ps-st { color: #FFA657; font-weight: 600; white-space: pre; }
+.ps-msg { color: #F2C14E; font-size: 0.92rem; margin-top: 8px; max-width: 30rem; }
+.ps-msg:empty { display: none; }

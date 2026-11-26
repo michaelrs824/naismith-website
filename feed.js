@@ -29,9 +29,14 @@
     if (h < 24) return h + 'h ago';
     return Math.round(h / 24) + 'd ago';
   }
-  // Same address as the homepage search: /app.html?player=Name#lookup
+  // His player page, /players/<slug> (same rule as slugify() in server/site_pages.py and search.js)
+  function slug(name) {
+    var s = String(name || '');
+    try { s = s.normalize('NFKD'); } catch (e) {}
+    return s.replace(/[^\x00-\x7f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  }
   function lookupLink(name) {
-    return '<a class="ac-look" href="/app.html?player=' + esc(encodeURIComponent(name)) + '#lookup">Look up ' + esc(name) + '</a>';
+    return '<a class="ac-look" href="/players/' + esc(slug(name)) + '">Look up ' + esc(name) + '</a>';
   }
   function card(text, link, when, linkLabel, look) {
     return '<article class="tweet">' +
@@ -102,6 +107,20 @@
   });
   window.NaismithWatch = W;
 
+  // Stars already in the page's HTML (the server-rendered player page): show the saved state.
+  // They ship hidden, so a visitor without JavaScript never sees a button that does nothing.
+  function syncStars() {
+    Array.prototype.forEach.call(document.querySelectorAll('.star[data-player]'), function (s) {
+      var on = W.has(s.getAttribute('data-player'));
+      s.setAttribute('aria-pressed', String(on)); s.textContent = on ? '★' : '☆';
+      s.title = on ? 'In my players' : 'Add to my players';
+      s.hidden = false;
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-watch-ui][hidden]'), function (el) { el.hidden = false; });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', syncStars); else syncStars();
+  window.addEventListener('storage', function (e) { if (e.key === KEY) syncStars(); });  // starred in another tab
+
   // Read a posted tweet back into its parts: headline, news, pickups, source.
   var HEAD = /^(\S+)\s+(.+?)\s+\(([A-Z]{2,4})\)\s+—\s+(.+?)(?:\s+\|\s+(\d+)\s+FPTS\/g)?$/;
   var PICK = /^(🔥|🎯|👀)\s+(.+?)\s+\(\+([\d.]+) FPTS\/g\)\s+—\s+(.+)$/;
@@ -153,12 +172,12 @@
   }
 
   window.NaismithFeed = {
-    esc: esc, ago: ago, card: card, X: X, parse: parse, cleanSource: cleanSource,
+    esc: esc, ago: ago, card: card, X: X, parse: parse, cleanSource: cleanSource, slug: slug,
     // The parsed parts behind a card (also for alerts posted before tweet text was saved)
     info: function (a) { return parse(a.tweet_text || headline(a) || ''); },
     // One posted alert as a card; null when there's nothing to show.
     // opts.when: replaces the "4h ago" text (the alerts page adds the day when it isn't sorted by time)
-    // opts.lookup: adds a "Look up <player>" link to his page in Lookup (alerts page)
+    // opts.lookup: adds a "Look up <player>" link to his player page, /players/<slug> (alerts page)
     alertCard: function (a, opts) {
       opts = opts || {};
       var text = a.tweet_text || headline(a);

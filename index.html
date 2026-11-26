@@ -220,8 +220,8 @@
         <span class="eyebrow">NBA injury news and fantasy pickups</span>
         <h1>Injury news fast. <span class="grad">Pickups faster.</span></h1>
         <p class="lede">We spot NBA injuries as they break and tell you who to pick up right then, so you can move before your league does. Free.</p>
-        <form class="hero-search" action="/app.html" method="get" role="search">
-          <input type="search" name="player" placeholder="Look up a player" aria-label="Look up a player" autocomplete="off">
+        <form class="hero-search" action="/app.html" method="get" role="search" data-player-search>
+          <input type="search" name="player" placeholder="Look up a player" aria-label="Look up a player" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="search" maxlength="40">
           <button type="submit">Search</button>
         </form>
         </div>
@@ -328,6 +328,7 @@ He went to the locker room with an ankle injury in the second quarter.
   </div>
 
   <script src="/feed.js"></script>
+  <script src="/search.js"></script>
   <script>
   (function () {
     var API = 'https://naismith-api-production.up.railway.app';

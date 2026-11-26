@@ -1053,7 +1053,7 @@
       width: 100%;
       padding: 0.75rem 1rem;
       border-radius: 10px;
-      font-size: 0.95rem;
+      font-size: 1rem;
       border: 1px solid var(--border);
       background: var(--bg-surface);
       color: var(--text-primary);
@@ -1077,135 +1077,6 @@
     .lookup-btn:hover { opacity: 0.9; }
     .lookup-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .lookup-results { display: none; }
-    .lookup-results.visible { display: block; }
-
-    .lookup-player-card {
-      background: linear-gradient(135deg, rgba(108, 60, 225, 0.15) 0%, rgba(108, 60, 225, 0.05) 100%);
-      border: 1px solid rgba(108, 60, 225, 0.25);
-      border-radius: 16px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-    .lookup-player-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 1rem;
-    }
-    .lookup-player-name {
-      font-size: 1.5rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-    .lookup-player-meta {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-top: 0.25rem;
-    }
-    .lookup-team-badge {
-      background: rgba(108, 60, 225, 0.2);
-      color: var(--accent-purple);
-      font-weight: 700;
-      font-size: 0.85rem;
-      padding: 0.4rem 0.75rem;
-      border-radius: 8px;
-    }
-    .lookup-stats-row {
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-    .lookup-stat-chip {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.5rem 0.75rem;
-      text-align: center;
-      min-width: 80px;
-    }
-    .lookup-stat-value {
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-    .lookup-stat-label {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-top: 0.15rem;
-    }
-
-    .lookup-section-title {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
-    .lookup-section-bar {
-      width: 3px;
-      height: 16px;
-      background: var(--gradient);
-      border-radius: 2px;
-    }
-
-    .lookup-ben-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 0.75rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .lookup-ben-name {
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-    .lookup-ben-meta {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-      margin-top: 0.2rem;
-    }
-    .lookup-ben-delta {
-      font-weight: 700;
-      font-size: 1rem;
-      padding: 0.3rem 0.6rem;
-      border-radius: 6px;
-    }
-    .lookup-ben-delta.positive {
-      color: var(--accent-green);
-      background: rgba(63, 185, 80, 0.1);
-    }
-
-    .lookup-alert-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 0.75rem;
-    }
-    .lookup-alert-status {
-      font-weight: 700;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.35rem;
-    }
-    .lookup-alert-detail {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
-    .lookup-alert-time {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 0.5rem;
-    }
-
     .lookup-empty {
       text-align: center;
       padding: 4rem 2rem;
@@ -1219,11 +1090,6 @@
     .lookup-empty-text {
       font-size: 0.95rem;
       line-height: 1.6;
-    }
-    .lookup-source {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 0.75rem;
     }
 
     /* ── Responsive ───────────────────────────── */
@@ -1253,9 +1119,6 @@
       .sim-input-row { grid-template-columns: 1fr; }
       .feed-header, .feed-list { padding-left: 1rem; padding-right: 1rem; }
       .compare-container, .sim-container, .lookup-container { padding: 1.5rem 1rem; }
-      .lookup-search-row { flex-direction: column; gap: 0.75rem; }
-      .lookup-stats-row { gap: 0.5rem; }
-      .lookup-stat-chip { min-width: 65px; }
     }
 
     .mobile-tabs { display: none; }
@@ -1379,12 +1242,8 @@
     }
     @media (min-width: 760px) and (pointer: coarse) { .site-footer li a { min-height: 44px; } }
     @media (min-width: 1000px) { .wrap { max-width: 1180px; padding: 0 40px; } }
-    .star { background: none; border: 0; cursor: pointer; font-size: 1.3rem; color: #848D97; padding: 2px 6px 2px 0; vertical-align: 2px; }
-    .star[aria-pressed="true"] { color: #F2C14E; }
-    .lookup-share { margin-top: 14px; }
-    .lookup-share button { font: inherit; font-size: 0.9rem; font-weight: 600; color: #E6EDF3; background: #161B22; border: 1px solid rgba(139,148,158,.25); border-radius: 10px; padding: 10px 14px; cursor: pointer; }
     /* QA: readable contrast for purple text and muted labels */
-    .alert-fpts, .autocomplete-item > span, .lookup-stat-value { color: var(--accent-2) !important; }
+    .alert-fpts, .autocomplete-item > span { color: var(--accent-2) !important; }
     .alert-time.stale { color: #848D97 !important; opacity: 1 !important; }
     .badge-out { color: #FF7B72 !important; }
     .site-footer, .site-footer p { color: #848D97; }
@@ -1413,6 +1272,26 @@
       .app-tabs .nav-status:has(.status-dot.offline) { display: flex; }
       main { padding-bottom: 0 !important; }
     }
+    /* Player search suggestions (search.js): same rules as site.css, which this page doesn't load */
+    .ps-form { position: relative; }
+    /* the list spans the whole form, under the box and the button, so it never covers the button */
+    .ps-wrap { position: static; flex: 1; min-width: 0; display: flex; }
+    .ps-wrap > input { flex: 1; min-width: 0; }
+    .ps-list { position: absolute; z-index: 60; top: calc(100% + 4px); left: 0; right: 0; list-style: none; margin: 0; padding: 4px 0;
+      background: var(--card, #1C2129); border: 1px solid rgba(139, 148, 158, 0.32); border-radius: 10px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45); max-height: min(22rem, 52vh); overflow-y: auto; overscroll-behavior: contain; }
+    .ps-list[hidden] { display: none; }
+    .ps-list li { display: flex; flex-wrap: wrap; align-items: center; column-gap: 0; min-height: 44px; padding: 8px 12px;
+      cursor: pointer; color: var(--text, #E6EDF3); font-size: 1rem; line-height: 1.3; text-align: left; }
+    .ps-list li:hover, .ps-list li.on { background: rgba(108, 60, 225, 0.22); }
+    .ps-list li.on { outline: 2px solid var(--accent-2, #A487F7); outline-offset: -2px; }
+    .ps-list .ps-name { font-weight: 600; }
+    .ps-list .ps-team { color: var(--text-2, #8B949E); white-space: pre; }
+    .ps-list .ps-st { color: #FFA657; font-weight: 600; white-space: pre; }
+    .ps-msg { color: #F2C14E; font-size: 0.92rem; margin-top: 8px; max-width: 30rem; }
+    .ps-msg:empty { display: none; }
+    #lookupForm { margin-bottom: 0; }
+    #lookupHint { max-width: none; }
   </style>
 </head>
 <body>
@@ -1502,22 +1381,17 @@
     <div class="page active" id="page-lookup">
       <div class="lookup-container">
         <h1 class="lookup-title">Player Lookup</h1>
-        <p class="lookup-subtitle">Search any NBA player to see his stats, injury status and who gains when he's out.</p>
+        <p class="lookup-subtitle">Search any NBA player to open his page: injury status, recent games and who gains when he's out.</p>
 
-        <div class="lookup-search-row">
-          <div class="autocomplete-wrapper">
-            <input type="text" class="lookup-input" id="lookupInput" aria-label="Player name" placeholder="e.g. LeBron James, KAT, Wemby" autocomplete="off">
-            <div class="autocomplete-list" id="acListLookup"></div>
-          </div>
-          <button class="lookup-btn" id="lookupBtn" onclick="runLookup()">Look Up</button>
-        </div>
+        <form class="lookup-search-row" id="lookupForm" action="/app.html" method="get" role="search" data-player-search data-ps-msg="lookupHint">
+          <input type="search" name="player" class="lookup-input" id="lookupInput" aria-label="Player name" placeholder="e.g. LeBron James, KAT, Wemby" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="search" maxlength="40">
+          <button type="submit" class="lookup-btn" id="lookupBtn">Search</button>
+        </form>
         <p class="form-hint" id="lookupHint" role="status" aria-live="polite"></p>
 
-        <div class="lookup-results" id="lookupResults"></div>
-
         <div class="lookup-empty" id="lookupEmpty">
-          <div class="lookup-empty-icon">&#128270;</div>
-          <div class="lookup-empty-text">Type a name above to see his status, recent news<br>and who picks up his minutes when he's out.</div>
+          <div class="lookup-empty-icon" aria-hidden="true">&#128270;</div>
+          <div class="lookup-empty-text">Start typing and pick a name from the list. Part of a name works too.</div>
         </div>
       </div>
     </div>
@@ -1626,6 +1500,7 @@
   </div>
 
   <script src="/feed.js"></script>
+  <script src="/search.js"></script>
   <script>
     // ═══════════════════════════════════════════
     //  CONFIG
@@ -2455,218 +2330,8 @@
     // ═══════════════════════════════════════════
     //  PLAYER LOOKUP
     // ═══════════════════════════════════════════
-    let lookupSelectedPlayer = '';
-
-    function setupLookupAutocomplete() {
-      const input = document.getElementById('lookupInput');
-      const list = document.getElementById('acListLookup');
-      let debounceTimer = null;
-
-      input.addEventListener('input', () => {
-        const q = input.value.trim();
-        if (q.length < 2) { list.classList.remove('visible'); return; }
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(async () => {
-          const matches = await searchPlayers(q);
-          if (document.activeElement !== input || input.value.trim() !== q) return;  // L-08
-          if (matches.length === 0) { list.classList.remove('visible'); return; }
-          list.innerHTML = matches.map(p => {
-            const statusBadge = p.status && p.status !== 'ACTIVE'
-              ? `<span style="color: var(--accent-red); font-size: 0.7rem; font-weight: 600; margin-left: 4px;">${p.status}</span>`
-              : '';
-            return `<div class="autocomplete-item" data-name="${escH(p.name)}" data-team="${escH(p.team)}">
-              ${escH(p.name)} <span class="autocomplete-item-team">${escH(p.team)}${p.position ? ' · ' + p.position : ''}</span>${statusBadge}
-              <span style="margin-left: auto; font-size: 0.75rem; color: var(--accent-purple); font-weight: 600;">${p.avg_fpts.toFixed(1)} FP</span>
-            </div>`;
-          }).join('');
-          list.classList.add('visible');
-          list.querySelectorAll('.autocomplete-item').forEach(item => {
-            item.addEventListener('mousedown', e => {
-              e.preventDefault();
-              input.value = item.dataset.name;
-              lookupSelectedPlayer = item.dataset.name;
-              list.classList.remove('visible');
-              runLookup();
-            });
-          });
-        }, 250);
-      });
-
-      input.addEventListener('blur', () => {
-        setTimeout(() => list.classList.remove('visible'), 200);
-      });
-
-      input.addEventListener('keydown', e => {
-        if (e.key === 'Enter') { runLookup(); }
-      });
-    }
-
-    let lookupSeq = 0;
-    async function runLookup() {
-      const input = document.getElementById('lookupInput');
-      const results = document.getElementById('lookupResults');
-      const empty = document.getElementById('lookupEmpty');
-      const btn = document.getElementById('lookupBtn');
-      const query = input.value.trim();
-      const hint = document.getElementById('lookupHint');
-      if (!query) { hint.textContent = "Type a player's name to look him up."; input.focus(); return; }  // L-19
-      hint.textContent = '';
-      const mySeq = ++lookupSeq;  // a slower earlier lookup can't overwrite this one (L-05)
-      document.querySelectorAll('.autocomplete-list').forEach(l => l.classList.remove('visible'));  // L-08
-      try { history.replaceState(null, '', '?player=' + encodeURIComponent(query) + '#lookup'); } catch (e) {}  // L-18
-
-      btn.disabled = true;
-      btn.textContent = 'Loading...';
-      empty.style.display = 'none';
-      results.classList.remove('visible');
-
-      try {
-        // Fetch lookup data and player alerts in parallel
-        const [lookupRes, alertsRes] = await Promise.all([
-          fetchT(`${API_BASE}/public/lookup/${encodeURIComponent(query)}`),
-          fetchT(`${API_BASE}/public/alerts?tweeted_only=true`).catch(() => null),  // its news is extra (L-06)
-        ]);
-
-        if (mySeq !== lookupSeq) return;
-        if (!lookupRes.ok && lookupRes.status !== 404) throw new Error('HTTP ' + lookupRes.status);  // busy or down: not "not found" (L-02)
-        if (!lookupRes.ok) {
-          results.innerHTML = `<div class="lookup-empty">
-            <div class="lookup-empty-icon">&#128533;</div>
-            <div class="lookup-empty-text">Player not found. Try a different name or spelling.</div>
-          </div>`;
-          results.classList.add('visible');
-          btn.disabled = false;
-          btn.textContent = 'Look Up';
-          return;
-        }
-
-        const data = await lookupRes.json();
-        const alertsData = (alertsRes && alertsRes.ok) ? await alertsRes.json().catch(() => ({alerts: []})) : {alerts: []};
-        if (mySeq !== lookupSeq) return;  // a newer lookup started meanwhile (L-05)
-
-        // Filter alerts for this player
-        const playerName = data.player || query;
-        const playerAlerts = (alertsData.alerts || []).filter(a => {
-          const evtName = (a.event?.player_name || '').toLowerCase();
-          return evtName === playerName.toLowerCase();
-        }).slice(0, 3);
-
-        const team = data.team || '';
-        const avgFpts = (data.avg_fpts || 0).toFixed(1);
-        const missed = data.games_missed_clean ?? data.games_missed ?? 0;
-        const status = data.player_status || '';
-        const dataSource = data.data_source || '';
-        const position = data.position || '';
-        const avgMin = data.avg_min ? data.avg_min.toFixed(1) : null;
-        const beneficiaries = data.beneficiaries || [];
-
-        // Status color
-        const statusColor = status === 'OUT' ? 'var(--accent-red)'
-          : status === 'QUESTIONABLE' || status === 'DOUBTFUL' ? 'var(--accent-orange)'
-          : status === 'RETURNING' ? 'var(--accent-green)'
-          : 'var(--text-muted)';
-
-        let html = `
-          <div class="lookup-player-card">
-            <div class="lookup-player-header">
-              <div>
-                <div class="lookup-player-name">${window.NaismithWatch ? window.NaismithWatch.star(playerName) : ''}${escH(playerName)}</div>
-                <div class="lookup-player-meta">${team}${position ? ' · ' + position : ''}${status ? ' · <span style="color: ' + statusColor + '; font-weight: 600;">' + status + '</span>' : ''}</div>
-              </div>
-              <div class="lookup-team-badge">${team}</div>
-            </div>
-            <div class="lookup-stats-row">
-              <div class="lookup-stat-chip">
-                <div class="lookup-stat-value" style="color: var(--accent-purple);">${avgFpts}</div>
-                <div class="lookup-stat-label">FPTS/Game</div>
-              </div>
-              ${avgMin ? `<div class="lookup-stat-chip">
-                <div class="lookup-stat-value">${avgMin}</div>
-                <div class="lookup-stat-label">MIN/Game</div>
-              </div>` : ''}
-              ${missed > 0 ? `<div class="lookup-stat-chip">
-                <div class="lookup-stat-value" style="color: var(--accent-red);">${missed}</div>
-                <div class="lookup-stat-label">Games Missed</div>
-              </div>` : ''}
-            </div>
-              </div>`;
-
-        // Latest alerts
-        if (playerAlerts.length > 0) {
-          html += `<div class="lookup-section-title"><div class="lookup-section-bar" style="background: var(--accent-orange);"></div>Latest Alerts</div>`;
-          playerAlerts.forEach(a => {
-            const evt = a.event || {};
-            const evtType = evt.event_type || '';
-            const typeMap = { 'INJURY_OUT': 'OUT', 'INJURY_RETURN': 'RETURNING', 'INJURY_QUESTIONABLE': 'QUESTIONABLE', 'INJURY_DOUBTFUL': 'DOUBTFUL' };
-            const alertStatus = typeMap[evtType] || evtType;
-            const alertColor = evtType.includes('OUT') ? 'var(--accent-red)' : evtType.includes('RETURN') ? 'var(--accent-green)' : 'var(--accent-orange)';
-            const detail = evt.detail || '';
-            const ts = a.source_timestamp || a.timestamp || '';
-            const timeStr = ts ? new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
-            html += `<div class="lookup-alert-card">
-              <div class="lookup-alert-status" style="color: ${alertColor};">${alertStatus}</div>
-              <div class="lookup-alert-detail">${detail}</div>
-              <div class="lookup-alert-time">${timeStr}${evt.source ? ' · ' + (window.NaismithFeed ? NaismithFeed.cleanSource(evt.source) : evt.source) : ''}</div>
-            </div>`;
-          });
-          html += '<div style="height: 1rem;"></div>';
-        }
-
-        // Beneficiaries
-        if (beneficiaries.length > 0) {
-          html += `<div class="lookup-section-title"><div class="lookup-section-bar"></div>Who gains when ${playerName.split(' ').pop()} is out</div>`;
-          beneficiaries.forEach(b => {
-            const bName = b.player_name || b.name || '';
-            const delta = b.fpts_delta || 0;
-            const rawConf = b.confidence || 0;
-            // API returns confidence as 0-100 (whole number), not 0-1
-            const confPct = rawConf > 1 ? rawConf : Math.round(rawConf * 100);
-            const rawImpact = b.impact_level || '';
-            // Clean internal labels: "PROJECTED_HIGH" → "High", "STATISTICAL_HIGH" → "High"
-            const impact = rawImpact.replace(/^(PROJECTED_|STATISTICAL_|DYNAMIC_)/i, '').toLowerCase().replace(/^\w/, c => c.toUpperCase());
-            const sign = delta >= 0 ? '+' : '';
-            html += `<div class="lookup-ben-card">
-              <div>
-                <div class="lookup-ben-name">${bName}</div>
-                <div class="lookup-ben-meta">${impact ? impact + ' impact' : ''}</div>
-              </div>
-              <div class="lookup-ben-delta positive">${sign}${delta.toFixed(1)} FPTS</div>
-            </div>`;
-          });
-        }
-
-        if (playerAlerts.length === 0 && beneficiaries.length === 0) {
-          html += `<div style="text-align: center; padding: 2rem; color: var(--text-muted);">
-            No recent alerts or beneficiary data for this player.
-          </div>`;
-        }
-
-        const slug = playerName.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-        results.innerHTML = html + `<div class="lookup-share"><button type="button" id="copyLink">Copy link to ${escH(playerName)}</button> <a href="/players/${slug}" style="margin-left:12px;color:var(--accent-2)">${escH(playerName)}'s page</a></div>`;
-        results.classList.add('visible');
-        // a shareable address for this player: /app.html?player=Devin%20Booker#lookup
-        try { history.replaceState(null, '', '/app.html?player=' + encodeURIComponent(playerName) + '#lookup'); } catch (e) {}
-        const cl = document.getElementById('copyLink');
-        if (cl) cl.addEventListener('click', () => {
-          const url = location.origin + '/app.html?player=' + encodeURIComponent(playerName) + '#lookup';
-          (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(
-            () => { cl.textContent = 'Link copied'; },
-            () => { window.prompt('Copy this link', url); });
-        });
-
-      } catch (err) {
-        if (mySeq !== lookupSeq) return;
-        console.error('Lookup error:', err);
-        results.innerHTML = `<div class="lookup-empty">
-          <div class="lookup-empty-icon">&#9888;&#65039;</div>
-          <div class="lookup-empty-text">Something went wrong. Check your connection and try again.</div>
-        </div>`;
-        results.classList.add('visible');
-      }
-
-      btn.disabled = false;
-      btn.textContent = 'Look Up';
-    }
+    // The box is upgraded by /search.js (form[data-player-search]): suggestions as you type, and every
+    // search opens the player's page, /players/<slug>. The old result card is retired (owner, 2026-11-26).
 
     // ═══════════════════════════════════════════
     //  INIT
@@ -2677,18 +2342,33 @@
       setupAutocomplete('comparePlayerB', 'acListB');
       setupAutocomplete('simPlayer', 'acListSim');
     });
-    setupLookupAutocomplete();
-    // /app.html?player=Name (homepage search, shared links): open Lookup with that player
+    // /app.html?player=Name (old links, shared links, the home search without JavaScript):
+    // open that player's page. No match: stay here with the name in the box and the not-found message.
     (function () {
-      const q = new URLSearchParams(location.search).get('player');
-      if (!q) return;
-      // ?player=Name#compare keeps the Compare tab; only Lookup (or no tab) runs the lookup (L-13)
+      let q = null;
+      try { q = new URLSearchParams(location.search).get('player'); } catch (e) {}
+      if (!q || !q.trim()) return;
+      // ?player=Name#compare keeps the Compare tab; only Lookup (or no tab) opens the page (L-13)
       const h = tabFor((location.hash || '').slice(1));
       if (h && h !== 'lookup' && document.getElementById(`page-${h}`)) return;
       const tab = document.querySelector('.nav-tab[data-page="lookup"]');
-      if (tab) tab.click();
-      document.getElementById('lookupInput').value = q;
-      runLookup();
+      if (tab && !tab.classList.contains('active')) tab.click();
+      if (window.NaismithSearch) NaismithSearch.run(document.getElementById('lookupForm'), q, true);
+      else document.getElementById('lookupInput').value = q;
+    })();
+
+    // /app.html?a=Name#compare (from a player's page): Compare opens with him as Player A.
+    (function () {
+      let a = null;
+      try { a = new URLSearchParams(location.search).get('a'); } catch (e) {}
+      if (!a || !a.trim()) return;
+      const inp = document.getElementById('comparePlayerA');
+      if (!inp) return;
+      inp.value = a.trim().slice(0, 40);
+      const tab = document.querySelector('.nav-tab[data-page="compare"]');
+      if (tab && !tab.classList.contains('active')) tab.click();
+      const b = document.getElementById('comparePlayerB');
+      if (b) b.focus();
     })();
 
     // Auto-refresh feed every 2 minutes
