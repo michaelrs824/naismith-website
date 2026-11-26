@@ -50,6 +50,21 @@
       "source": "/index.html",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/:page(ai-fantasy-nba|alerts|app|connector|help|pickups|privacy|recap|terms|tonight)",
+      "destination": "/:page.html",
+      "permanent": true
+    },
+    {
+      "source": "/:page(ai-fantasy-nba|alerts|app|connector|help|pickups|privacy|recap|terms|tonight)/",
+      "destination": "/:page.html",
+      "permanent": true
+    },
+    {
+      "source": "/:page(injuries|players)/",
+      "destination": "/:page",
+      "permanent": true
     }
   ]
 }
