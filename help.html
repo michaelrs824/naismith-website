@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Help · Naismith AI</title>
-  <meta name="description" content="Help with the Naismith AI connector for Claude and ChatGPT: setup, troubleshooting, what it covers and how to reach us.">
+  <meta name="description" content="Help with Naismith AI in ChatGPT, Claude and Gemini and on the website: setup, fixes, what it covers and how to reach us.">
   <link rel="canonical" href="https://www.naismithai.com/help.html">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='68' font-size='60' font-family='Arial' font-weight='800' text-anchor='middle' fill='white'>N</text></svg>">
   <link rel="apple-touch-icon" href="/logo.png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.naismithai.com/help.html">
   <meta property="og:title" content="Help · Naismith AI">
-  <meta property="og:description" content="Setup, troubleshooting and contact for the Naismith AI connector.">
+  <meta property="og:description" content="Help with Naismith AI in ChatGPT, Claude and Gemini and on the website: setup, fixes, what it covers and how to reach us.">
   <meta property="og:image" content="https://www.naismithai.com/og.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@NaismithAIApp">
@@ -166,6 +166,21 @@
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/site.css">
+  <style>
+    /* Help page (draft, Nov 2026). Page-only rules; loaded after site.css on purpose. */
+    .help-hero { padding: 28px 0 4px; }
+    .help-hero .lede a { color: var(--accent-2); text-decoration: underline; text-underline-offset: 2px; }
+    .help-page .legal h2 { scroll-margin-top: 16px; }
+    .legal a.help-btn { margin-top: 14px; max-width: 22rem; color: #fff; text-decoration: none; }
+    .faq { margin-top: 6px; max-width: 44rem; }
+    .faq dt { color: var(--text); font-weight: 600; font-size: 0.98rem; margin-top: 16px; }
+    .faq dd { color: var(--text-2); font-size: 0.95rem; margin: 4px 0 0; }
+    .legal ul.site-list, .legal ul.tag-list { list-style: none; padding-left: 0; max-width: 44rem; }
+    .site-list li, .tag-list li { padding: 8px 0; margin-top: 0; border-bottom: 1px solid var(--border); }
+    .site-list li:last-child, .tag-list li:last-child { border-bottom: 0; }
+    .legal .site-list a { font-weight: 600; text-decoration: none; display: inline-block; padding: 4px 0; }
+    .help-h3 { font-size: 1.02rem; font-weight: 700; margin-top: 22px; }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -191,33 +206,57 @@
       <a class="nav-follow" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
     </header>
 
-    <main id="main">
-      <div class="hero legal">
-        <p class="eyebrow">Help</p>
-        <h1>Help · Naismith AI</h1>
+    <main id="main" class="help-page">
+      <div class="hero legal help-hero">
+        <h1>Help</h1>
+        <p class="lede">Using Naismith AI in an AI assistant? Start with <a href="#start">Getting started</a>. Using this website? See <a href="#website">Using the website</a>.</p>
       </div>
 
       <div class="legal">
-      <h2>Getting started</h2>
-      <p>Naismith AI works inside Claude and ChatGPT. Add it once, then ask about NBA injuries in plain words. Full setup steps for each assistant are on the <a href="/connector.html">connector page</a>.</p>
-      <ul>
-        <li><strong>Claude</strong>: Settings → Connectors → Add custom connector. Name it Naismith AI and paste <code>https://www.naismithai.com/mcp/v1</code><button type="button" class="copy-btn" data-copy="https://www.naismithai.com/mcp/v1">Copy</button>.</li>
-        <li><strong>ChatGPT</strong>: open <a href="https://chatgpt.com/plugins/plugin_asdk_app_6aff73a914608191bb59bfcefb3b625f" target="_blank" rel="noopener">Naismith AI in ChatGPT's plugin directory</a> and press Install plugin.</li>
+      <h2 id="start">Getting started</h2>
+      <p>Naismith AI works inside ChatGPT, Claude and Gemini. Add it once, then ask about NBA injuries in plain words. The steps for each assistant are on the Ask AI page.</p>
+      <a class="btn btn-primary help-btn" href="/connector.html">Open the setup page</a>
+
+      <h2 id="fix">If something isn't working</h2>
+      <dl class="faq">
+        <dt>My assistant isn't using Naismith AI.</dt>
+        <dd>Mention it by name: "Ask Naismith AI who's out tonight." In ChatGPT or Gemini, type @ and pick Naismith AI.</dd>
+        <dt>It says a player is out, but I heard he's playing.</dt>
+        <dd>News moves fast. Every answer says when it was last updated and where the news came from. Check again before your lineup locks, and tell us if we got it wrong.</dd>
+        <dt>It can't find a player.</dt>
+        <dd>Check the spelling; partial names usually work. Some two-way and newly signed players may not be listed yet.</dd>
+        <dt>It says it's busy.</dt>
+        <dd>We briefly limit very heavy use. Try again in a minute.</dd>
+        <dt>The numbers don't match my league.</dt>
+        <dd>Numbers use points scoring: points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, threes 0.5, turnovers −1. In a category league, read them as a guide to who gets more minutes.</dd>
+      </dl>
+
+      <h2 id="limits">What it doesn't do</h2>
+      <p>It doesn't connect to your fantasy league, so it can't see your roster or matchups. You can paste your players into the chat and it will check them.</p>
+      <p>It doesn't give trade advice, betting odds or standings. It covers player availability and the pickups an injury creates.</p>
+
+      <h2 id="website">Using the website</h2>
+      <p>You don't need an AI assistant to use the site.</p>
+      <ul class="site-list">
+        <li><a href="/tonight.html">Tonight's games</a>: every game tonight, with each team's injury news and who to pick up if a player sits.</li>
+        <li><a href="/alerts.html">Alerts</a>: every injury alert we posted on X in the last week. Filter by status or search a player or team.</li>
+        <li><a href="/pickups.html">Pickups</a>: players who gain from a current injury, ranked by the fantasy points per game they should add.</li>
+        <li><a href="/app.html#lookup">Lookup</a>: type a player's name to see his status and who gains when he's out.</li>
+        <li><a href="/recap.html">Recap</a>: last night's top performers, breakouts and minutes to watch.</li>
       </ul>
 
-      <h2>If something isn't working</h2>
-      <ul>
-        <li><strong>My assistant isn't using Naismith.</strong> Mention it by name ("Ask Naismith AI who's out tonight"). In ChatGPT, type @ and pick Naismith AI.</li>
-        <li><strong>It says a player is out, but I heard he's playing.</strong> News moves fast. Every answer says when it was last updated and where the news came from. Check again before your lineup locks, and tell us if we got it wrong.</li>
-        <li><strong>It can't find a player.</strong> Check the spelling; partial names usually work. Some two-way and newly signed players may not be listed yet.</li>
-        <li><strong>It says it's busy.</strong> We briefly limit very heavy use. Try again in a minute.</li>
-        <li><strong>The numbers don't match my league.</strong> Projections use points scoring (points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, threes 0.5, turnovers −1). In a category league, read them as a guide to who gets more minutes.</li>
+      <h3 class="help-h3">The star</h3>
+      <p><span aria-hidden="true">☆</span> Star a player to save him on this device. Find him under Your players on the home page and My players on Tonight.</p>
+
+      <h3 class="help-h3">Labels on pickups</h3>
+      <ul class="tag-list">
+        <li><span aria-hidden="true">🔥</span> <strong>All leagues</strong>: worth adding in any league</li>
+        <li><span aria-hidden="true">🎯</span> <strong>12+ team</strong>: worth adding in 12+ team leagues</li>
+        <li><span aria-hidden="true">👀</span> <strong>Deep league</strong>: only worth adding in 14+ team leagues</li>
+        <li><strong>FPTS/g</strong>: fantasy points per game</li>
       </ul>
 
-      <h2>What it doesn't do</h2>
-      <p>Trade advice, betting odds, standings, or anything about your own league's rosters or matchups. It only covers player availability and the pickups an injury creates.</p>
-
-      <h2>Contact</h2>
+      <h2 id="contact">Contact</h2>
       <p>Email <a href="mailto:naismithai@gmail.com?subject=Naismith%20AI%20help">naismithai@gmail.com</a> or message <a href="https://x.com/NaismithAIApp">@NaismithAIApp</a> on X. We read every message.</p>
       <p><a href="/privacy.html">Privacy policy</a> · <a href="/terms.html">Terms of use</a> · Not affiliated with the NBA.</p>
       </div>
