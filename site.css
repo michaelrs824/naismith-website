@@ -392,3 +392,30 @@ code { overflow-wrap: anywhere; word-break: break-word; }
 .copy-btn { font: inherit; font-size: 0.85rem; font-weight: 600; margin-left: 8px; padding: 0 14px; min-height: 44px;
   border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; vertical-align: middle; }
 .copy-btn:hover { background: var(--accent-bg); }
+
+/* ── Alerts + home copy pass (draft, Nov 2026) ── */
+/* Tag key: same list as pickups.html, inside a "What the tags mean" disclosure (closed on phones) */
+ul.tagkey { list-style: none; display: grid; gap: 2px; margin-top: 4px; line-height: 1.45; }
+.key-cat { color: var(--text); }
+details.key-d { margin-top: 8px; padding: 0 0 4px; border-bottom: 0; }
+.key-d summary { min-height: 44px; align-items: center; justify-content: flex-start; gap: 8px; font-size: 0.9rem; color: var(--text-2); }
+.key-d summary::after { font-size: 1.1rem; }
+@media (min-width: 760px) { .key-d ul.tagkey { grid-template-rows: repeat(3, auto); grid-auto-flow: column; grid-template-columns: auto minmax(0, 1fr); column-gap: 32px; max-width: 60rem; } }
+/* Star line: same as pickups.html */
+.star-note { color: var(--text-2); font-size: 0.85rem; margin-top: 14px; }
+.star-note b { color: var(--text); font-weight: 600; }
+.star-note a { color: var(--accent-2); }
+/* Alert cards on /alerts: source on one line, then "Look up <player>" and "View on X" */
+.ac-foot.has-links { flex-direction: column; gap: 8px; }
+.ac-links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px 16px; }
+.ac-foot a.ac-look { white-space: normal; }
+/* Phone tap targets: 44px tall without changing how the links look (website QA SA-12) */
+@media (max-width: 759px), (pointer: coarse) { .ac-foot a, .sec-link { padding: 12px 0; margin: -12px 0; } }
+
+/* Alert cards: rows wrap instead of running past the card (website QA SA-10: at 200% text the
+   player row and pickup rows went past 360px). At normal size only very long names take a second line. */
+.ac-player, .ac-picks li { flex-wrap: wrap; }
+.ac-name, .ac-picks li > * { min-width: 0; }
+.ac-name { overflow-wrap: anywhere; }
+.ac-top, .ac-foot, .feed-tools { flex-wrap: wrap; }
+.feed-tools select { max-width: 100%; min-width: 0; }

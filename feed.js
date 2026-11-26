@@ -29,11 +29,15 @@
     if (h < 24) return h + 'h ago';
     return Math.round(h / 24) + 'd ago';
   }
-  function card(text, link, when, linkLabel) {
+  // Same address as the homepage search: /app.html?player=Name#lookup
+  function lookupLink(name) {
+    return '<a class="ac-look" href="/app.html?player=' + esc(encodeURIComponent(name)) + '#lookup">Look up ' + esc(name) + '</a>';
+  }
+  function card(text, link, when, linkLabel, look) {
     return '<article class="tweet">' +
       '<div class="tweet-head"><div class="logo">N</div><div class="tweet-who"><b>Naismith AI</b><span>@NaismithAIApp</span></div></div>' +
       '<div class="tweet-body">' + body(text) + '</div>' +
-      '<div class="tweet-foot"><span>' + esc(when || '') + '</span>' +
+      '<div class="tweet-foot"><span>' + esc(when || '') + '</span>' + (look || '') +
       (link ? '<a href="' + link + '" target="_blank" rel="noopener">' + esc(linkLabel || 'View on X') + ' →</a>' : '') +
       '</div></article>';
   }
@@ -56,9 +60,6 @@
     return s;
   }
 
-
-  // Published gains are calibrated from 2026-11-11 (server calibration.py); the factor comes with each API response
-  var CAL = {factor: null, since: '2026-11-11T06:19:00'};
 
   // ── My players: a watchlist kept on this device (no account) ──
   var KEY = 'naismith.watch';
@@ -133,7 +134,7 @@
     if (m && m[1].toLowerCase().indexOf(m[2].toLowerCase()) >= 0) src = m[1];
     return src.replace(/\s+RSS$/, '');
   }
-  function structured(a, link, when, linkLabel) {
+  function structured(a, link, when, linkLabel, look) {
     return '<article class="acard k-' + a.kind + '">' +
       '<div class="ac-top"><span class="ac-status"><i></i>' + esc(a.status) + '</span><span class="ac-time">' + esc(when) + '</span></div>' +
       '<div class="ac-player">' + W.star(a.player) + '<span class="ac-name">' + esc(a.player) + '</span><span class="ac-team">' + esc(a.team) + '</span>' +
@@ -143,38 +144,31 @@
         return '<li>' + W.star(p.name) + '<span class="ac-pn">' + esc(p.name) + '</span><span class="pill">' + esc(p.icon + ' ' + p.tag) +
           '</span><span class="ac-pd">+' + esc(p.delta) + '</span></li>';
       }).join('') + '</ul>' : '') +
-      '<div class="ac-foot"><span>' + esc(a.source || '') + '</span>' +
-        (link ? '<a href="' + link + '" target="_blank" rel="noopener">' + esc(linkLabel) + ' →</a>' : '') + '</div>' +
+      (look
+        ? '<div class="ac-foot has-links">' + (a.source ? '<span>' + esc(a.source) + '</span>' : '') + '<span class="ac-links">' + look +
+            (link ? '<a href="' + link + '" target="_blank" rel="noopener">' + esc(linkLabel) + ' →</a>' : '') + '</span></div>'
+        : '<div class="ac-foot"><span>' + esc(a.source || '') + '</span>' +
+            (link ? '<a href="' + link + '" target="_blank" rel="noopener">' + esc(linkLabel) + ' →</a>' : '') + '</div>') +
       '</article>';
   }
 
   window.NaismithFeed = {
     esc: esc, ago: ago, card: card, X: X, parse: parse, cleanSource: cleanSource,
-    // Tag cutoffs on the published (calibrated) scale: the model tags at +8 / +5 / +3,
-    // and every gain we show is multiplied by the nightly calibration factor.
-    setTagKeys: function (cal) {
-      if (!cal || cal <= 0) return;
-      CAL.factor = cal;
-      var f = function (x) { return '+' + (Math.round(x * cal * 10) / 10).toFixed(1); };
-      var txt = {all: f(8) + ' or more', '12': f(5) + ' to ' + f(8), deep: f(3) + ' to ' + f(5)};
-      Array.prototype.forEach.call(document.querySelectorAll('.tagkey [data-t] i'), function (i) {
-        i.textContent = txt[i.parentNode.getAttribute('data-t')];
-      });
-    },
     // The parsed parts behind a card (also for alerts posted before tweet text was saved)
     info: function (a) { return parse(a.tweet_text || headline(a) || ''); },
     // One posted alert as a card; null when there's nothing to show.
-    alertCard: function (a) {
+    // opts.when: replaces the "4h ago" text (the alerts page adds the day when it isn't sorted by time)
+    // opts.lookup: adds a "Look up <player>" link to his page in Lookup (alerts page)
+    alertCard: function (a, opts) {
+      opts = opts || {};
       var text = a.tweet_text || headline(a);
       if (!text) return null;
       var link = a.tweet_id ? X + a.tweet_id : null, label = a.tweet_text ? 'View on X' : 'Pickups on X';
-      var parts = parse(text);
-      // Posts from before calibration went out on the model's raw scale: show them on today's scale
-      if (parts && CAL.factor && a.timestamp && a.timestamp < CAL.since) {
-        parts.picks.forEach(function (p) { p.delta = (Math.round(parseFloat(p.delta) * CAL.factor * 10) / 10).toFixed(1); });
-      }
+      var parts = parse(text), when = opts.when || ago(a.timestamp);
+      var who = (parts && parts.player) || (a.event || {}).player_name;
+      var look = opts.lookup && who ? lookupLink(who) : '';
       if (parts && !parts.source) parts.source = cleanSource((a.event || {}).source);  // the tweet had no room for it, or predates saved text
-      return parts ? structured(parts, link, ago(a.timestamp), label) : card(text, link, ago(a.timestamp), label);
+      return parts ? structured(parts, link, when, label, look) : card(text, link, when, label, look);
     }
   };
 })();
