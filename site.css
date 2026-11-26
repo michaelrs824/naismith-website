@@ -70,8 +70,6 @@ section { border-top: 0; }
   font-family: var(--display); font-weight: 700; font-size: 1.02rem; line-height: 1.05;
   text-transform: uppercase; letter-spacing: 0.02em;
 }
-.follow-bar { margin-top: 10px; width: 100%; font-family: var(--display); font-size: 1.15rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.03em; }
 
 /* Homepage: 5 alerts on a phone, 6 on wider screens so the grid fills evenly */
 @media (max-width: 599px) { #feed > .tweet:nth-child(6), #feed > .acard:nth-child(6) { display: none; } }  /* live cards too (website QA DP-10) */
@@ -122,16 +120,17 @@ section { border-top: 0; }
   width: 100%; gap: 0; margin: 0; padding: 0; position: static;
   background: none; border: 0; overflow: visible;
   /* Phone type size scales with the screen so the 6 items always fit on one row
-     (sized for the "Use with AI" label: 13.1px at 375px, capped at 0.92rem). */
-  --nav-fs: 3.5vw;
+     (sized for "Tonight's games" + "Ask AI": 12.75px at 375px, 12.24px at 360px, capped at 0.92rem;
+     side padding trimmed to 2px first, the spare width goes between items). */
+  --nav-fs: 3.4vw;
 }
 .site-header .topnav > a,
 .site-header .nav-more > summary {
-  display: flex; align-items: center; min-height: 44px; padding: 0 4px;
-  color: var(--text-2, #8B949E); text-decoration: none; font-size: clamp(11px, var(--nav-fs), 0.92rem); font-weight: 500;
+  display: flex; align-items: center; min-height: 44px; padding: 0 2px;
+  color: var(--text-2, #8B949E); text-decoration: none; font-size: max(clamp(11px, var(--nav-fs), 0.92rem), 0.68rem); font-weight: 500;
   line-height: 1.2; white-space: nowrap; border-radius: 8px;
 }
-.site-header .topnav > a:first-child { margin-left: -4px; }   /* line the first label up with the logo */
+.site-header .topnav > a:first-child { margin-left: -2px; }   /* line the first label up with the logo */
 .site-header .topnav > a:hover,
 .site-header .nav-more > summary:hover { color: var(--text, #E6EDF3); background: var(--surface, #161B22); }
 .site-header .topnav a[aria-current="page"] { color: var(--text, #E6EDF3); background: var(--accent-bg, rgba(108,60,225,0.14)); }
@@ -142,7 +141,7 @@ section { border-top: 0; }
 
 /* "More": native <details>, no script */
 .site-header .nav-more { position: relative; border: 0; padding: 0; margin: 0; }
-.site-header .nav-more > summary { cursor: pointer; list-style: none; gap: 4px; justify-content: flex-start; font-weight: 500; margin-right: -4px; }
+.site-header .nav-more > summary { cursor: pointer; list-style: none; gap: 4px; justify-content: flex-start; font-weight: 500; margin-right: -2px; }
 .site-header .nav-more > summary::-webkit-details-marker { display: none; }
 .site-header .nav-more > summary::after {
   content: ""; width: 5px; height: 5px; margin-top: -3px;
@@ -190,24 +189,24 @@ section { border-top: 0; }
 }
 @media (min-width: 1000px) { .site-header { padding-top: 28px; } }
 
-/* Footer: 4 short groups, 2 columns on phones, 4 from 760px */
+/* Footer: 4 short groups. Phones: 2 columns filled top to bottom (Today over Players,
+   Help & more over Legal) so each column is an evenly spaced stack; 4 columns from 760px. */
 .site-footer { border-top: 1px solid var(--border, rgba(139,148,158,0.16)); padding: 24px 0 40px; margin-top: 8px; color: var(--text-3, #848D97); font-size: 0.9rem; }
-.site-footer .foot-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 16px; margin: 0 0 16px; padding: 0; position: static; background: none; border: 0; }
+.site-footer .foot-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto; grid-auto-flow: column; gap: 18px 16px; margin: 0 0 14px; padding: 0; position: static; background: none; border: 0; }
 .site-footer .foot-h {
   font-family: var(--display, 'Barlow Condensed', 'Inter', system-ui, sans-serif); font-size: 0.8rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.12em; line-height: 1.2; color: var(--text-3, #848D97); margin: 0 0 2px;
+  text-transform: uppercase; letter-spacing: 0.12em; line-height: 1.2; color: var(--text-3, #848D97); margin: 0;
 }
 .site-footer ul { list-style: none; margin: 0; padding: 0; }
 .site-footer li a {
-  display: flex; align-items: center; min-height: 44px; padding: 0;
+  display: flex; align-items: center; min-height: 36px; padding: 0;   /* compact rows, still an easy tap */
   color: var(--text-2, #8B949E); text-decoration: none; overflow-wrap: anywhere; line-height: 1.25;
 }
 .site-footer li a:hover { color: var(--text, #E6EDF3); }
 .site-footer li a[aria-current="page"] { color: var(--text, #E6EDF3); }
 .site-footer .foot-note { color: var(--text-3, #848D97); font-size: 0.85rem; margin: 0; }
 @media (min-width: 760px) {
-  .site-footer .foot-nav { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px 28px; }
-  .site-footer li a { min-height: 36px; }   /* pointer screens; phones keep 44px */
+  .site-footer .foot-nav { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: none; grid-auto-flow: row; gap: 20px 28px; }
 }
 @media (min-width: 760px) and (pointer: coarse) { .site-footer li a { min-height: 44px; } }
 
@@ -241,19 +240,17 @@ section { border-top: 0; }
 .ac-foot a { color: var(--accent-2); text-decoration: none; font-weight: 600; white-space: nowrap; }
 #feed, #list .feed { align-items: stretch !important; }
 
-/* Homepage tiles: three across on phones; a list with descriptions on laptops */
+/* Homepage tiles: six tiles, 2 x 3 on phones, 3 x 2 from tablet width; descriptions on laptops */
 .tile-text { display: flex; flex-direction: column; gap: 4px; }
 .tile-desc { display: none; }
 @media (min-width: 1000px) {
   .hero-split { align-items: center; padding: 56px 0 40px; }
   .hero-split h1 { font-size: 4.2rem; }
-  .hero-split .tiles { grid-template-columns: 1fr; gap: 10px; }
-  .hero-split .tile { flex-direction: row; justify-content: flex-start; text-align: left; min-height: 0; padding: 16px 18px; gap: 16px; }
+  .hero-split .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .hero-split .tile { align-items: flex-start; justify-content: flex-start; text-align: left; min-height: 0; padding: 18px 16px; gap: 12px; }
   .hero-split .tile svg { width: 26px; height: 26px; flex: none; }
-  .hero-split .tile::after { content: "→"; margin-left: auto; color: var(--text-3); font-size: 1.1rem; }
-  .hero-split .tile:hover::after { color: var(--accent-2); }
-  .tile-desc { display: block; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--text-2); text-transform: none; letter-spacing: 0; font-weight: 400; }
-  .tile-text > span { font-size: 1.2rem; }
+  .tile-desc { display: block; font-family: 'Inter', sans-serif; font-size: 0.82rem; line-height: 1.35; color: var(--text-2); text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .tile-text > span { font-size: 1.15rem; }
 }
 
 /* Buttons that shouldn't stretch edge to edge on wide screens */
@@ -272,13 +269,6 @@ section { border-top: 0; }
   .legend { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* Homepage value points */
-.values { display: grid; gap: 10px; padding: 8px 0 20px; }
-.value { display: flex; gap: 12px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
-.value svg { width: 22px; height: 22px; color: var(--accent-2); flex: none; margin-top: 2px; }
-.value b { display: block; font-family: var(--display); font-weight: 700; font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.02em; }
-.value span { display: block; color: var(--text-2); font-size: 0.9rem; margin-top: 2px; }
-@media (min-width: 760px) { .values { grid-template-columns: repeat(3, 1fr); gap: 14px; } }
 
 /* Pickups page: tag key inline */
 .tagkey { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; color: var(--text-2); font-size: 0.85rem; }
@@ -371,8 +361,9 @@ section { border-top: 0; }
 .losing ul { list-style: none; margin-top: 8px; }
 .losing ul li { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid var(--border); font-size: 0.93rem; }
 .losing .minus { margin-left: auto; font-family: var(--display); font-weight: 800; font-size: 1.15rem; color: #FF7B72; }
-.tiles { grid-template-columns: repeat(2, 1fr); }
+.tiles { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 1fr; }   /* every row the same height */
 .tiles .tile { min-height: 96px; }
+@media (min-width: 600px) { .tiles { grid-template-columns: repeat(3, 1fr); } }
 
 /* Skip link (website QA SA-14) */
 .skip-link { position: absolute; left: -9999px; top: 8px; z-index: 1000; background: #6C3CE1; color: #fff; padding: 10px 14px; border-radius: 8px; font-weight: 600; text-decoration: none; }
@@ -389,3 +380,15 @@ code { overflow-wrap: anywhere; word-break: break-word; }
 .star { position: relative; }
 .star::before { content: ""; position: absolute; inset: -7px; }
 .ac-picks .star::before { inset: -9px; }
+
+/* Large text settings (website QA SA-10): nav labels grow with the text size (the 0.68rem floor equals
+   today's 11px minimum at normal size), the menu wraps to a second row only when it no longer fits,
+   the desktop header lets Follow on X drop below, and the logo letter stays inside its square. */
+.site-header .topnav { flex-wrap: wrap; }
+@media (min-width: 880px) { .site-header { flex-wrap: wrap; } }
+.site-header .logo { font-size: min(1.1rem, 22px); }
+
+/* Copy button next to the connector address (website QA SA-20) */
+.copy-btn { font: inherit; font-size: 0.85rem; font-weight: 600; margin-left: 8px; padding: 0 14px; min-height: 44px;
+  border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; vertical-align: middle; }
+.copy-btn:hover { background: var(--accent-bg); }

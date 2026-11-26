@@ -166,6 +166,76 @@
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/site.css">
+  <style>
+    /* Ask AI page (simpler layout draft, Nov 2026). Page-only rules; loaded after site.css on purpose. */
+    .ask-hero { padding: 28px 0 8px; }
+    .ask h1 { font-size: clamp(2.1rem, 10vw, 3.2rem); }
+    .ask .lede { color: var(--text-2); font-size: 1.05rem; margin-top: 12px; max-width: 34em; }
+    .ask-facts { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .ask-facts li { font-size: 0.9rem; font-weight: 600; color: var(--text); background: var(--surface);
+      border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px; }
+    .ask section { padding: 24px 0; }
+    .ask-setup { padding-top: 16px !important; }
+    .ask-sub { color: var(--text-2); font-size: 0.95rem; margin-top: 6px; }
+    .ask-note { color: var(--text-2); font-size: 0.9rem; margin-top: 14px; max-width: 44rem; }
+    .ask-note b { color: var(--text); }
+    .ask a:not(.btn) { color: var(--accent-2); text-underline-offset: 2px; }
+
+    /* The three assistant choices: native <details>, one open at a time (name="assistant") */
+    .pickers { display: grid; gap: 10px; margin-top: 14px; }
+    .pickers, .ask details.more-box, .asks { max-width: 40rem; }
+    .ask details.picker, .ask details.more-box { border: 1px solid var(--border); border-radius: 14px;
+      background: var(--surface); padding: 0; margin: 0; }
+    .ask details.picker[open] { border-color: var(--accent); }
+    .ask details.picker > summary, .ask details.more-box > summary {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      min-height: 56px; padding: 0 16px; cursor: pointer; list-style: none; border-radius: 14px; }
+    .ask details.picker > summary { font-family: var(--display); font-size: 1.45rem; font-weight: 700; letter-spacing: 0.01em; }
+    .ask details.more-box > summary { min-height: 48px; font-weight: 600; font-size: 0.98rem; }
+    .ask details > summary::-webkit-details-marker { display: none; }
+    .ask details.picker > summary::after, .ask details.more-box > summary::after {
+      content: ""; flex: none; width: 10px; height: 10px; margin-right: 4px;
+      border-right: 2px solid var(--text-2); border-bottom: 2px solid var(--text-2);
+      transform: rotate(45deg) translate(-2px, -2px); transition: transform .15s; }
+    .ask details[open] > summary::after { content: ""; transform: rotate(-135deg) translate(-2px, -2px); }
+    .ask details > summary:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+    .ask details.more-box { margin-top: 14px; }
+    .picker-body, .more-body { padding: 0 16px 16px; }
+    .more-body p { color: var(--text-2); font-size: 0.95rem; margin-top: 8px; }
+    .more-body p b, .more-body p strong { color: var(--text); }
+
+    /* Numbered steps, one action each */
+    .steps { list-style: none; counter-reset: step; display: grid; gap: 12px; margin-top: 4px; }
+    .steps > li { counter-increment: step; position: relative; padding-left: 38px; min-height: 28px; font-size: 1rem; }
+    .steps > li::before { content: counter(step); position: absolute; left: 0; top: -1px; width: 28px; height: 28px;
+      border-radius: 50%; background: var(--accent-bg); color: var(--accent-2); font-weight: 700; font-size: 0.9rem;
+      display: grid; place-items: center; }
+    .steps b { font-weight: 600; }
+    .ask-btn { margin-top: 10px; color: #fff !important; text-decoration: none; max-width: 22rem; }
+    .steps-note { color: var(--text-2); font-size: 0.9rem; margin-top: 12px; }
+    .steps-next { font-size: 0.95rem; margin-top: 12px; }
+
+    /* The address: wraps inside its box and never pushes the page sideways */
+    .addr { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; max-width: 100%; }
+    .addr code { flex: 1 1 14rem; min-width: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 12px; font-size: 0.88rem; overflow-wrap: anywhere; word-break: normal; }
+    .addr .copy-btn { margin-left: 0; min-width: 72px; }
+
+    /* Try it, what it can look up */
+    .asks, .can, .lines { list-style: none; margin-top: 12px; }
+    .asks li { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-top: 8px; }
+    .can li, .lines li { padding: 9px 0; border-bottom: 1px solid var(--border); }
+    .can li:last-child, .lines li:last-child { border-bottom: 0; }
+    .lines li { color: var(--text-2); font-size: 0.95rem; }
+    .ask-link { margin-top: 14px; font-size: 0.95rem; }
+    .ask-link a, .ask-stuck a { display: inline-block; padding: 10px 0; margin: -10px 0; }
+
+    /* End: stuck, privacy, contact */
+    .ask-stuck { font-size: 1rem; margin-bottom: 8px; }
+    .ask-end h2 { margin-top: 22px; }
+    .ask-end p { color: var(--text-2); font-size: 0.95rem; margin-top: 10px; max-width: 44rem; }
+    .ask-end p b { color: var(--text); }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -191,53 +261,139 @@
       <a class="nav-follow" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
     </header>
 
-    <main id="main">
-      <div class="hero legal">
-        <p class="eyebrow">Connector</p>
-        <h1>Naismith AI in your AI assistant</h1>
-        <p class="lede">Add Naismith AI to Claude, ChatGPT or Gemini, then ask about NBA injuries in plain words. You get our live status, return timelines and who to pick up, the same data behind our alerts on X. Free, read-only, no sign-in.</p>
-        <p style="margin-top:16px"><a class="btn btn-primary" style="color:#fff !important;text-decoration:none" href="https://chatgpt.com/plugins/plugin_asdk_app_6aff73a914608191bb59bfcefb3b625f" target="_blank" rel="noopener">Add to ChatGPT</a></p>
+    <main id="main" class="ask">
+      <div class="hero ask-hero">
+        <h1>Ask your AI about NBA injuries</h1>
+        <p class="lede">Add Naismith AI to ChatGPT, Claude or Gemini once. Then ask in plain words who's out, when they're back and who to pick up.</p>
+        <ul class="ask-facts">
+          <li>Free.</li>
+          <li>No account.</li>
+          <li>It only answers questions.</li>
+        </ul>
       </div>
 
-      <h2>Connector address</h2>
-      <p class="copy-row"><code id="mcp-url">https://www.naismithai.com/mcp/v1</code><button type="button" class="copy-btn" data-copy="https://www.naismithai.com/mcp/v1">Copy</button></p>
-      <p>Authentication: <strong>none</strong>. Transport: <strong>Streamable HTTP</strong>.</p>
+      <section class="ask-setup" aria-labelledby="pick">
+        <h2 id="pick">Pick your assistant</h2>
+        <p class="ask-sub">Choose yours to see the steps.</p>
 
-      <h2>Add it</h2>
-      <ul>
-        <li><strong>Claude</strong>: Settings → Connectors → Add custom connector. Name it Naismith AI and paste the address.</li>
-        <li><strong>ChatGPT</strong>: open <a href="https://chatgpt.com/plugins/plugin_asdk_app_6aff73a914608191bb59bfcefb3b625f" target="_blank" rel="noopener">Naismith AI in ChatGPT's plugin directory</a> and press Install plugin.</li>
-        <li><strong>Gemini</strong>: Apps → Connectors → + → Connect to an MCP server. Paste the address, press Next, accept and Connect. In a chat, type @ and pick Naismith AI. Works best in Auto mode.</li>
-        <li><strong>Grok</strong> (paid plans, not yet tested by us): grok.com → Connectors → New connector → Custom. Choose Streamable HTTP, paste the address and set Authentication to None.</li>
-      </ul>
-      <p>Menus change often; if a step looks different, look for "connectors", "apps" or "MCP" in your assistant's settings. Assistants that support prompts also get three ready-made ones: check my roster, who to start tonight, and best pickups.</p>
+        <div class="pickers">
+          <details class="picker" name="assistant">
+            <summary>ChatGPT</summary>
+            <div class="picker-body">
+              <ol class="steps">
+                <li>Open Naismith AI in ChatGPT.
+                  <a class="btn btn-primary ask-btn" href="https://chatgpt.com/plugins/plugin_asdk_app_6aff73a914608191bb59bfcefb3b625f" target="_blank" rel="noopener">Add to ChatGPT</a></li>
+                <li>Press <b>Install plugin</b>.</li>
+              </ol>
+              <p class="steps-next">Done. <a href="#try">Try it below</a>.</p>
+            </div>
+          </details>
 
-      <h2>What to ask</h2>
-      <ul>
-        <li>"Here's my roster: … Anything I should know before tonight?"</li>
-        <li>"Who should I pick up with Stephen Curry out?"</li>
-        <li>"Best adds right now for a 12-team league?"</li>
-        <li>"What injury news broke in the last few hours?"</li>
-        <li>"Who's out tonight for the Lakers and Celtics?"</li>
-        <li>"Is Jalen Brunson playing tonight?"</li>
-      </ul>
-      <p><a href="/ai-fantasy-nba.html">AI for fantasy NBA</a></p>
+          <details class="picker" name="assistant">
+            <summary>Claude</summary>
+            <div class="picker-body">
+              <ol class="steps">
+                <li>Open <b>Settings</b>, then <b>Connectors</b>.</li>
+                <li>Press <b>Add custom connector</b>.</li>
+                <li>Name it <b>Naismith AI</b>.</li>
+                <li>Paste this address:
+                  <span class="addr"><code id="mcp-url">https://www.naismithai.com/<wbr>mcp/v1</code><button type="button" class="copy-btn" data-copy="https://www.naismithai.com/mcp/v1">Copy</button></span></li>
+                <li>Press <b>Add</b> or a similar button to finish.</li>
+              </ol>
+              <p class="steps-next">Done. <a href="#try">Try it below</a>.</p>
+            </div>
+          </details>
 
-      <h2>What it can look up</h2>
-      <ul>
-        <li><strong>Check players</strong>: status (out, doubtful, questionable, probable, available), the injury, return timeline and earliest return date, whether his team plays today and how many games it has left this week, and for injured players the teammates who gain the most. Up to 30 names at once; partial or misspelled names work.</li>
-        <li><strong>Who gains when a player sits</strong>: projected fantasy points per game each teammate should add, with the evidence: minutes with and without him and what each teammate actually did in the games he missed.</li>
-        <li><strong>Tonight</strong>: today's games with tip-off times (ET) and each team's injury news, or just the games your players are in.</li>
-        <li><strong>Best pickups</strong>: the top adds across every current injury, for 10-team, 12-team or deep leagues, with the share of ESPN leagues that already roster each one.</li>
-        <li><strong>Latest news</strong>: status changes from the last few hours (or since your last check), with the insider who reported it.</li>
-      </ul>
-      <p>Numbers use points scoring (points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, threes 0.5, turnovers −1). When a player has missed games before, they lean on what each teammate actually did in those games; otherwise they're a conservative model projection. In a category league, read them as a guide to who gets more minutes. Statuses come from the official NBA injury report, ESPN, and NBA insiders and beat writers, usually within minutes. Check before lineups lock.</p>
+          <details class="picker" name="assistant">
+            <summary>Gemini</summary>
+            <div class="picker-body">
+              <ol class="steps">
+                <li>Open <b>Apps</b>, then <b>Connectors</b>.</li>
+                <li>Press <b>+</b>, then <b>Connect to an MCP server</b>.</li>
+                <li>Paste this address:
+                  <span class="addr"><code>https://www.naismithai.com/<wbr>mcp/v1</code><button type="button" class="copy-btn" data-copy="https://www.naismithai.com/mcp/v1">Copy</button></span></li>
+                <li>Press <b>Next</b>.</li>
+                <li>Accept and press <b>Connect</b>.</li>
+                <li>In a chat, type <b>@</b> and pick <b>Naismith AI</b>.</li>
+              </ol>
+              <p class="steps-note">Works best in Auto mode.</p>
+              <p class="steps-next">Done. <a href="#try">Try it below</a>.</p>
+            </div>
+          </details>
+        </div>
 
-      <h2>Privacy</h2>
-      <p>The connector is read-only and needs no account. It receives only what your assistant sends it, such as player names, and we don't store your questions or link them to you. See the <a href="/privacy.html">privacy policy</a> and <a href="/terms.html">terms of use</a>.</p>
+        <p class="ask-note">Menus change often. If a step looks different, look for "connectors", "apps" or "MCP" in your assistant's settings.</p>
 
-      <h2>Contact</h2>
-      <p>Questions or problems: <a href="mailto:naismithai@gmail.com?subject=Naismith%20AI%20connector">naismithai@gmail.com</a> or <a href="https://x.com/NaismithAIApp">@NaismithAIApp</a> on X. Not affiliated with the NBA.</p>
+        <details class="more-box">
+          <summary>Other assistants</summary>
+          <div class="more-body">
+            <p><b>Grok</b> (paid plans, not yet tested by us)</p>
+            <ol class="steps">
+              <li>On grok.com, open <b>Connectors</b>, then <b>New connector</b>, then <b>Custom</b>.</li>
+              <li>Choose <b>Streamable HTTP</b>.</li>
+              <li>Paste this address:
+                <span class="addr"><code>https://www.naismithai.com/<wbr>mcp/v1</code><button type="button" class="copy-btn" data-copy="https://www.naismithai.com/mcp/v1">Copy</button></span></li>
+              <li>Set Authentication to <b>None</b>.</li>
+            </ol>
+          </div>
+        </details>
+      </section>
+
+      <section id="try" aria-labelledby="try-h">
+        <h2 id="try-h">Try it</h2>
+        <p class="ask-sub">Ask in your own words. For example:</p>
+        <ul class="asks">
+          <li>"Is Jalen Brunson playing tonight?"</li>
+          <li>"Who should I pick up with Stephen Curry out?"</li>
+          <li>"Here's my roster: … Anything I should know before tonight?"</li>
+        </ul>
+        <p class="ask-note"><b>If it answers without Naismith AI:</b> Mention it by name: "Ask Naismith AI who's out tonight." In ChatGPT or Gemini, type @ and pick Naismith AI.</p>
+        <p class="ask-link">More on using AI for your fantasy team: <a href="/ai-fantasy-nba.html">AI for fantasy NBA</a></p>
+      </section>
+
+      <section aria-labelledby="can-h">
+        <h2 id="can-h">What it can look up</h2>
+        <ul class="can">
+          <li>A player's status and when he's expected back</li>
+          <li>Who gains when a player sits</li>
+          <li>Tonight's games and each team's injury news</li>
+          <li>The best pickups for 10-team, 12-team or deep leagues</li>
+          <li>The latest injury news from the last few hours</li>
+        </ul>
+
+        <details class="more-box">
+          <summary>How the numbers work</summary>
+          <div class="more-body">
+            <ul class="lines">
+              <li>Numbers use points scoring: points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, threes 0.5, turnovers −1.</li>
+              <li>When a player has missed games before, they lean on what each teammate actually did in those games.</li>
+              <li>Otherwise they're a conservative model projection.</li>
+              <li>In a category league, read them as a guide to who gets more minutes.</li>
+              <li>Statuses come from the official NBA injury report and trusted NBA reporters.</li>
+              <li>Check before lineups lock.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="more-box">
+          <summary>For developers</summary>
+          <div class="more-body">
+            <p>Address: <span class="addr"><code>https://www.naismithai.com/<wbr>mcp/v1</code><button type="button" class="copy-btn" data-copy="https://www.naismithai.com/mcp/v1">Copy</button></span></p>
+            <p>Authentication: <strong>none</strong>. Transport: <strong>Streamable HTTP</strong>.</p>
+            <p>Assistants that support prompts also get three ready-made ones: check my roster, who to start tonight, and best pickups.</p>
+          </div>
+        </details>
+      </section>
+
+      <section class="ask-end" aria-labelledby="priv-h">
+        <p class="ask-stuck"><b>Stuck?</b> See <a href="/help.html">Help</a>.</p>
+
+        <h2 id="priv-h">Privacy</h2>
+        <p>The connector is read-only and needs no account. It receives only what your assistant sends it, such as player names, and we don't store your questions or link them to you. See the <a href="/privacy.html">privacy policy</a> and <a href="/terms.html">terms of use</a>.</p>
+
+        <h2>Contact</h2>
+        <p>Questions or problems: <a href="mailto:naismithai@gmail.com?subject=Naismith%20AI%20connector">naismithai@gmail.com</a> or <a href="https://x.com/NaismithAIApp">@NaismithAIApp</a> on X. Not affiliated with the NBA.</p>
+      </section>
     </main>
 
     <footer class="site-footer">
