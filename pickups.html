@@ -227,16 +227,15 @@
     <header class="site-header">
       <a class="brand" href="/"><div class="logo" aria-hidden="true">N</div><div class="brand-name">Naismith AI</div></a>
       <nav class="topnav" aria-label="Main">
-        <a href="/tonight.html">Tonight</a>
+        <a href="/tonight.html">Tonight's games</a>
         <a href="/alerts.html">Alerts</a>
         <a href="/pickups.html" aria-current="page">Pickups</a>
         <a href="/app.html#lookup">Lookup</a>
-        <a class="nav-ai" href="/connector.html">Use with AI</a>
+        <a class="nav-ai" href="/connector.html">Ask AI</a>
         <details class="nav-more">
           <summary>More</summary>
           <div class="nav-more-menu">
             <a href="/recap.html">Recap</a>
-            <a href="/injuries">Injury report</a>
             <a href="/players">Injuries by player</a>
             <a href="/help.html">Help</a>
             <a class="nav-more-x" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
@@ -259,7 +258,7 @@
           <button class="chip" data-f="12" aria-pressed="false">12-team</button>
           <button class="chip" data-f="deep" aria-pressed="true">Deep</button>
         </div>
-        <p class="chip-note">10-team shows All leagues picks only.</p>
+        <p class="chip-note" id="pick-count" aria-live="polite"></p>
         <ul class="tagkey" aria-label="What the tags mean">
           <li>🔥 <b>All leagues:</b> worth adding in any league</li>
           <li>🎯 <b>12+ team:</b> worth adding in 12+ team leagues</li>
@@ -300,7 +299,7 @@
         <h2 id="next-h">Next</h2>
         <ul class="next-links">
           <li><a href="/tonight.html"><b>Tonight</b><span>Every game on tonight's slate, with each team's injury news and who to pick up if a player sits.</span></a></li>
-          <li><a href="/connector.html"><b>Use with AI</b><span>Add Naismith AI to Claude, ChatGPT or Gemini, then ask about NBA injuries in plain words.</span></a></li>
+          <li><a href="/connector.html"><b>Use with AI assistants</b><span>Add Naismith AI to Claude, ChatGPT or Gemini, then ask about NBA injuries in plain words.</span></a></li>
         </ul>
       </section>
 
@@ -335,7 +334,7 @@
         <div class="foot-group">
           <h2 class="foot-h">Help &amp; more</h2>
           <ul>
-            <li><a href="/connector.html">Use with AI</a></li>
+            <li><a href="/connector.html">Ask AI</a></li>
             <li><a href="/help.html">Help</a></li>
             <li><a href="mailto:naismithai@gmail.com?subject=Naismith%20AI%20feedback">Feedback</a></li>
             <li><a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a></li>
@@ -381,10 +380,18 @@
       return 'With ' + parts.join(', and ') + '.';
     }
     var LIMIT = 25, showAll = false;
+    // Count line under the league-size chips: total picks in this view, not just the first 25 shown.
+    var COUNT_FOR = {std: ['10-team leagues', 'All leagues picks only'], '12': ['12-team leagues', 'All leagues and 12+ team picks'],
+                     deep: ['deep leagues', 'every pick']};
+    function setCount(n) {
+      var c = COUNT_FOR[filter], el = document.getElementById('pick-count');
+      el.textContent = n ? n + (n === 1 ? ' pick' : ' picks') + ' for ' + c[0] + ' (' + c[1] + ')' : '';
+    }
     function renderBoard() {
       var list = document.getElementById('picks');
       if (!board) return;
       var picks = board.pickups.filter(function (p) { return SHOW[filter].indexOf(p.tag) >= 0; });
+      setCount(picks.length);
       if (!picks.length) {
         list.innerHTML = '<li class="empty">' + (board.building ? 'Updating the board…' :
           'No pickups at this league size right now.') + '</li>';
@@ -483,6 +490,7 @@
         })
         .catch(function () {
           document.getElementById('picks').innerHTML = '<li class="empty">Couldn\'t load pickups. Try again in a minute.</li>';
+          document.getElementById('pick-count').textContent = '';
           document.getElementById('injuries').innerHTML = '<p class="empty">Couldn\'t load the injury list. Try again in a minute.</p>';
           document.getElementById('losing-sec').hidden = true;
           document.getElementById('jump-losing').hidden = true;

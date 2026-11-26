@@ -1289,16 +1289,17 @@
       width: 100%; gap: 0; margin: 0; padding: 0; position: static;
       background: none; border: 0; overflow: visible;
       /* Phone type size scales with the screen so the 6 items always fit on one row
-         (sized for the "Use with AI" label: 13.1px at 375px, capped at 0.92rem). */
-      --nav-fs: 3.5vw;
+         (sized for "Tonight's games" + "Ask AI": 12.75px at 375px, 12.24px at 360px, capped at 0.92rem;
+         side padding trimmed to 2px first, the spare width goes between items). */
+      --nav-fs: 3.4vw;
     }
     .site-header .topnav > a,
     .site-header .nav-more > summary {
-      display: flex; align-items: center; min-height: 44px; padding: 0 4px;
+      display: flex; align-items: center; min-height: 44px; padding: 0 2px;
       color: var(--text-2, #8B949E); text-decoration: none; font-size: clamp(11px, var(--nav-fs), 0.92rem); font-weight: 500;
       line-height: 1.2; white-space: nowrap; border-radius: 8px;
     }
-    .site-header .topnav > a:first-child { margin-left: -4px; }   /* line the first label up with the logo */
+    .site-header .topnav > a:first-child { margin-left: -2px; }   /* line the first label up with the logo */
     .site-header .topnav > a:hover,
     .site-header .nav-more > summary:hover { color: var(--text, #E6EDF3); background: var(--surface, #161B22); }
     .site-header .topnav a[aria-current="page"] { color: var(--text, #E6EDF3); background: var(--accent-bg, rgba(108,60,225,0.14)); }
@@ -1309,7 +1310,7 @@
 
     /* "More": native <details>, no script */
     .site-header .nav-more { position: relative; border: 0; padding: 0; margin: 0; }
-    .site-header .nav-more > summary { cursor: pointer; list-style: none; gap: 4px; justify-content: flex-start; font-weight: 500; margin-right: -4px; }
+    .site-header .nav-more > summary { cursor: pointer; list-style: none; gap: 4px; justify-content: flex-start; font-weight: 500; margin-right: -2px; }
     .site-header .nav-more > summary::-webkit-details-marker { display: none; }
     .site-header .nav-more > summary::after {
       content: ""; width: 5px; height: 5px; margin-top: -3px;
@@ -1357,24 +1358,24 @@
     }
     @media (min-width: 1000px) { .site-header { padding-top: 28px; } }
 
-    /* Footer: 4 short groups, 2 columns on phones, 4 from 760px */
+    /* Footer: 4 short groups. Phones: 2 columns filled top to bottom (Today over Players,
+       Help & more over Legal) so each column is an evenly spaced stack; 4 columns from 760px. */
     .site-footer { border-top: 1px solid var(--border, rgba(139,148,158,0.16)); padding: 24px 0 40px; margin-top: 8px; color: var(--text-3, #848D97); font-size: 0.9rem; }
-    .site-footer .foot-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 16px; margin: 0 0 16px; padding: 0; position: static; background: none; border: 0; }
+    .site-footer .foot-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto; grid-auto-flow: column; gap: 18px 16px; margin: 0 0 14px; padding: 0; position: static; background: none; border: 0; }
     .site-footer .foot-h {
       font-family: var(--display, 'Barlow Condensed', 'Inter', system-ui, sans-serif); font-size: 0.8rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.12em; line-height: 1.2; color: var(--text-3, #848D97); margin: 0 0 2px;
+      text-transform: uppercase; letter-spacing: 0.12em; line-height: 1.2; color: var(--text-3, #848D97); margin: 0;
     }
     .site-footer ul { list-style: none; margin: 0; padding: 0; }
     .site-footer li a {
-      display: flex; align-items: center; min-height: 44px; padding: 0;
+      display: flex; align-items: center; min-height: 36px; padding: 0;   /* compact rows, still an easy tap */
       color: var(--text-2, #8B949E); text-decoration: none; overflow-wrap: anywhere; line-height: 1.25;
     }
     .site-footer li a:hover { color: var(--text, #E6EDF3); }
     .site-footer li a[aria-current="page"] { color: var(--text, #E6EDF3); }
     .site-footer .foot-note { color: var(--text-3, #848D97); font-size: 0.85rem; margin: 0; }
     @media (min-width: 760px) {
-      .site-footer .foot-nav { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px 28px; }
-      .site-footer li a { min-height: 36px; }   /* pointer screens; phones keep 44px */
+      .site-footer .foot-nav { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: none; grid-auto-flow: row; gap: 20px 28px; }
     }
     @media (min-width: 760px) and (pointer: coarse) { .site-footer li a { min-height: 44px; } }
     @media (min-width: 1000px) { .wrap { max-width: 1180px; padding: 0 40px; } }
@@ -1417,16 +1418,15 @@
     <header class="site-header">
       <a class="brand" href="/"><div class="logo" aria-hidden="true">N</div><div class="brand-name">Naismith AI</div></a>
       <nav class="topnav" aria-label="Main">
-        <a href="/tonight.html">Tonight</a>
+        <a href="/tonight.html">Tonight's games</a>
         <a href="/alerts.html">Alerts</a>
         <a href="/pickups.html">Pickups</a>
         <a href="/app.html#lookup" aria-current="page">Lookup</a>
-        <a class="nav-ai" href="/connector.html">Use with AI</a>
+        <a class="nav-ai" href="/connector.html">Ask AI</a>
         <details class="nav-more">
           <summary>More</summary>
           <div class="nav-more-menu">
             <a href="/recap.html">Recap</a>
-            <a href="/injuries">Injury report</a>
             <a href="/players">Injuries by player</a>
             <a href="/help.html">Help</a>
             <a class="nav-more-x" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
@@ -1600,7 +1600,7 @@
         <div class="foot-group">
           <h2 class="foot-h">Help &amp; more</h2>
           <ul>
-            <li><a href="/connector.html">Use with AI</a></li>
+            <li><a href="/connector.html">Ask AI</a></li>
             <li><a href="/help.html">Help</a></li>
             <li><a href="mailto:naismithai@gmail.com?subject=Naismith%20AI%20feedback">Feedback</a></li>
             <li><a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a></li>
