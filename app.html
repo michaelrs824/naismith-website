@@ -1274,7 +1274,7 @@
     /* Shared site header (same as the other pages) */
     .wrap { max-width: 640px; margin: 0 auto; padding: 0 16px; }
     .site-header .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
-    .site-header .logo { width: 34px; height: 34px; border-radius: 9px; background: #6C3CE1; display: grid; place-items: center; font-weight: 800; color: #fff; font-size: 1.1rem; }
+    .site-header .logo { width: 34px; height: 34px; border-radius: 9px; background: #6C3CE1; display: grid; place-items: center; font-weight: 800; color: #fff; font-size: min(1.1rem, 22px); }
     .site-header .brand-name { font-family: var(--display); font-weight: 700; font-size: 1.5rem; letter-spacing: 0.01em; }
     @media (min-width: 600px) { .wrap { max-width: 920px; padding: 0 24px; } }
     /* Shared header + footer (Nov 2026). Copied from site.css (this page does not load it);
@@ -1296,7 +1296,7 @@
     .site-header .topnav > a,
     .site-header .nav-more > summary {
       display: flex; align-items: center; min-height: 44px; padding: 0 2px;
-      color: var(--text-2, #8B949E); text-decoration: none; font-size: clamp(11px, var(--nav-fs), 0.92rem); font-weight: 500;
+      color: var(--text-2, #8B949E); text-decoration: none; font-size: max(clamp(11px, var(--nav-fs), 0.92rem), 0.68rem); font-weight: 500;
       line-height: 1.2; white-space: nowrap; border-radius: 8px;
     }
     .site-header .topnav > a:first-child { margin-left: -2px; }   /* line the first label up with the logo */
@@ -1399,6 +1399,11 @@
       .lookup-container > *, .compare-container > *, .sim-container > * { max-width: 820px; }
     }
     .app-tabs { display: flex; align-items: center; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .form-hint { min-height: 1.2em; margin-top: 0.6rem; color: #F2C14E; font-size: 0.9rem; }
+    .form-hint:empty { margin-top: 0; min-height: 0; }
+    /* Large text settings (SA-10), same as site.css */
+    .site-header .topnav { flex-wrap: wrap; }
+    @media (min-width: 880px) { .site-header { flex-wrap: wrap; } }
     .app-tabs .nav-tab { white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center; }
     .app-tabs .nav-status { margin-left: auto; white-space: nowrap; padding-left: 12px; }
     @media (max-width: 768px) {
@@ -1506,6 +1511,7 @@
           </div>
           <button class="lookup-btn" id="lookupBtn" onclick="runLookup()">Look Up</button>
         </div>
+        <p class="form-hint" id="lookupHint" role="status" aria-live="polite"></p>
 
         <div class="lookup-results" id="lookupResults"></div>
 
@@ -1540,6 +1546,7 @@
           </div>
         </div>
         <button class="compare-btn" id="compareBtn" onclick="runComparison()">Compare Players</button>
+        <p class="form-hint" id="compareHint" role="status" aria-live="polite"></p>
 
         <div class="compare-results" id="compareResults"></div>
       </div>
@@ -2077,6 +2084,16 @@
       }
     }
 
+    // Current status for one name from /public/status (null if it fails)
+    async function fetchStatus(name) {
+      try {
+        const res = await fetchT(`${API_BASE}/public/status?players=${encodeURIComponent(name)}`);
+        if (!res.ok) return null;
+        const d = await res.json();
+        return (d.players && d.players[0]) || null;
+      } catch (e) { return null; }
+    }
+
     async function fetchPlayerData(name) {
       try {
         // apostrophes are dropped, not turned into '-' ("De'Aaron" -> "deaaron"; L-03, L-14)
@@ -2139,15 +2156,23 @@
     async function runComparison() {
       const nameA = document.getElementById('comparePlayerA').value.trim();
       const nameB = document.getElementById('comparePlayerB').value.trim();
-      if (!nameA || !nameB) return;
+      const hint = document.getElementById('compareHint');
+      if (!nameA || !nameB) {  // L-19
+        hint.textContent = 'Enter two players to compare.';
+        document.getElementById(nameA ? 'comparePlayerB' : 'comparePlayerA').focus();
+        return;
+      }
+      hint.textContent = '';
 
       const btn = document.getElementById('compareBtn');
       btn.disabled = true;
       btn.innerHTML = '<span class="inline-spinner"></span>Comparing...';
 
-      const [dataA, dataB] = await Promise.all([
+      const [dataA, dataB, stA, stB] = await Promise.all([
         fetchPlayerData(nameA),
         fetchPlayerData(nameB),
+        fetchStatus(nameA),
+        fetchStatus(nameB),
       ]);
 
       const results = document.getElementById('compareResults');
@@ -2173,8 +2198,20 @@
       });
 
       // Tie-break on FPTS, then default to true tie
-      const winner = winsA > winsB ? 'A' : winsB > winsA ? 'B'
+      const statsWinner = winsA > winsB ? 'A' : winsB > winsA ? 'B'
         : statA.avg_fpts > statB.avg_fpts ? 'A' : statB.avg_fpts > statA.avg_fpts ? 'B' : 'TIE';
+      // Injury status decides "Recommended" before the stat rows do (L-11)
+      const outA = stA && stA.status === 'out', outB = stB && stB.status === 'out';
+      const winner = outA && outB ? 'NONE' : outA ? 'B' : outB ? 'A' : statsWinner;
+      const notes = [];
+      const tl = st => (st && st.timeline && st.timeline !== 'none reported') ? ' (' + escH(st.timeline) + ')' : '';
+      if (outA && outB) notes.push('Both players are out. This compares their stats only.');
+      else if (outA) notes.push(`${statA.name} is out${tl(stA)}, so we recommend ${statB.name} for now.`);
+      else if (outB) notes.push(`${statB.name} is out${tl(stB)}, so we recommend ${statA.name} for now.`);
+      [[stA, statA], [stB, statB]].forEach(([st, s]) => {
+        if (st && (st.status === 'doubtful' || st.status === 'questionable'))
+          notes.push(`Check ${s.name}'s status before lineups lock: he's ${st.status}.`);
+      });
 
       results.innerHTML = `
         <div class="compare-grid" style="margin-top: 2rem;">
@@ -2212,11 +2249,12 @@
         <div class="compare-verdict">
           <div class="compare-verdict-title">AI Verdict</div>
           <div class="compare-verdict-text">
-            ${winner === 'TIE'
+            ${notes.map(n => `<strong>${n}</strong> `).join('')}
+            ${statsWinner === 'TIE'
               ? `<strong>Too close to call.</strong> Both players win ${winsA} of ${categories.length} categories. ${statA.avg_fpts > 0 && statB.avg_fpts > 0 ? `${statA.name} averages ${statA.avg_fpts.toFixed(1)} FPTS/G vs ${statB.name}'s ${statB.avg_fpts.toFixed(1)} FPTS/G.` : ''} Consider schedule and matchup context to decide.`
-              : `<strong>${winner === 'A' ? statA.name : statB.name}</strong> gets the edge, winning ${Math.max(winsA, winsB)} of ${categories.length} categories.
+              : `<strong>${statsWinner === 'A' ? statA.name : statB.name}</strong> gets the edge, winning ${Math.max(winsA, winsB)} of ${categories.length} categories.
             ${statA.avg_fpts > 0 && statB.avg_fpts > 0 ? `${statA.name} averages ${statA.avg_fpts.toFixed(1)} FPTS/G vs ${statB.name}'s ${statB.avg_fpts.toFixed(1)} FPTS/G. ` : ''}
-            ${(winner === 'A' ? statA : statB).stocks >= 2 ? `${winner === 'A' ? statA.name : statB.name} also provides elite stocks (${(winner === 'A' ? statA : statB).stocks.toFixed(1)} STL+BLK), a scarce category on waivers.` : ''}`}
+            ${(statsWinner === 'A' ? statA : statB).stocks >= 2 ? `${statsWinner === 'A' ? statA.name : statB.name} also provides elite stocks (${(statsWinner === 'A' ? statA : statB).stocks.toFixed(1)} STL+BLK), a scarce category on waivers.` : ''}`}
           </div>
         </div>
       `;
@@ -2470,7 +2508,9 @@
       const empty = document.getElementById('lookupEmpty');
       const btn = document.getElementById('lookupBtn');
       const query = input.value.trim();
-      if (!query) return;
+      const hint = document.getElementById('lookupHint');
+      if (!query) { hint.textContent = "Type a player's name to look him up."; input.focus(); return; }  // L-19
+      hint.textContent = '';
       const mySeq = ++lookupSeq;  // a slower earlier lookup can't overwrite this one (L-05)
       document.querySelectorAll('.autocomplete-list').forEach(l => l.classList.remove('visible'));  // L-08
       try { history.replaceState(null, '', '?player=' + encodeURIComponent(query) + '#lookup'); } catch (e) {}  // L-18
