@@ -2001,8 +2001,8 @@
           if (matches.length === 0) { list.classList.remove('visible'); return; }
 
           list.innerHTML = matches.map(p => {
-            const statusBadge = p.status && p.status !== 'ACTIVE'
-              ? `<span style="color: var(--accent-red); font-size: 0.7rem; font-weight: 600; margin-left: 4px;">${p.status}</span>`
+            const statusBadge = p.status && !/^(active|available)$/i.test(p.status)
+              ? `<span style="color: var(--accent-red); font-size: 0.7rem; font-weight: 600; margin-left: 4px;">${escH(p.status)}</span>`
               : '';
             return `<div class="autocomplete-item" data-name="${escH(p.name)}" data-team="${escH(p.team)}">
               ${escH(p.name)} <span class="autocomplete-item-team">${escH(p.team)}${p.position ? ' · ' + p.position : ''}</span>${statusBadge}

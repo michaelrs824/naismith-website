@@ -166,10 +166,9 @@
         name.textContent = p.name;
         row.appendChild(name);
         var meta = (p.team ? ' \u00b7 ' + p.team : '');
-        // No status here: /public/search returns the roster's coarse ACTIVE/OUT flag, which can disagree
-        // with the player's page (Haliburton: OUT here, Questionable there, 2026-11-26). Add it back when
-        // the search returns the same status the page shows.
-        var st = '';
+        // /public/search returns the word the player's page shows (server 67f8350, website QA SR-01),
+        // so the row and the page can't disagree. Nothing is shown for an available player.
+        var st = statusWord(p.status);
         if (meta) {
           var t = document.createElement('span');
           t.className = 'ps-team';
