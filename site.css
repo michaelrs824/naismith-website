@@ -538,6 +538,13 @@ input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:foc
 .site-header .nav-menu-panel a:hover { background: var(--accent-bg, rgba(108,60,225,0.14)); }
 .site-header .nav-menu-panel a[aria-current="page"] { color: var(--text, #E6EDF3); background: var(--accent-bg, rgba(108,60,225,0.14)); }
 .site-header .nav-menu-panel a:focus-visible { outline: 2px solid var(--accent-2, #A487F7); outline-offset: -2px; }
+/* Current page in the phone Menu and the More list: bold text and a 3px accent bar at the row's left, besides the
+   tint (the tint alone is about 1.2:1 against the panel; H-05) */
+.site-header .nav-menu-panel a[aria-current="page"], .site-header .nav-more-menu a[aria-current="page"] { position: relative; font-weight: 700; }
+.site-header .nav-menu-panel a[aria-current="page"]::after, .site-header .nav-more-menu a[aria-current="page"]::after {
+  content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 0 2px 2px 0;
+  background: var(--accent-2, #A487F7);
+}
 .site-header .nav-menu-panel .nm-more { position: relative; margin-top: 9px; }   /* the "More" links under a hairline */
 .site-header .nav-menu-panel .nm-more::before { content: ""; position: absolute; left: 12px; right: 12px; top: -5px; height: 1px; background: var(--border, rgba(139,148,158,0.16)); }
 /* Header search row: same look as the home page search bar; 16px+ text so iPhone Safari doesn't zoom */
@@ -568,3 +575,7 @@ input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:foc
   .site-header .topnav > a, .site-header .nav-more > summary { padding: 0 6px; }
   .site-header .topnav > a:first-child { margin-left: -6px; }
 }
+
+/* Pages that load their data with JavaScript: the line shown without it (H-03) */
+.noscript-msg { color: var(--text-2); margin-top: 16px; max-width: 40rem; }
+.noscript-msg a { color: var(--accent-2); font-weight: 600; }

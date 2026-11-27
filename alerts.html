@@ -169,6 +169,7 @@
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/site.css">
+  <noscript><style>.needs-js { display: none !important; }</style></noscript>
 </head>
 <body>
   <div class="wrap">
@@ -223,8 +224,8 @@
       <div class="hero" style="padding-bottom:8px">
         <h1>Latest alerts</h1>
         <p class="lede">Every injury alert from the last week, newest first, and who to pick up. FPTS/g&nbsp;= fantasy points per game.</p>
-        <div class="live"><span class="dot" id="dot"></span><span id="updated">Loading…</span></div>
-        <div class="feed-controls">
+        <div class="live needs-js"><span class="dot" id="dot"></span><span id="updated">Loading…</span></div>
+        <div class="feed-controls needs-js">
           <div class="chips" id="filters" role="group" aria-label="Status">
             <button class="chip" data-k="mine" aria-pressed="false">★ My players <span></span></button>
             <button class="chip" data-k="all" aria-pressed="true">All <span></span></button>
@@ -254,9 +255,9 @@
         </details>
       </div>
       <section aria-label="Alerts" style="border-top:0;padding-top:0">
-        <div id="list"><p class="empty">Loading alerts…</p></div>
+        <div id="list"><p class="empty needs-js">Loading alerts…</p><noscript><p class="noscript-msg">This page needs JavaScript to load the alerts. See <a href="/injuries">today's injuries and pickups</a> without it.</p></noscript></div>
         <button class="btn" id="more" style="width:100%;margin-top:16px;display:none">Show more</button>
-        <p class="star-note">☆ <b>Star a player</b> to save him on this device. Find him under Your players on the <a href="/">home page</a> and My players on <a href="/tonight.html">Tonight</a>.</p>
+        <p class="star-note needs-js">☆ <b>Star a player</b> to save him on this device. Find him under Your players on the <a href="/">home page</a> and My players on <a href="/tonight.html">Tonight</a>.</p>
       </section>
 
       <section class="next" aria-labelledby="next-h">

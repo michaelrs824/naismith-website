@@ -172,6 +172,7 @@
     .game .gp-status { display: block; text-transform: none; letter-spacing: 0; font-size: 0.82rem; font-weight: 600; line-height: 1.35; }
     .game .gp-status.probable { color: var(--green); }
     .game .gp-fp { margin-left: 0; align-self: start; padding-top: 2px; }
+    .gp-fp abbr { text-decoration: none; }
     /* "If he sits:" pickups, two to a row; each is a link to his page, at least 44px tall */
     .game .gp-picks { padding-left: 38px; margin-top: 2px; }
     .game .gp-plist { list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 12px; }
@@ -194,6 +195,7 @@
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/site.css">
+  <noscript><style>.needs-js { display: none !important; }</style></noscript>
 </head>
 <body>
   <div class="wrap">
@@ -248,8 +250,8 @@
       <div class="hero" style="padding-bottom:8px">
         <h1>Tonight's games</h1>
         <p class="lede" id="t-sub">Every game on tonight's slate, with each team's injury news and who to pick up if a player sits.</p>
-        <div class="live" id="live"><span class="dot" id="dot"></span><span id="updated">Loading…</span></div>
-        <div class="feed-controls" id="t-controls">
+        <div class="live needs-js" id="live"><span class="dot" id="dot"></span><span id="updated">Loading…</span></div>
+        <div class="feed-controls needs-js" id="t-controls">
           <div class="chips" role="group" aria-label="Show">
             <button class="chip" data-v="all" aria-pressed="true">All games</button>
             <button class="chip" data-v="mine" aria-pressed="false">★ My players</button>
@@ -264,14 +266,14 @@
             <li>👀 <b>Deep league:</b> only worth adding in 14+ team leagues</li>
             <li><b>+5.3</b> (example): extra FPTS/g while the injured player is out</li>
             <li><b>2% owned:</b> share of ESPN leagues that roster him</li>
-            <li><b>FPTS/g:</b> fantasy points per game.</li>
+            <li><b>Proj. 30 FPTS/g</b> (example): his projected fantasy points per game.</li>
             <li class="key-cat">Category league? Read the numbers as a guide to who's getting more minutes.</li>
           </ul>
         </details>
       </div>
       <section aria-label="Games" style="border-top:0;padding-top:0">
-        <div class="games" id="games"><p class="empty">Loading tonight's games…</p></div>
-        <p class="star-note" id="t-star">☆ <b>Star a player</b> to save him on this device. Find him under Your players on the <a href="/">home page</a> and My players on this page.</p>
+        <div class="games" id="games"><p class="empty needs-js">Loading tonight's games…</p><noscript><p class="noscript-msg">This page needs JavaScript to load tonight's games. See <a href="/injuries">today's injuries and pickups</a> without it.</p></noscript></div>
+        <p class="star-note needs-js" id="t-star">☆ <b>Star a player</b> to save him on this device. Find him under Your players on the <a href="/">home page</a> and My players on this page.</p>
       </section>
       <section class="next" id="next" aria-labelledby="next-h">
         <h2 id="next-h">Next</h2>
@@ -340,11 +342,21 @@
 
     // "2:00 PM" never splits across lines (website QA DP-11). Times are the visitor's own clock;
     // the status line adds the zone ("first tip 4:00 PM PST").
+    // A tip that falls on another day on the visitor's clock than tonight's US Eastern game date gets the
+    // weekday: "Sat 12:00 AM GMT" for a 7 PM ET Friday game seen in London (C-13).
+    var slateDay = '';
+    function ymd(d, tz) {
+      var o = {year: 'numeric', month: '2-digit', day: '2-digit'};
+      if (tz) o.timeZone = tz;
+      return d.toLocaleDateString('en-CA', o);
+    }
     function time(iso, zone) {
       if (!iso) return '';
-      var o = {hour: 'numeric', minute: '2-digit'};
+      var d = new Date(iso), o = {hour: 'numeric', minute: '2-digit'};
       if (zone) o.timeZoneName = 'short';
-      return new Date(iso).toLocaleTimeString([], o).replace(/ /g, '\u00a0');
+      var t = d.toLocaleTimeString([], o);
+      if (slateDay && ymd(d) !== slateDay) t = d.toLocaleDateString([], {weekday: 'short'}) + ' ' + t;
+      return t.replace(/ /g, '\u00a0');
     }
     function owned(x) { return x == null ? '' : (x < 1 ? 'under 1%' : Math.round(x) + '%') + ' owned'; }
     function link(n) { return '/players/' + encodeURIComponent(F.slug(n)); }
@@ -352,8 +364,15 @@
     function label(p) {
       var l = p.status === 'OUT' ? 'Out' : p.status === 'DOUBTFUL' ? 'Doubtful' : p.probable ? 'Probable' : 'Questionable';
       if (l === 'Probable') return l;  // never a duration next to Probable
-      var d = (p.duration || '').replace(new RegExp('^' + l + ' ', 'i'), '');  // "out indefinitely" -> "Out (indefinitely)"
+      // "out indefinitely" -> "Out (indefinitely)", "6-8 weeks" -> "Out (6 to 8 weeks)" (feed.js plainDuration)
+      var d = F.plainDuration((p.duration || '').replace(new RegExp('^' + l + ' ', 'i'), ''));
       return l + (d ? ' (' + d + ')' : '');
+    }
+    // The pill already says Live or Final: "Final" isn't repeated beside it ("Final/OT" -> "OT")
+    function detail(g) {
+      var t = String(g.detail || '');
+      if (g.state === 'final') t = t.replace(/^final\s*\/?\s*/i, '');
+      return t;
     }
     function empty(html) { document.getElementById('games').innerHTML = '<p class="empty">' + html + '</p>'; }
     // No games, or the list didn't load: hide the controls, key and star line, and move the Next links up
@@ -382,13 +401,13 @@
         var g = x.g;
         var state = g.state === 'live' ? '<span class="game-state live">Live</span>' : g.state === 'final' ? '<span class="game-state final">Final</span>' : '';
         return '<article class="game"><div class="game-head"><span class="game-teams">' + esc(g.teams.join(' vs ')) + '</span>' + state +
-          '<span class="game-time">' + (g.state === 'upcoming' ? esc(time(g.start, true)) : esc(g.detail || '')) + '</span></div>' +
+          '<span class="game-time">' + (g.state === 'upcoming' ? esc(time(g.start, true)) : esc(detail(g))) + '</span></div>' +
           (x.ps.length ? '<ul class="game-players">' + x.ps.map(function (p) {
             var mine = W.has(p.player);
             return '<li class="' + (mine ? 'mine-row' : '') + '"><div class="gp-top">' + W.star(p.player) +
               '<a class="gp-who" href="' + link(p.player) + '"><span class="gp-name">' + esc(p.player) + '</span><span class="gp-team">' + esc(p.team) + '</span>' +
               '<span class="gp-status ' + p.status + (p.probable ? ' probable' : '') + '">' + esc(label(p)) + '</span></a>' +
-              '<span class="gp-fp"><small>Avg </small>' + p.avg_fpts.toFixed(0) + '<small> FPTS/g</small></span></div>' +
+              '<span class="gp-fp"><small><abbr title="Projected">Proj.</abbr> </small>' + p.avg_fpts.toFixed(0) + '<small> FPTS/g</small></span></div>' +
               (p.pickups.length ? '<div class="gp-picks">' + (p.status === 'OUT' ? 'Pick up:' : 'If he sits:') + '<ul class="gp-plist">' + p.pickups.map(function (k) {
                 // "+9.4 · 🔥 All leagues · under 1% owned": each "·" stays with the part before it, so no line starts with one
                 var bits = ['<span class="d">+' + k.fpts_delta.toFixed(1) + '</span>'];
@@ -424,13 +443,17 @@
         .then(function (d) {
           data = d;
           var gs = d.games || [];
+          var starts = gs.map(function (g) { return g.start; }).filter(Boolean).sort();
+          slateDay = starts.length ? ymd(new Date(starts[0]), 'America/New_York') : '';
           var up = gs.filter(function (g) { return g.state === 'upcoming' && g.start; }).map(function (g) { return g.start; }).sort();
           var n = gs.length, hurt = gs.reduce(function (s, g) { return s + g.players.length; }, 0);
+          // "first tip" before any game starts, "next tip" once some have, nothing once all have (C-14)
+          var begun = gs.some(function (g) { return g.state !== 'upcoming'; });
           document.getElementById('dot').className = n ? 'dot on' : 'dot';
           document.getElementById('live').hidden = !n;
           document.getElementById('updated').textContent = !n ? '' :
             n + ' game' + (n === 1 ? '' : 's') + ' · ' + hurt + ' player' + (hurt === 1 ? '' : 's') + ' out, doubtful or questionable' +
-            (up.length ? ' · first tip ' + time(up[0], true) : '');
+            (up.length ? (begun ? ' · next tip ' : ' · first tip ') + time(up[0], true) : '');
           render();
         })
         .catch(function () {

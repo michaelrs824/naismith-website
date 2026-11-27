@@ -1350,7 +1350,7 @@
     }
     .site-header .nav-more-menu { max-width: calc(100vw - 16px); }
     .site-header .nav-more-menu a { white-space: normal; overflow-wrap: anywhere; }
-    .site-header .brand { min-height: 44px; margin: -5px 0; }   /* the logo is 34px here */
+    .site-header .brand { min-height: 44px; margin: -3.4px 0; }   /* as site.css: the brand row is 37.2px tall on every page (H-06: -5px made it 3px shorter here) */
     /* ── Phone header: search icon + Menu (draft, Nov 27; strategy/DRAFT.md) ──
        Under 600px: the logo, a search icon and a Menu button; no row of text links. The icon opens a player search
        row under the logo row (search.js), Menu opens a panel with every link. From 600px: the one-row text header.
@@ -1397,6 +1397,13 @@
     .site-header .nav-menu-panel a:hover { background: var(--accent-bg, rgba(108,60,225,0.14)); }
     .site-header .nav-menu-panel a[aria-current="page"] { color: var(--text, #E6EDF3); background: var(--accent-bg, rgba(108,60,225,0.14)); }
     .site-header .nav-menu-panel a:focus-visible { outline: 2px solid var(--accent-2, #A487F7); outline-offset: -2px; }
+    /* Current page in the phone Menu and the More list: bold text and a 3px accent bar at the row's left, besides the
+       tint (the tint alone is about 1.2:1 against the panel; H-05) */
+    .site-header .nav-menu-panel a[aria-current="page"], .site-header .nav-more-menu a[aria-current="page"] { position: relative; font-weight: 700; }
+    .site-header .nav-menu-panel a[aria-current="page"]::after, .site-header .nav-more-menu a[aria-current="page"]::after {
+      content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 0 2px 2px 0;
+      background: var(--accent-2, #A487F7);
+    }
     .site-header .nav-menu-panel .nm-more { position: relative; margin-top: 9px; }   /* the "More" links under a hairline */
     .site-header .nav-menu-panel .nm-more::before { content: ""; position: absolute; left: 12px; right: 12px; top: -5px; height: 1px; background: var(--border, rgba(139,148,158,0.16)); }
     /* Header search row: same look as the home page search bar; 16px+ text so iPhone Safari doesn't zoom */
@@ -2216,8 +2223,11 @@
     const pageUrl = n => '/players/' + pslug(n);
     const plink = n => `<a class="pl-link" href="${escH(pageUrl(n))}">${escH(n)}</a>`;
     const cleanName = v => String(v || '').replace(/[‘’ʼ]/g, "'").replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
-    const isSeasonOut = st => !!(st && st.status === 'out' && /season/i.test(st.timeline || ''));
-    const hasTimeline = st => !!(st && st.timeline && st.timeline !== 'none reported');
+    // Timelines in the plain words used across the site ("6 to 8 weeks", "day to day": feed.js plainDuration)
+    const plainTl = st => (st && window.NaismithFeed ? NaismithFeed.plainDuration(st.timeline) : ((st && st.timeline) || ''));
+    // Out for the season only when the report says season-ending / rest of the season, not "most or all of season" (C-12)
+    const isSeasonOut = st => !!(st && st.status === 'out' && plainTl(st) === 'for the rest of the season');
+    const hasTimeline = st => !!plainTl(st);
 
     // Who is this name? /public/status matches nicknames and misspellings and gives his status.
     // -> {st} | {notFound: true} | {error: true}
@@ -2236,7 +2246,7 @@
       if (!st) return '';
       const word = {out: 'Out', doubtful: 'Doubtful', questionable: 'Questionable', probable: 'Probable'}[st.status];
       if (!word) return 'No injury reported';
-      return word + (hasTimeline(st) ? ': ' + st.timeline : '') + (st.injury ? ` (${injCaps(st.injury)})` : '');
+      return word + (hasTimeline(st) ? ': ' + plainTl(st) : '') + (st.injury ? ` (${injCaps(st.injury)})` : '');
     }
     // Known knee/elbow ligament abbreviations in capitals ("mcl" -> "MCL"); other words stay as they are
     function injCaps(s) { return String(s).replace(/\b(mcl|acl|pcl|lcl|ucl)\b/gi, m => m.toUpperCase()); }
@@ -2265,6 +2275,7 @@
       const results = document.getElementById('compareResults');
       hint.classList.remove('neutral');
       if (!nameA || !nameB) {  // L-19
+        results.classList.remove('visible'); results.innerHTML = '';  // the last comparison goes (C-12)
         hint.textContent = 'Enter two players to compare.';
         (nameA ? inB : inA).focus();
         return;
@@ -2336,8 +2347,9 @@
         // "X is out" lines come first (out players get no "higher" styling: see top)
         [A, B].forEach(P => {
           const st = P.st;
-          if (isSeasonOut(st)) lines.push(`<strong>${escH(P.name)} is out for the season</strong>${/^season[- ]ending$/i.test(st.timeline) ? '' : ' (' + escH(st.timeline) + ')'}.`);
-          else if (st.status === 'out') lines.push(`<strong>${escH(P.name)} is out</strong>${hasTimeline(st) ? ' (' + escH(st.timeline) + ')' : ', with no timeline reported'}. He adds nothing until he's back.`);
+          if (isSeasonOut(st)) lines.push(`<strong>${escH(P.name)} is out for the season</strong>.`);
+          else if (st.status === 'out' && /season/i.test(plainTl(st))) lines.push(`<strong>${escH(P.name)} is out</strong> (${escH(plainTl(st))}).`);
+          else if (st.status === 'out') lines.push(`<strong>${escH(P.name)} is out</strong>${hasTimeline(st) ? ' (' + escH(plainTl(st)) + ')' : ', with no timeline reported'}. He adds nothing until he's back.`);
         });
         if (!both) {
           [A, B].filter(P => !P.hasStats).forEach(P => lines.push(`${plink(P.name)} has no stats yet, so there's nothing to compare.`));
@@ -2388,9 +2400,11 @@
         avg_fpts: n(ri.avg_fpts), avg_min: n(ri.avg_min), avg_pts: n(ri.avg_pts), avg_reb: n(ri.avg_reb), avg_ast: n(ri.avg_ast),
         stocks: n(ri.avg_stl) + n(ri.avg_blk),
         games_current: games,
-        basisNote: basis === 'current' ? `Averages from this season (${games} game${games === 1 ? '' : 's'}).`
-          : games === 0 ? 'No games this season. Averages are from earlier seasons.'
-          : `Only ${games} game${games === 1 ? '' : 's'} this season, so these averages also use earlier seasons.`,
+        // One rule for everyone (C-12): the server's stats_basis ("current" or "projection") isn't the games count
+        // (Jenkins and Reed, both 17 games, had one each), and both are projection numbers (Jenkins "current":
+        // 30.0 here, 28.5 FPTS/g season on his page). So the note says that, the same for every player.
+        basisNote: games === 0 ? 'No games this season. These numbers are from earlier seasons.'
+          : 'Per-game numbers from his projection.',
       };
     }
 
@@ -2458,7 +2472,7 @@
 
         let statusLine;
         // Already out: the heading says "X is out", so this line is just the timeline
-        if (already) statusLine = hasTimeline(st) ? `${escH(st.timeline.charAt(0).toUpperCase() + st.timeline.slice(1))}${st.injury ? ' (' + escH(injCaps(st.injury)) + ')' : ''}.` : 'No return date reported.';
+        if (already) statusLine = hasTimeline(st) ? `${escH(plainTl(st).charAt(0).toUpperCase() + plainTl(st).slice(1))}${st.injury ? ' (' + escH(injCaps(st.injury)) + ')' : ''}.` : 'No return date reported.';
         else if (['doubtful', 'questionable', 'probable'].includes(st.status)) statusLine = `He is ${escH(st.status)}${st.injury ? ' (' + escH(injCaps(st.injury)) + ')' : ''} right now.`;
         else statusLine = 'He has no injury reported right now.';
 
@@ -2488,7 +2502,7 @@
           <div class="sim-scenario" style="margin-top: 1rem;">
             <h3 class="sim-scenario-title">${already ? `${plink(full)} is out` : `If ${plink(full)} is ${escH(dur.label)}`}</h3>
             ${typed ? `<p class="sim-note">Showing ${escH(full)} for "${escH(name)}".</p>` : ''}
-            <p class="sim-note">${statusLine}${g.proj ? ` He averages <strong>${escH(g.proj)}</strong> projected FPTS/g${st.team ? ' for ' + escH(st.team) : ''}.` : ''}</p>
+            <p class="sim-note">${statusLine}${g.proj ? ` He is projected for <strong>${escH(g.proj)}</strong> FPTS/g${st.team ? ' for ' + escH(st.team) : ''}.` : ''}</p>
             ${list}
             <p class="sim-more"><a href="${escH(pageUrl(full))}">His player page: injury news and recent games →</a></p>
           </div>

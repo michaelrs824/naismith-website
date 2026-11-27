@@ -224,6 +224,7 @@
     .next-links span { display: block; color: var(--text-2); font-size: 0.9rem; margin-top: 2px; }
     @media (min-width: 600px) { .next-links { grid-template-columns: 1fr 1fr; } }
   </style>
+  <noscript><style>.needs-js { display: none !important; }</style></noscript>
 </head>
 <body>
   <div class="wrap">
@@ -282,7 +283,7 @@
           <div class="live"><span class="dot" id="dot"></span><span id="updated">Updated every 15 minutes</span></div>
           <nav class="onpage" aria-label="On this page"><a href="#by-injury">By injury</a><a href="#losing-sec" id="jump-losing">Losing minutes</a></nav>
         </div>
-        <div class="chips" role="group" aria-label="League size">
+        <div class="chips needs-js" role="group" aria-label="League size">
           <button class="chip" data-f="std" aria-pressed="false">10-team</button>
           <button class="chip" data-f="12" aria-pressed="false">12-team</button>
           <button class="chip" data-f="deep" aria-pressed="true">Deep</button>
@@ -308,11 +309,11 @@
       </div>
 
       <section id="board" aria-label="Pickups" style="border-top:0;padding-top:0">
-        <ul class="picks" id="picks"><li class="empty">Loading pickups…</li></ul>
-        <p class="star-note">☆ <b>Star a player</b> to save him on this device. Find him under Your players on the <a href="/">home page</a> and My players on <a href="/tonight.html">Tonight</a>.</p>
+        <ul class="picks" id="picks"><li class="empty needs-js">Loading pickups…</li></ul><noscript><p class="noscript-msg">This page needs JavaScript to load the pickups. See <a href="/injuries">today's injuries and pickups</a> without it.</p></noscript>
+        <p class="star-note needs-js">☆ <b>Star a player</b> to save him on this device. Find him under Your players on the <a href="/">home page</a> and My players on <a href="/tonight.html">Tonight</a>.</p>
       </section>
 
-      <section id="by-injury" aria-labelledby="inj-h">
+      <section id="by-injury" class="needs-js" aria-labelledby="inj-h">
         <h2 id="inj-h">By injury</h2>
         <p class="sub">Tap a player to see everyone who gains while he's out.</p>
         <div id="injuries"><p class="empty">Loading…</p></div>
@@ -398,15 +399,17 @@
     }
     function ago(iso) { return window.NaismithFeed.ago(iso); }
     function names(list) {
-      var n = list.map(function (b) { return '<b>' + esc(b.player) + '</b>' + (b.duration ? ' (' + esc(b.duration) + ')' : ''); });
+      var n = list.map(function (b) { var d = window.NaismithFeed.plainDuration(b.duration); return '<b>' + esc(b.player) + '</b>' + (d ? ' (' + esc(d) + ')' : ''); });
       return n.length < 3 ? n.join(' and ') : n.slice(0, -1).join(', ') + ' and ' + n[n.length - 1];
     }
     function why(because) {
-      var out = because.filter(function (b) { return b.status !== 'DOUBTFUL'; });
+      var out = because.filter(function (b) { return b.status !== 'DOUBTFUL' && b.status !== 'QUESTIONABLE'; });
       var doubt = because.filter(function (b) { return b.status === 'DOUBTFUL'; });
+      var q = because.filter(function (b) { return b.status === 'QUESTIONABLE'; });
       var parts = [];
       if (out.length) parts.push(names(out) + ' out');
       if (doubt.length) parts.push(names(doubt) + ' doubtful');
+      if (q.length) parts.push(names(q) + ' questionable');
       return 'With ' + parts.join(', and ') + '.';
     }
     var LIMIT = 25, showAll = false;
@@ -433,7 +436,7 @@
         return '<li class="pick"><div class="pick-top">' + W.star(p.player) + '<span class="pick-who"><span class="pick-name">' + esc(p.player) + '</span> ' +
           '<span class="pick-meta">' + esc([p.team, p.position].filter(Boolean).join(' · ')) + '</span></span>' +
           '<span class="pick-gain">+' + p.fpts_delta.toFixed(1) + '<small> FPTS/g</small></span></div>' +
-          '<div class="pick-why">' + why(p.because) + ' Averages ' + p.avg_fpts.toFixed(1) + ' FPTS/g.' +
+          '<div class="pick-why">' + why(p.because) + ' Projected for ' + p.avg_fpts.toFixed(1) + ' FPTS/g.' +
           (p.owned != null ? ' <span class="owned">Owned in ' + fmtOwned(p.owned) + ' of ESPN leagues.</span>' : '') + '</div>' +
           '<span class="pill">' + esc(p.icon + ' ' + p.tag) + '</span></li>';
       }).join('') + (total > picks.length ? '<li><button class="chip" id="more">Show all ' + total + '</button></li>' : '');
@@ -445,7 +448,7 @@
       if (!board.injuries.length) { el.innerHTML = '<p class="empty">No injuries with pickups right now.</p>'; return; }
       el.innerHTML = board.injuries.map(function (i) {
         return '<details class="inj"><summary><span>' + esc(i.player) + ' <span class="inj-meta">' +
-          esc(i.team) + ' · ' + (i.status === 'DOUBTFUL' ? 'Doubtful' : 'Out') + (i.duration ? ' ' + esc(i.duration) : '') +
+          esc(i.team) + ' · ' + (i.status === 'DOUBTFUL' ? 'Doubtful' : 'Out') + (window.NaismithFeed.plainDuration(i.duration) ? ' ' + esc(window.NaismithFeed.plainDuration(i.duration)) : '') +
           ' · ' + i.avg_fpts.toFixed(1) + ' FPTS/g</span></span></summary><ul>' +
           i.pickups.map(function (p) {
             return '<li><span>' + esc(p.icon) + '</span><span>' + esc(p.player) + ' <span class="inj-meta">' +

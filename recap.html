@@ -188,6 +188,7 @@
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/site.css">
+  <noscript><style>.needs-js { display: none !important; }</style></noscript>
 </head>
 <body>
   <div class="wrap">
@@ -240,13 +241,13 @@
 
     <main id="main">
       <div class="hero" style="padding-bottom:8px">
-        <h1>Last night's recap</h1>
+        <h1 id="recap-h">Last night's recap</h1>
         <p class="recap-date" id="recap-date" hidden></p>
-        <p class="lede" id="recap-sub">Who went off last night, who's worth a look, whose minutes changed and who had an off night.</p>
+        <p class="lede" id="recap-sub">Who went off last night, who's worth a look and whose minutes changed.</p>
         <p class="note">FPTS = fantasy points in that game (points scoring: points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, threes 0.5, turnovers -1).</p>
       </div>
       <section aria-label="Recap" style="border-top:0;padding-top:0">
-        <div id="thread"><p class="empty">Loading the recap…</p></div>
+        <div id="thread"><p class="empty needs-js">Loading the recap…</p><noscript><p class="noscript-msg">This page needs JavaScript to load the recap. See <a href="/injuries">today's injuries and pickups</a> without it.</p></noscript></div>
         <a class="btn" id="on-x" style="margin-top:16px;display:none" target="_blank" rel="noopener">Read the thread on X</a>
       </section>
 
@@ -397,6 +398,15 @@
             (d.games ? ' · ' + d.games + (d.games === 1 ? ' game' : ' games') : '');
         }
         var sections = parse(d.thread);
+        // C-08: "Last night's" only when the recap is for yesterday in US Eastern time (after a night with no
+        // games it is older); "who had an off night" only when the recap has that section.
+        var t = new Date().toLocaleDateString('en-CA', {timeZone: 'America/New_York'}).split('-');   // today in ET
+        var y = new Date(Date.UTC(+t[0], +t[1] - 1, +t[2] - 1)).toISOString().slice(0, 10).replace(/-/g, '');
+        var latest = !!d.game_day && d.game_day !== y;
+        var off = sections.some(function (s) { return /^off nights/i.test(s.title); });
+        if (latest) document.getElementById('recap-h').textContent = 'Latest recap';
+        document.getElementById('recap-sub').textContent = 'Who went off' + (latest ? '' : ' last night') +
+          (off ? ', who\'s worth a look, whose minutes changed and who had an off night.' : ', who\'s worth a look and whose minutes changed.');
         el.className = '';
         el.innerHTML = sections.length ? renderSections(sections)
           : '<div class="feed">' + d.thread.map(function (t) { return F.card(t, null, ''); }).join('') + '</div>';

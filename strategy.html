@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NBA fantasy weekly strategy: games per team, back-to-backs and pickups · Naismith AI</title>
-  <meta name="description" content="This fantasy week's NBA schedule: which teams play the most and fewest games, back-to-backs, light nights, and today's best pickups with their games left.">
+  <meta name="description" content="The fantasy week's NBA schedule: which teams play the most and fewest games, back-to-backs, light nights, and today's best pickups with their games left.">
   <link rel="canonical" href="https://www.naismithai.com/strategy.html">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='68' font-size='60' font-family='Arial' font-weight='800' text-anchor='middle' fill='white'>N</text></svg>">
   <link rel="apple-touch-icon" href="/logo.png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.naismithai.com/strategy.html">
   <meta property="og:title" content="NBA fantasy weekly strategy">
-  <meta property="og:description" content="Games per team this fantasy week, back-to-backs and light nights, with today's best pickups and their games left.">
+  <meta property="og:description" content="Games per team in the fantasy week, back-to-backs and light nights, with today's best pickups and their games left.">
   <meta property="og:image" content="https://www.naismithai.com/og.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@NaismithAIApp">
@@ -180,7 +180,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/site.css">
   <style>
-  <style>
     /* Weekly strategy page (draft, Nov 27). After site.css so it wins at equal specificity. */
     @media (max-width: 599px) { .hero { padding-top: 24px; } .lede { margin-top: 10px; } }
     .hero .chips { margin-top: 14px; }
@@ -209,6 +208,9 @@
     .grid .t { width: 3.2em; text-align: left; font-weight: 600; }
     .grid .n { width: 2.7em; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
     .grid thead .t, .grid thead .n { font-size: 0.72rem; }
+    /* the column is as wide as its header word ("Games") at any text size: 2.7em of the header's 0.72rem was
+       narrower than the word, 16px too narrow at 200% text (H-07) */
+    .grid thead .n { width: 3.75em; }
     .dot-g, .dot-p { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
     .dot-g { background: var(--accent-2); }
     .dot-p { border: 1.5px solid var(--text-3); }
@@ -250,6 +252,7 @@
     @media (min-width: 600px) { .next-links { grid-template-columns: 1fr 1fr; } }
     section[hidden] { display: none; }
   </style>
+  <noscript><style>.needs-js { display: none !important; }</style></noscript>
 </head>
 <body>
   <div class="wrap">
@@ -303,14 +306,14 @@
     <main id="main">
       <div class="hero" style="padding-bottom:8px">
         <h1>Weekly strategy</h1>
-        <p class="lede">Which teams play the most games this fantasy week (Monday to Sunday), and today's best pickups with the games each has left.</p>
-        <div class="live"><span class="dot" id="dot"></span><span id="updated">Loading…</span></div>
+        <p class="lede">Which teams play the most games in the fantasy week (Monday to Sunday), and today's best pickups with the games each has left.</p>
+        <div class="live needs-js"><span class="dot" id="dot"></span><span id="updated">Loading…</span></div>
         <div class="chips" role="group" aria-label="Week" id="wk-pick" hidden></div>
       </div>
 
       <section id="sched" aria-labelledby="sched-h" style="border-top:0;padding-top:20px">
         <h2 id="sched-h">The week's schedule</h2>
-        <div id="sched-body"><p class="wk-msg">Loading the week's schedule…</p></div>
+        <div id="sched-body"><p class="wk-msg needs-js">Loading the week's schedule…</p><noscript><p class="noscript-msg">This page needs JavaScript to load the schedule. See <a href="/injuries">today's injuries and pickups</a> without it.</p></noscript></div>
       </section>
 
       <section id="pk" aria-labelledby="pk-h" hidden>
@@ -459,12 +462,16 @@
       if (empty.length) notes.push((tbdN.length ? 'No other games are scheduled for ' + and(empty) + ' yet.' : 'No games on ' + and(empty) + '.'));
       out.push('<p class="wk-note">' + lead + (notes.length ? ' ' + notes.join(' ') : '') + '</p>');
 
+      // Provisional week (server/strategy.py: TBD games or December nights not scheduled yet): counts can still
+      // go up, so the titles say "so far" and there's no bench/drop advice. Same for the rest of this week.
+      var sofar = w.provisional ? ' so far' : '';
+      var advice = !w.provisional && label(w) !== 'Rest of this week' ? ' A good week to bench or drop a fringe player from these teams.' : '';
       var bl = [];
-      if (w.most) bl.push(block(left ? 'Most games left' : 'Most games',
+      if (w.most) bl.push(block((left ? 'Most games left' : 'Most games') + sofar,
         left ? 'More games left means more chances to score before Sunday.' : 'More games means more chances to score.',
         byCount(w.most.by_team, left)));
-      if (w.fewest) bl.push(block(left ? 'Fewest games left' : 'Fewest games',
-        'Fewer games means fewer chances to score. A good week to bench or drop a fringe player from these teams.',
+      if (w.fewest) bl.push(block((left ? 'Fewest games left' : 'Fewest games') + sofar,
+        (left ? 'Fewer games left means fewer chances to score before Sunday.' : 'Fewer games means fewer chances to score.') + advice,
         byCount(w.fewest.by_team, left)));
       if (w.b2b && w.b2b.length) {
         var pairs = {}, order = [];
@@ -502,26 +509,33 @@
           }).join('') + '<td class="n">' + n + '</td></tr>';
       }).join('');
       out.push('<details class="grid-d" id="grid-d"' + (wide() ? ' open' : '') + '><summary>Every team, day by day</summary>' +
-        '<p class="grid-key"><span class="dot-g"></span>game' + (left ? ' to play <span class="dot-p" style="margin-left:10px"></span>already played' : '') +
+        '<p class="grid-key"><span class="dot-g"></span>= a game' + (left ? ' to play <span class="dot-p" style="margin-left:10px"></span>= already played' : '') +
         '. Sorted by ' + (left ? 'games left' : 'games') + '.</p>' +
         '<table class="grid"><caption class="vh">Games per team, ' + esc(label(w)) + '</caption><thead>' + head + '</thead><tbody>' + rows + '</tbody></table></details>');
       document.getElementById('sched-body').innerHTML = out.join('');
     }
 
     function why(because) {
-      var names = function (list) { return and(list.map(function (b) { return '<b>' + esc(b.player) + '</b>' + (b.duration ? ' (' + esc(b.duration) + ')' : ''); })); };
-      var out = because.filter(function (b) { return b.status !== 'DOUBTFUL'; });
+      var names = function (list) { return and(list.map(function (b) { var d = F.plainDuration(b.duration); return '<b>' + esc(b.player) + '</b>' + (d ? ' (' + esc(d) + ')' : ''); })); };
+      var out = because.filter(function (b) { return b.status !== 'DOUBTFUL' && b.status !== 'QUESTIONABLE'; });
       var doubt = because.filter(function (b) { return b.status === 'DOUBTFUL'; });
+      var q = because.filter(function (b) { return b.status === 'QUESTIONABLE'; });
       var parts = [];
       if (out.length) parts.push(names(out) + ' out');
       if (doubt.length) parts.push(names(doubt) + ' doubtful');
+      if (q.length) parts.push(names(q) + ' questionable');
       return parts.length ? 'With ' + parts.join(', and ') + '. ' : '';
     }
     function fmtOwned(x) { return x < 1 ? 'under 1%' : Math.round(x) + '%'; }
+    // Is next week's schedule still incomplete? The "next" week's own flag, or (Mon-Thu, next week not shown) the feed's.
+    function nextProvisional() {
+      var n = data.weeks.filter(function (w) { return w.key === 'next'; })[0];
+      return n ? !!n.provisional : !!data.next_provisional;
+    }
     function gamesLine(p) {
       var bits = [];
       if (p.left_this_week != null) bits.push(p.left_this_week ? '<b>' + games(p.left_this_week) + ' left</b> <span>this week</span>' : '<b>No games left</b> <span>this week</span>');
-      if (p.next_week != null && (data.weeks.length > 1 || p.next_week)) bits.push('<b>' + p.next_week + '</b> <span>next week</span>');
+      if (p.next_week != null && (data.weeks.length > 1 || p.next_week)) bits.push('<b>' + p.next_week + '</b> <span>next week' + (nextProvisional() ? ' so far' : '') + '</span>');
       return bits.length ? '<span class="pick-games">' + bits.join(' <span>·</span> ') + '</span>' : '';
     }
     function renderPicks() {
@@ -570,9 +584,10 @@
       }).join('');
       Array.prototype.forEach.call(el.querySelectorAll('button'), function (b) {
         b.addEventListener('click', function () {
-          sel = b.getAttribute('data-k');
-          Array.prototype.forEach.call(el.querySelectorAll('button'), function (c) { c.setAttribute('aria-pressed', String(c === b)); });
-          show();
+          var k = b.getAttribute('data-k');
+          // the week goes in the URL (#next, #this): a link opens it, Back returns to the week seen before
+          if (location.hash !== '#' + k) location.hash = k;
+          else pick(k);
         });
       });
     }
@@ -580,6 +595,21 @@
       var w = data.weeks.filter(function (x) { return x.key === sel; })[0] || data.weeks[0];
       if (w) renderWeek(w);
     }
+    function hashWeek() {
+      var k = (location.hash || '').slice(1);
+      return data && data.weeks.some(function (w) { return w.key === k; }) ? k : null;
+    }
+    function pick(k) {
+      sel = k;
+      Array.prototype.forEach.call(document.querySelectorAll('#wk-pick button'), function (c) {
+        c.setAttribute('aria-pressed', String(c.getAttribute('data-k') === k));
+      });
+      show();
+    }
+    window.addEventListener('hashchange', function () {
+      if (!data || !data.weeks.length) return;
+      pick(hashWeek() || data.default_week || data.weeks[0].key);
+    });
     function fail(msg) {
       document.getElementById('sched-h').textContent = 'The week\'s schedule';
       document.getElementById('sched-body').innerHTML = '<p class="wk-msg">' + msg + ' ' + ONWARD + '</p>';
@@ -598,7 +628,7 @@
             document.getElementById('dot').className = 'dot on';
             document.getElementById('updated').textContent = 'Updated ' + F.ago(d.generated_at);
           }
-          sel = sel || d.default_week;
+          sel = sel || hashWeek() || d.default_week;
           renderChips();
           if (data.weeks.length) show();
           else fail('The schedule isn\'t available right now. Try again later.');

@@ -35,6 +35,23 @@
     try { s = s.normalize('NFKD'); } catch (e) {}
     return s.replace(/[^\x00-\x7f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   }
+  // A reported timeline in plain words, the same cases as server/site_pages.py _plain_duration (/injuries):
+  // 'out indefinitely' -> 'indefinitely', 'day-to-day' -> 'day to day', '6-8 weeks' -> '6 to 8 weeks',
+  // 'most or all of season' -> 'most or all of the season'. '' for none.
+  var SEASON = ['season-ending', 'season ending', 'rest of season', 'rest of the season', 'remainder of season',
+                'remainder of the season', 'for the season', 'the season', 'season'];
+  function plainDuration(duration) {
+    var d = String(duration == null ? '' : duration).replace(/\s+/g, ' ').trim();
+    d = d.replace(/^(?:out|sidelined)\s+(?:for\s+)?/i, '');
+    var low = d.toLowerCase().replace(/\.+$/, '');
+    if (!d || ['none', 'none reported', 'unknown', 'tbd'].indexOf(low) >= 0) return '';
+    if (/^indefinite(?:ly)?$/.test(low)) return 'indefinitely';
+    if (/^day[- ]to[- ]day$/.test(low)) return 'day to day';
+    if (/^week[- ]to[- ]week$/.test(low)) return 'week to week';
+    if (SEASON.indexOf(low) >= 0) return 'for the rest of the season';
+    d = d.replace(/\b(most|all|rest|part) of season\b/gi, '$1 of the season');
+    return d.replace(/\b(\d+)\s*-\s*(\d+)\b/g, '$1 to $2');
+  }
   function lookupLink(name) {
     return '<a class="ac-look" href="/players/' + esc(slug(name)) + '">Look up ' + esc(name) + '</a>';
   }
@@ -60,7 +77,8 @@
     if (DONE.test(d)) { emoji = '🚑'; label = "Won't return"; }
     else if (EXIT.test(d)) { emoji = '🚑'; label = 'Left game'; }
     var s = emoji + ' ' + ev.player_name + (ev.player_team ? ' (' + ev.player_team + ')' : '') + ' — ' + label;
-    if (ev.duration_estimate) s += ' (' + ev.duration_estimate + ')';
+    var dur = plainDuration(ev.duration_estimate);
+    if (dur) s += ' (' + dur + ')';
     if (a.avg_fpts >= 10) s += ' | ' + Math.round(a.avg_fpts) + ' FPTS/g';
     return s;
   }
@@ -139,7 +157,9 @@
     var lines = text.replace(/(\n\s*)?(#[A-Za-z0-9_]+\s*)+$/, '').trim().split('\n');
     var first = (lines[0] || '').trim(), m = first.match(HEAD), a;
     if (m) {
-      a = {kind: KIND[m[1]] || 'info', player: m[2], team: m[3], status: m[4], fpts: m[5] || null,
+      // "OUT (6-8 weeks)" -> "OUT (6 to 8 weeks)": the plain timeline words used across the site
+      var sw = m[4].replace(/\s*\(([^()]*)\)$/, function (x, d) { var p = plainDuration(d); return p ? ' (' + p + ')' : ''; });
+      a = {kind: KIND[m[1]] || 'info', player: m[2], team: m[3], status: sw, fpts: m[5] || null,
            news: [], picks: [], source: null};
     } else if ((m = first.match(BACK))) {  // back-in-game reply: "✅ Update: Name (TEAM) is back."
       a = {kind: 'back', player: m[1], team: m[2] || '', status: 'Back in the game', fpts: null, news: [], picks: [], source: null};
@@ -181,7 +201,7 @@
   }
 
   window.NaismithFeed = {
-    esc: esc, ago: ago, card: card, X: X, parse: parse, cleanSource: cleanSource, slug: slug,
+    esc: esc, ago: ago, card: card, X: X, parse: parse, cleanSource: cleanSource, slug: slug, plainDuration: plainDuration,
     // The parsed parts behind a card (also for alerts posted before tweet text was saved)
     info: function (a) { return parse(a.tweet_text || headline(a) || ''); },
     // One posted alert as a card; null when there's nothing to show.

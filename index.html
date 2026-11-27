@@ -385,14 +385,14 @@ He went to the locker room with an ankle injury in the second quarter.
           (board.pickups || []).forEach(function (p) { if (W.key(p.player) === k) pick = p; });
           var what, cls = 's-ok', when = '';
           if (st) {
-            var tl = st.timeline && st.timeline !== 'none reported' ? ' (' + esc(st.timeline) + ')' : '';
+            var pd = F.plainDuration(st.timeline), tl = pd ? ' (' + esc(pd) + ')' : '';   // "6 to 8 weeks", as on /injuries
             if (LABEL[st.status]) {
               what = LABEL[st.status] + (st.status === 'out' || st.status === 'doubtful' ? tl : '');
               cls = st.status === 'out' || st.status === 'doubtful' ? 's-out' : st.status === 'probable' ? 's-ok' : 's-gtd';
               if (latest) when = ago(latest.timestamp);
             } else what = st.status === 'available' ? 'Available' : (latest ? 'No current news' : 'No injury news this week');
           } else if (inj) {
-            what = (inj.status === 'DOUBTFUL' ? 'Doubtful' : 'Out') + (inj.duration ? ' (' + esc(inj.duration) + ')' : ''); cls = 's-out';
+            what = (inj.status === 'DOUBTFUL' ? 'Doubtful' : 'Out') + (F.plainDuration(inj.duration) ? ' (' + esc(F.plainDuration(inj.duration)) + ')' : ''); cls = 's-out';
             if (latest) when = ago(latest.timestamp);
           } else if (latest) {
             var p = F.info(latest) || {};
