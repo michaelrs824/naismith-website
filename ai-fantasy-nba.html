@@ -37,8 +37,23 @@
     a.pl:hover { color: var(--accent-2); }
     .muted { color: var(--text-3); font-size: 0.85rem; }
 
+    .hero-cta { margin-top: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; }
+    .hero-cta .btn { max-width: 100%; }
+    .hero-more { margin-top: 6px; }
+    .hero-more a { display: inline-block; padding: 12px 0; margin: -12px 0; color: var(--accent-2); font-weight: 600; }
+    a.tlink { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent-2); font-weight: 600; }
+    .asks li { display: block; }
+    .faq { max-width: 44rem; }
+    .faq summary { min-height: 44px; align-items: center; }
+    .next-links { list-style: none; display: grid; gap: 10px; margin-top: 14px; }
+    .next-links a { display: block; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; text-decoration: none; }
+    .next-links a:hover { border-color: var(--accent); }
+    .next-links b { display: block; color: var(--accent-2); }
+    .next-links span { display: block; color: var(--text-2); font-size: 0.9rem; margin-top: 2px; }
+    @media (min-width: 760px) { .next-links { grid-template-columns: repeat(3, 1fr); } }
+
   </style>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "name": "AI for fantasy NBA injuries: live injury news in ChatGPT, Claude and Gemini · Naismith AI", "description": "Naismith AI adds live NBA injury news to Claude, ChatGPT and Gemini: who's out tonight, return timelines and who to pick up. Free, no sign-in.", "url": "https://www.naismithai.com/ai-fantasy-nba.html"}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Can ChatGPT or Claude tell me who's injured in the NBA tonight?", "acceptedAnswer": {"@type": "Answer", "text": "On their own, AI assistants answer from training data or a web search, which can be hours behind a player ruled out at shootaround. With the Naismith AI connector added, they read our live injury data instead: the official NBA injury report, ESPN, and NBA insiders and beat writers, usually updated within minutes of the news."}}, {"@type": "Question", "name": "Can AI check my fantasy basketball roster for injuries?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Paste your roster (up to 30 names, misspellings are fine) and ask what you should know before tonight. You get each player's status, injury, return timeline, whether his team plays today and, for injured players, the teammate who gains the most."}}, {"@type": "Question", "name": "Does Naismith AI connect to my ESPN, Yahoo or Sleeper league?", "acceptedAnswer": {"@type": "Answer", "text": "Not directly. It needs no account and never sees your league. Paste the players you care about into your assistant, or add a league connector alongside Naismith AI and your assistant can use both: your roster from one, the injury news from the other. Naismith AI doesn't do trades, rankings or draft advice: it covers player availability and the pickups an injury creates."}}, {"@type": "Question", "name": "Who should I pick up when a player gets hurt?", "acceptedAnswer": {"@type": "Answer", "text": "Ask \"Who should I pick up with [player] out?\" Naismith AI ranks his teammates by the fantasy points per game each should add, with the evidence: minutes with and without him and what each teammate actually did in games he already missed. It also flags who is likely already rostered."}}, {"@type": "Question", "name": "How fast is the injury news?", "acceptedAnswer": {"@type": "Answer", "text": "Usually within minutes. We track the official NBA injury report and trusted NBA reporters. Still, check before your lineup locks."}}, {"@type": "Question", "name": "Is it free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Free, read-only and no sign-in. It's also on X at @NaismithAIApp."}}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "name": "AI for fantasy NBA injuries: live injury news in ChatGPT, Claude and Gemini · Naismith AI", "description": "Naismith AI adds live NBA injury news to Claude, ChatGPT and Gemini: who's out tonight, return timelines and who to pick up. Free, no sign-in.", "url": "https://www.naismithai.com/ai-fantasy-nba.html"}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Can ChatGPT or Claude tell me who's injured in the NBA tonight?", "acceptedAnswer": {"@type": "Answer", "text": "Not reliably on their own. Their built-in knowledge is out of date, and a quick web search can miss news from the last hour. With Naismith AI added, they get the current injury status."}}, {"@type": "Question", "name": "Which AI assistants does it work with?", "acceptedAnswer": {"@type": "Answer", "text": "Claude and ChatGPT, both tested. Gemini works too (use Auto mode). There are steps for Grok, but we haven't tested it yet."}}, {"@type": "Question", "name": "Can AI check my fantasy basketball roster for injuries?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Paste your roster (misspellings are fine) and ask what you should know before tonight. You get each player's status, when he's expected back and who gains if he sits."}}, {"@type": "Question", "name": "Does Naismith AI connect to my ESPN, Yahoo or Sleeper league?", "acceptedAnswer": {"@type": "Answer", "text": "Not directly. It needs no account and never sees your league. Paste in the players you care about. It covers injuries and pickups, not trades, rankings or draft advice."}}, {"@type": "Question", "name": "Who should I pick up when a player gets hurt?", "acceptedAnswer": {"@type": "Answer", "text": "Ask \"Who should I pick up with [player] out?\" You get his teammates ranked by the fantasy points per game each should add while he's out."}}, {"@type": "Question", "name": "Where does the injury news come from?", "acceptedAnswer": {"@type": "Answer", "text": "The official NBA injury report and trusted NBA reporters. Still, check before your lineup locks."}}, {"@type": "Question", "name": "Is it free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Free, and no sign-in. It's also on X at @NaismithAIApp."}}]}]}</script>
 </head>
 <body>
   <div class="wrap">
@@ -67,51 +82,60 @@
       <div class="hero" style="padding-bottom:8px">
         <p class="eyebrow">Naismith AI in your AI assistant</p>
         <h1>AI for fantasy NBA injuries</h1>
-        <p class="lede">Naismith AI adds live NBA injury news to the AI assistant you already use. Ask Claude, ChatGPT or Gemini who's out tonight, how long a player will miss and who to pick up, and it answers from our live injury data. Free, no sign-in.</p>
-        <p style="margin-top:18px"><a class="btn btn-primary" href="/connector.html">Add it to your AI</a> <a class="btn" href="https://chatgpt.com/plugins/plugin_asdk_app_6aff73a914608191bb59bfcefb3b625f" target="_blank" rel="noopener">Add to ChatGPT</a></p>
+        <p class="lede">Ask Claude, ChatGPT or Gemini who's out tonight, when he's back and who to pick up. Naismith AI gives your assistant the current injury news to answer from. Free, no sign-in.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="/connector.html">Set it up in your AI</a>
+          <a class="tlink" href="https://chatgpt.com/plugins/plugin_asdk_app_6aff73a914608191bb59bfcefb3b625f" target="_blank" rel="noopener">Using ChatGPT? Add it from ChatGPT</a>
+        </div>
+        <p class="sub hero-more">Just want today's injuries? See <a href="/tonight.html">Tonight's games</a> or <a href="/pickups.html">Pickups</a>.</p>
       </div>
       <section aria-labelledby="why-h">
         <h2 id="why-h">Why injuries trip up AI assistants</h2>
-        <p class="sub">Fantasy basketball decisions are nightly, and injury news moves faster than an AI's training data or a quick web search: a starter ruled out at shootaround, a return announced an hour before tip-off, a player who leaves in the second quarter. Naismith AI tracks the official NBA injury report, ESPN, and NBA insiders and beat writers, and hands your assistant the current status with its source and time.</p>
+        <p class="sub">There's a gap between a player getting hurt and working out who to pick up. An AI assistant's own knowledge is out of date, and a quick web search can miss news from the last hour.</p>
+        <p class="sub" style="margin-top:10px">Naismith AI gives it the current injury status and who gains, from the official NBA injury report and trusted NBA reporters.</p>
       </section>
       <section aria-labelledby="ask-h">
         <h2 id="ask-h">What you can ask</h2>
-        <ul class="plist">
+        <ul class="plist asks">
           <li>“Here&#x27;s my roster: … Anything I should know before tonight?”</li>
           <li>“Is Jalen Brunson playing tonight?”</li>
-          <li>“How long is Chet Holmgren out, and when could he be back?”</li>
+          <li>“How long is Chet Holmgren out?”</li>
           <li>“Who should I pick up with Stephen Curry out?”</li>
+          <li>“Who are the best pickups for a 12-team league?”</li>
           <li>“What injury news broke in the last few hours?”</li>
-          <li>“Who&#x27;s coming back this week, and who loses minutes when he does?”</li>
         </ul>
       </section>
       <section aria-labelledby="diff-h">
         <h2 id="diff-h">What the answers include</h2>
         <ul class="plist">
-          <li><div><b>Status with its source</b><div class="muted">Out, doubtful, questionable, probable or available, who reported it and when.</div></div></li>
-          <li><div><b>Return timelines</b><div class="muted">The reported timeline, when it was reported, and the earliest return date it implies.</div></div></li>
-          <li><div><b>Who gains, with evidence</b><div class="muted">Fantasy points per game each teammate should add, backed by the minutes they played with and without him in games he already missed.</div></div></li>
-          <li><div><b>Who loses value on a return</b><div class="muted">The teammates whose minutes shrink when he comes back.</div></div></li>
-          <li><div><b>Tonight&#x27;s slate</b><div class="muted">Today&#x27;s games with tip-off times and each team&#x27;s injury news.</div></div></li>
+          <li><div><b>Status and return</b><div class="muted">A player&#x27;s status and when he&#x27;s expected back.</div></div></li>
+          <li><div><b>Who gains</b><div class="muted">Who gains when a player sits, in fantasy points per game.</div></div></li>
+          <li><div><b>Best pickups</b><div class="muted">For 10-team, 12-team or deep leagues.</div></div></li>
+          <li><div><b>Tonight&#x27;s games</b><div class="muted">Every game tonight, with each team&#x27;s injury news.</div></div></li>
+          <li><div><b>Latest news</b><div class="muted">Injury news from the last few hours.</div></div></li>
         </ul>
-        <p class="sub" style="margin-top:12px">Numbers use points scoring. In a category league, read them as a guide to who gets more minutes.</p>
+        <p class="sub" style="margin-top:12px">Numbers use points scoring. Category league? Read the numbers as a guide to who's getting more minutes.</p>
       </section>
       <section aria-labelledby="faq-h">
         <h2 id="faq-h">Questions</h2>
-        <h3 style="margin-top:18px">Can ChatGPT or Claude tell me who&#x27;s injured in the NBA tonight?</h3>
-        <p class="sub" style="margin-top:6px">On their own, AI assistants answer from training data or a web search, which can be hours behind a player ruled out at shootaround. With the Naismith AI connector added, they read our live injury data instead: the official NBA injury report, ESPN, and NBA insiders and beat writers, usually updated within minutes of the news.</p>
-        <h3 style="margin-top:18px">Can AI check my fantasy basketball roster for injuries?</h3>
-        <p class="sub" style="margin-top:6px">Yes. Paste your roster (up to 30 names, misspellings are fine) and ask what you should know before tonight. You get each player&#x27;s status, injury, return timeline, whether his team plays today and, for injured players, the teammate who gains the most.</p>
-        <h3 style="margin-top:18px">Does Naismith AI connect to my ESPN, Yahoo or Sleeper league?</h3>
-        <p class="sub" style="margin-top:6px">Not directly. It needs no account and never sees your league. Paste the players you care about into your assistant, or add a league connector alongside Naismith AI and your assistant can use both: your roster from one, the injury news from the other. Naismith AI doesn&#x27;t do trades, rankings or draft advice: it covers player availability and the pickups an injury creates.</p>
-        <h3 style="margin-top:18px">Who should I pick up when a player gets hurt?</h3>
-        <p class="sub" style="margin-top:6px">Ask &quot;Who should I pick up with [player] out?&quot; Naismith AI ranks his teammates by the fantasy points per game each should add, with the evidence: minutes with and without him and what each teammate actually did in games he already missed. It also flags who is likely already rostered.</p>
-        <h3 style="margin-top:18px">How fast is the injury news?</h3>
-        <p class="sub" style="margin-top:6px">Usually within minutes. We track the official NBA injury report and trusted NBA reporters. Still, check before your lineup locks.</p>
-        <h3 style="margin-top:18px">Is it free?</h3>
-        <p class="sub" style="margin-top:6px">Yes. Free, read-only and no sign-in. It&#x27;s also on X at @NaismithAIApp.</p>
+        <div class="faq">
+          <details><summary>Can ChatGPT or Claude tell me who&#x27;s injured in the NBA tonight?</summary><p>Not reliably on their own. Their built-in knowledge is out of date, and a quick web search can miss news from the last hour. With Naismith AI added, they get the current injury status.</p></details>
+          <details><summary>Which AI assistants does it work with?</summary><p>Claude and ChatGPT, both tested. Gemini works too (use Auto mode). There are steps for Grok, but we haven&#x27;t tested it yet.</p></details>
+          <details><summary>Can AI check my fantasy basketball roster for injuries?</summary><p>Yes. Paste your roster (misspellings are fine) and ask what you should know before tonight. You get each player&#x27;s status, when he&#x27;s expected back and who gains if he sits.</p></details>
+          <details><summary>Does Naismith AI connect to my ESPN, Yahoo or Sleeper league?</summary><p>Not directly. It needs no account and never sees your league. Paste in the players you care about. It covers injuries and pickups, not trades, rankings or draft advice.</p></details>
+          <details><summary>Who should I pick up when a player gets hurt?</summary><p>Ask &quot;Who should I pick up with [player] out?&quot; You get his teammates ranked by the fantasy points per game each should add while he&#x27;s out.</p></details>
+          <details><summary>Where does the injury news come from?</summary><p>The official NBA injury report and trusted NBA reporters. Still, check before your lineup locks.</p></details>
+          <details><summary>Is it free?</summary><p>Yes. Free, and no sign-in. It&#x27;s also on X at @NaismithAIApp.</p></details>
+        </div>
       </section>
-      <p class="muted" style="margin-top:20px"><a class="pl" href="/connector.html">Set it up in Claude, ChatGPT or Gemini</a> · <a class="pl" href="/injuries">Today's injury report</a> · <a class="pl" href="/players">Injured players</a></p>
+      <section class="next" aria-labelledby="next-h">
+        <h2 id="next-h">Next</h2>
+        <ul class="next-links">
+          <li><a href="/connector.html"><b>Set it up in your AI</b><span>Steps for ChatGPT, Claude and Gemini.</span></a></li>
+          <li><a href="/pickups.html"><b>Pickups</b><span>Who to add while a player is out.</span></a></li>
+          <li><a href="/tonight.html"><b>Tonight&#x27;s games</b><span>Every game tonight, with each team&#x27;s injury news.</span></a></li>
+        </ul>
+      </section>
       <section class="cta-end" aria-label="Follow on X">
         <h2>Get each new injury as it breaks.</h2>
         <a class="btn btn-primary" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow Naismith AI on X</a>

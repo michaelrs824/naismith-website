@@ -156,6 +156,41 @@
     footer a:hover { color: var(--text); }
     .day { font-size: 0.85rem; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: .06em; margin: 22px 0 10px; }
     .empty { color: var(--text-2); margin-top: 16px; }
+    #games.none { display: block; }
+    .feed-controls[hidden], .live[hidden] { display: none; }
+    #games > .next-links { margin-top: 14px; }
+    /* ── Tonight copy pass (draft, Nov 2026) ── */
+    /* Tag key: the alerts.html "What the tags mean" disclosure; 7 lines, so 4 + 3 in the two columns from 760px */
+    #t-key[hidden] { display: none; }
+    @media (min-width: 760px) { #t-key ul.tagkey { grid-template-rows: repeat(4, auto); } }
+    /* Player row: star | name, team and status (one link to his page) | FPTS/g */
+    .game .gp-top { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0 8px; flex-wrap: nowrap; }
+    .game .gp-who { display: block; min-height: 44px; padding: 2px 0; text-decoration: none; min-width: 0; }
+    .game .gp-who:hover .gp-name, .game .gp-pk:hover b { text-decoration: underline; }
+    .game .gp-name { font-weight: 700; overflow-wrap: anywhere; }
+    .game .gp-team { margin-left: 6px; white-space: nowrap; }
+    .game .gp-status { display: block; text-transform: none; letter-spacing: 0; font-size: 0.82rem; font-weight: 600; line-height: 1.35; }
+    .game .gp-status.probable { color: var(--green); }
+    .game .gp-fp { margin-left: 0; align-self: start; padding-top: 2px; }
+    /* "If he sits:" pickups, two to a row; each is a link to his page, at least 44px tall */
+    .game .gp-picks { padding-left: 38px; margin-top: 2px; }
+    .game .gp-plist { list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 12px; }
+    /* one pickup per row (name, then the gain line); two to a row only where a game card is full width */
+    @media (min-width: 600px) and (max-width: 759px) { .game .gp-plist { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .game .gp-pk { display: flex; flex-direction: column; justify-content: center; min-height: 44px; padding: 3px 0; text-decoration: none; line-height: 1.3; }
+    .game .gp-pk b { overflow-wrap: anywhere; }
+    .game .gp-pn { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; }
+    .game .gp-pk .owned { font-size: 0.78rem; }
+    /* League tag: same pill as pickups.html (icon + tag), sized to sit on the gain line */
+    .game .gp-pk .pill { display: inline-block; font-size: 0.72rem; font-weight: 600; border: 1px solid; border-radius: 999px; padding: 0 7px; line-height: 1.45; white-space: nowrap; }
+    .game .gp-pn > span { white-space: nowrap; }
+    section .star-note { margin-top: 18px; }
+    .next-links { list-style: none; display: grid; gap: 10px; margin-top: 14px; }
+    .next-links a { display: block; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; text-decoration: none; }
+    .next-links a:hover { border-color: var(--accent); }
+    .next-links b { display: block; color: var(--accent-2); }
+    .next-links span { display: block; color: var(--text-2); font-size: 0.9rem; margin-top: 2px; }
+    @media (min-width: 600px) { .next-links { grid-template-columns: 1fr 1fr; } }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/site.css">
@@ -186,19 +221,39 @@
 
     <main id="main">
       <div class="hero" style="padding-bottom:8px">
-        <h1>Tonight</h1>
+        <h1>Tonight's games</h1>
         <p class="lede" id="t-sub">Every game on tonight's slate, with each team's injury news and who to pick up if a player sits.</p>
-        <div class="live"><span class="dot" id="dot"></span><span id="updated">Loading…</span></div>
-        <div class="feed-controls">
+        <div class="live" id="live"><span class="dot" id="dot"></span><span id="updated">Loading…</span></div>
+        <div class="feed-controls" id="t-controls">
           <div class="chips" role="group" aria-label="Show">
             <button class="chip" data-v="all" aria-pressed="true">All games</button>
             <button class="chip" data-v="mine" aria-pressed="false">★ My players</button>
             <button class="chip" data-v="news" aria-pressed="false">Games with news</button>
           </div>
         </div>
+        <details class="key-d" id="t-key">
+          <summary>What the tags mean</summary>
+          <ul class="tagkey" aria-label="What the tags mean">
+            <li>🔥 <b>All leagues:</b> worth adding in any league</li>
+            <li>🎯 <b>12+ team:</b> worth adding in 12+ team leagues</li>
+            <li>👀 <b>Deep league:</b> only worth adding in 14+ team leagues</li>
+            <li><b>+5.3</b> (example): extra FPTS/g while the injured player is out</li>
+            <li><b>2% owned:</b> share of ESPN leagues that roster him</li>
+            <li><b>FPTS/g:</b> fantasy points per game.</li>
+            <li class="key-cat">Category league? Read the numbers as a guide to who's getting more minutes.</li>
+          </ul>
+        </details>
       </div>
       <section aria-label="Games" style="border-top:0;padding-top:0">
         <div class="games" id="games"><p class="empty">Loading tonight's games…</p></div>
+        <p class="star-note" id="t-star">☆ <b>Star a player</b> to save him on this device. Find him under Your players on the <a href="/">home page</a> and My players on this page.</p>
+      </section>
+      <section class="next" id="next" aria-labelledby="next-h">
+        <h2 id="next-h">Next</h2>
+        <ul class="next-links">
+          <li><a href="/pickups.html"><b>Today's best pickups</b><span>Ranked across every injury, by league size</span></a></li>
+          <li><a href="/alerts.html"><b>Latest alerts</b><span>Every injury alert from the last week, newest first, and who to pick up.</span></a></li>
+        </ul>
       </section>
       <section class="cta-end" aria-label="Follow on X">
         <h2>Get each new injury as it breaks.</h2>
@@ -257,74 +312,108 @@
     try { view = localStorage.getItem('tonightView') || 'all'; } catch (e) {}
     if (view === 'mine' && !W.names().length) view = 'all';
 
-    // "2:00 PM" never splits across lines (website QA DP-11)
-    function time(iso) { return iso ? new Date(iso).toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'}).replace(/ /g, '\u00a0') : ''; }
-    function owned(x) { return x == null ? '' : ' · ' + (x < 1 ? 'under 1%' : Math.round(x) + '%') + ' owned'; }
-    function label(s) { return s === 'OUT' ? 'Out' : s === 'DOUBTFUL' ? 'Doubtful' : 'Questionable'; }
+    // "2:00 PM" never splits across lines (website QA DP-11). Times are the visitor's own clock;
+    // the status line adds the zone ("first tip 4:00 PM PST").
+    function time(iso, zone) {
+      if (!iso) return '';
+      var o = {hour: 'numeric', minute: '2-digit'};
+      if (zone) o.timeZoneName = 'short';
+      return new Date(iso).toLocaleTimeString([], o).replace(/ /g, '\u00a0');
+    }
+    function owned(x) { return x == null ? '' : (x < 1 ? 'under 1%' : Math.round(x) + '%') + ' owned'; }
+    function link(n) { return '/players/' + encodeURIComponent(F.slug(n)); }
+    // Same words as the player pages: "Out (at least 4 weeks)", "Probable" (server/site_pages.py _status_text)
+    function label(p) {
+      var l = p.status === 'OUT' ? 'Out' : p.status === 'DOUBTFUL' ? 'Doubtful' : p.probable ? 'Probable' : 'Questionable';
+      if (l === 'Probable') return l;  // never a duration next to Probable
+      var d = (p.duration || '').replace(new RegExp('^' + l + ' ', 'i'), '');  // "out indefinitely" -> "Out (indefinitely)"
+      return l + (d ? ' (' + d + ')' : '');
+    }
+    function empty(html) { document.getElementById('games').innerHTML = '<p class="empty">' + html + '</p>'; }
+    // No games, or the list didn't load: hide the controls, key and star line, and move the Next links up
+    function slate(on, msg) {
+      ['t-controls', 't-key', 't-star', 'next'].forEach(function (id) { document.getElementById(id).hidden = !on; });
+      document.getElementById('games').classList.toggle('none', !on);
+      if (!on) document.getElementById('games').innerHTML = '<p class="empty">' + msg + '</p>' +
+        document.querySelector('#next .next-links').outerHTML;
+    }
 
     function render() {
       var el = document.getElementById('games');
       if (!data || !data.games) return;
-      if (!data.games.length) { el.innerHTML = '<p class="empty">No NBA games today.</p>'; return; }
+      slate(!!data.games.length, 'No NBA games tonight.');
+      if (!data.games.length) return;
       var games = data.games.map(function (g) {
         var ps = g.players;
         if (view === 'mine') ps = ps.filter(function (p) { return W.has(p.player) || p.pickups.some(function (x) { return W.has(x.player); }); });
         return {g: g, ps: ps};
       }).filter(function (x) { return view === 'all' || x.ps.length; });
       if (!games.length) {
-        el.innerHTML = '<p class="empty">' + (view === 'mine' ? 'None of your players have injury news in tonight\'s games.' : 'No injury news for tonight\'s games yet.') + '</p>';
-        return;
+        if (view === 'mine' && !W.names().length) return empty('You haven\'t starred anyone yet. Under All games, tap ☆ next to a player to save him on this device.');
+        return empty(view === 'mine' ? 'None of your players have injury news in tonight\'s games.' : 'No injury news for tonight\'s games yet.');
       }
       el.innerHTML = games.map(function (x) {
         var g = x.g;
         var state = g.state === 'live' ? '<span class="game-state live">Live</span>' : g.state === 'final' ? '<span class="game-state final">Final</span>' : '';
         return '<article class="game"><div class="game-head"><span class="game-teams">' + esc(g.teams.join(' vs ')) + '</span>' + state +
-          '<span class="game-time">' + (g.state === 'upcoming' ? esc(time(g.start)) : esc(g.detail || '')) + '</span></div>' +
+          '<span class="game-time">' + (g.state === 'upcoming' ? esc(time(g.start, true)) : esc(g.detail || '')) + '</span></div>' +
           (x.ps.length ? '<ul class="game-players">' + x.ps.map(function (p) {
             var mine = W.has(p.player);
             return '<li class="' + (mine ? 'mine-row' : '') + '"><div class="gp-top">' + W.star(p.player) +
-              '<span class="gp-status ' + p.status + '">' + label(p.status) + '</span>' +
-              '<span class="gp-name">' + esc(p.player) + '</span><span class="gp-team">' + esc(p.team) + (p.duration ? ' · ' + esc(p.duration) : '') + '</span>' +
-              '<span class="gp-fp">' + p.avg_fpts.toFixed(0) + '<small> FPTS/g</small></span></div>' +
-              (p.pickups.length ? '<div class="gp-picks">If he sits: ' + p.pickups.map(function (k, i) {
-                // each pick wraps as one unit, so a line never starts with "· 1% owned" (website QA DP-11)
-                return '<span class="pick"><span class="pk"><b>' + esc(k.player) + '</b> <span class="d">+' + k.fpts_delta.toFixed(1) + '</span></span><wbr><span class="owned">' + owned(k.owned) + '</span>' +
-                  (i < p.pickups.length - 1 ? ',' : '') + '</span>';
-              }).join(' ') + '</div>' : '') + '</li>';
+              '<a class="gp-who" href="' + link(p.player) + '"><span class="gp-name">' + esc(p.player) + '</span><span class="gp-team">' + esc(p.team) + '</span>' +
+              '<span class="gp-status ' + p.status + (p.probable ? ' probable' : '') + '">' + esc(label(p)) + '</span></a>' +
+              '<span class="gp-fp"><small>Avg </small>' + p.avg_fpts.toFixed(0) + '<small> FPTS/g</small></span></div>' +
+              (p.pickups.length ? '<div class="gp-picks">' + (p.status === 'OUT' ? 'Pick up:' : 'If he sits:') + '<ul class="gp-plist">' + p.pickups.map(function (k) {
+                // "+9.4 · 🔥 All leagues · under 1% owned": each "·" stays with the part before it, so no line starts with one
+                var bits = ['<span class="d">+' + k.fpts_delta.toFixed(1) + '</span>'];
+                if (k.tag) bits.push('<span class="pill">' + esc((k.icon ? k.icon + ' ' : '') + k.tag) + '</span>');
+                if (k.owned != null) bits.push('<span class="owned">' + owned(k.owned) + '</span>');
+                return '<li><a class="gp-pk" href="' + link(k.player) + '"><b>' + esc(k.player) + '</b><span class="gp-pn">' +
+                  bits.map(function (b, i) { return '<span>' + b + (i < bits.length - 1 ? '\u00a0·' : '') + '</span>'; }).join(' ') + '</span></a></li>';
+              }).join('') + '</ul></div>' : '') + '</li>';
           }).join('') + '</ul>' : '<p class="game-quiet">No injury news for either team.</p>') + '</article>';
       }).join('');
     }
     function chips() {
-      if (view === 'mine' && !W.names().length) {  // last star removed: back to All games (website QA DP-09)
-        view = 'all'; try { localStorage.setItem('tonightView', view); } catch (e) {}
-      }
       Array.prototype.forEach.call(document.querySelectorAll('.chip[data-v]'), function (b) {
         b.setAttribute('aria-pressed', String(b.dataset.v === view));
-        if (b.dataset.v === 'mine') b.hidden = !W.names().length;
       });
     }
     Array.prototype.forEach.call(document.querySelectorAll('.chip[data-v]'), function (b) {
       b.addEventListener('click', function () { view = b.dataset.v; try { localStorage.setItem('tonightView', view); } catch (e) {} chips(); render(); });
     });
-    document.addEventListener('watchchange', function () { var was = view; chips(); if (view === 'mine' || was !== view) render(); });
+    document.addEventListener('watchchange', function (e) {
+      var was = view;
+      // last star removed while My players is selected: back to All games (website QA DP-09)
+      if (view === 'mine' && !W.names().length && e.detail && !e.detail.on) {
+        view = 'all'; try { localStorage.setItem('tonightView', view); } catch (x) {}
+        chips();
+      }
+      if (view === 'mine' || was !== view) render();
+    });
     chips();
 
     function load() {
       fetch(API + '/public/tonight').then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
         .then(function (d) {
           data = d;
-          var up = (d.games || []).filter(function (g) { return g.state === 'upcoming' && g.start; }).map(function (g) { return g.start; }).sort();
-          var n = (d.games || []).length, hurt = (d.games || []).reduce(function (s, g) { return s + g.players.length; }, 0);
-          document.getElementById('dot').className = 'dot on';
-          document.getElementById('updated').textContent = n + ' game' + (n === 1 ? '' : 's') + ' · ' + hurt + ' players with news' +
-            (up.length ? ' · first tip ' + time(up[0]) : '');
+          var gs = d.games || [];
+          var up = gs.filter(function (g) { return g.state === 'upcoming' && g.start; }).map(function (g) { return g.start; }).sort();
+          var n = gs.length, hurt = gs.reduce(function (s, g) { return s + g.players.length; }, 0);
+          document.getElementById('dot').className = n ? 'dot on' : 'dot';
+          document.getElementById('live').hidden = !n;
+          document.getElementById('updated').textContent = !n ? '' :
+            n + ' game' + (n === 1 ? '' : 's') + ' · ' + hurt + ' player' + (hurt === 1 ? '' : 's') + ' out, doubtful or questionable' +
+            (up.length ? ' · first tip ' + time(up[0], true) : '');
           render();
         })
         .catch(function () {
-          document.getElementById('games').innerHTML = '<p class="empty">Couldn\'t load tonight\'s games. Try again in a minute.</p>';
-          document.getElementById('updated').textContent = '';
+          if (data) return;  // a failed refresh keeps the games already on screen
+          slate(false, 'Couldn\'t load tonight\'s games. Try again in a minute.');
+          document.getElementById('live').hidden = true;
         });
     }
+    if (window.matchMedia && window.matchMedia('(min-width: 760px)').matches) document.getElementById('t-key').open = true;
     load();
     setInterval(load, 120000);  // statuses change fast before tip-off
   })();

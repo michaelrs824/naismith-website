@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Last night's NBA fantasy recap · Naismith AI</title>
-  <meta name="description" content="Last night's top fantasy performers, breakouts and minutes to watch, with full stat lines.">
+  <meta name="description" content="Last night's top fantasy performers, breakouts, minutes to watch and off nights, with full stat lines.">
   <link rel="canonical" href="https://www.naismithai.com/recap.html">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='68' font-size='60' font-family='Arial' font-weight='800' text-anchor='middle' fill='white'>N</text></svg>">
   <link rel="apple-touch-icon" href="/logo.png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.naismithai.com/recap.html">
   <meta property="og:title" content="Last night's fantasy recap">
-  <meta property="og:description" content="Last night's top fantasy performers, breakouts and minutes to watch, with full stat lines.">
+  <meta property="og:description" content="Last night's top fantasy performers, breakouts, minutes to watch and off nights, with full stat lines.">
   <meta property="og:image" content="https://www.naismithai.com/og.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@NaismithAIApp">
@@ -167,6 +167,23 @@
     .rfp small { font-weight: 500; font-size: 0.72rem; color: var(--text-2); }
     .rstat { color: var(--text-2); font-size: 0.9rem; margin-top: 4px; }
     .rnotes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .rrows li { padding: 0; }
+    .rrows a.rlink { display: block; min-height: 44px; padding: 12px 14px; text-decoration: none; color: inherit; border-radius: 12px; }
+    .rrows a.rlink:hover .rname { text-decoration: underline; }
+    .rrows a.rlink:focus-visible { outline: 2px solid var(--accent-2, #8B6CF0); outline-offset: 2px; }
+    .rname { overflow-wrap: anywhere; }
+    .rsec .sub { margin-top: 2px; }
+    .recap-date { color: var(--text); font-weight: 600; margin-top: 12px; }
+    .hero .note { margin-top: 8px; }
+    .rnotes .pill.why { background: transparent; border-style: dashed; color: var(--text); }
+    .next-links { list-style: none; display: grid; gap: 10px; margin-top: 14px; }
+    .next-links a { display: block; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; text-decoration: none; }
+    .next-links a:hover { border-color: var(--accent); }
+    .next-links b { display: block; color: var(--accent-2); }
+    .next-links span { display: block; color: var(--text-2); font-size: 0.9rem; margin-top: 2px; }
+    @media (min-width: 600px) { .next-links { grid-template-columns: 1fr 1fr; } }
+    .state-links { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+    .state-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent-2); font-weight: 600; text-decoration: none; }
     .pill { font-size: 0.75rem; font-weight: 600; border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px; color: var(--text-2); }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
@@ -199,15 +216,25 @@
     <main id="main">
       <div class="hero" style="padding-bottom:8px">
         <h1>Last night's recap</h1>
-        <p class="lede" id="recap-sub">Top performers, breakouts and minutes to watch from last night's games.</p>
+        <p class="recap-date" id="recap-date" hidden></p>
+        <p class="lede" id="recap-sub">Who went off last night, who's worth a look, whose minutes changed and who had an off night.</p>
+        <p class="note">FPTS = fantasy points in that game (points scoring: points 1, rebounds 1.2, assists 1.5, steals 3, blocks 3, threes 0.5, turnovers -1).</p>
       </div>
       <section aria-label="Recap" style="border-top:0;padding-top:0">
         <div id="thread"><p class="empty">Loading the recap…</p></div>
         <a class="btn" id="on-x" style="margin-top:16px;display:none" target="_blank" rel="noopener">Read the thread on X</a>
       </section>
 
+      <section class="next" aria-labelledby="next-h">
+        <h2 id="next-h">Next</h2>
+        <ul class="next-links">
+          <li><a href="/pickups.html"><b>Today's best pickups</b><span>Ranked across every injury, by league size</span></a></li>
+          <li><a href="/tonight.html"><b>Tonight's games</b><span>Every game on tonight's slate, with each team's injury news and who to pick up if a player sits.</span></a></li>
+        </ul>
+      </section>
+
       <section class="cta-end" aria-label="Follow on X">
-        <h2>Get each new injury as it breaks.</h2>
+        <h2>Get each night's recap and injury news on X.</h2>
         <a class="btn btn-primary" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           Follow Naismith AI on X
@@ -259,6 +286,22 @@
   (function () {
     var F = window.NaismithFeed, esc = F.esc;
     var ITEM = /^(?:\d+\.\s+|•\s*)(.+?)\s+\(([A-Z]{2,4})\):\s+(.+)$/;
+    // "• Jaylen Brown (PHI) (hamstring) left early after 17 min"
+    var INJ = /^•\s*(.+?)\s+\(([A-Z]{2,4})\)\s+\(([^)]+)\)\s+(.+)$/;
+
+    // Section titles come from the X thread; show the site's own wording for the ones we know.
+    // Intro lines only say what every row in that section shows (no cutoffs: the thread doesn't state them).
+    var KNOWN = [
+      [/^top performers/i, 'Top performers', 'The most fantasy points of the night.'],
+      [/^breakouts/i, 'Breakouts worth a look', 'Far more fantasy points than usual.'],
+      [/^minutes/i, 'Minutes to watch', 'Played more minutes than usual.'],
+      [/^off nights/i, 'Off nights: don\'t panic yet', 'Stars who scored far fewer fantasy points than usual.'],
+      [/^injur/i, 'Injuries to watch', 'Left a game early.']
+    ];
+    function heading(title) {
+      for (var i = 0; i < KNOWN.length; i++) if (KNOWN[i][0].test(title)) return {h: KNOWN[i][1], sub: KNOWN[i][2]};
+      return {h: title, sub: ''};
+    }
 
     // The thread is written for X; read it back into sections and player rows.
     function parse(thread) {
@@ -266,15 +309,22 @@
       thread.join('\n').split('\n').forEach(function (raw) {
         var line = raw.trim();
         if (!line || /^🧵/.test(line) || /fantasy recap/i.test(line)) return;
-        var m = line.match(ITEM);
-        if (m) {
+        var m = line.match(ITEM), inj = !m && line.match(INJ);
+        if (m || inj) {
           if (!cur) { cur = {title: '', rows: []}; sections.push(cur); }
-          var parts = m[3].split(' · '), row = {name: m[1], team: m[2], stat: parts[0], fpts: null, avg: null, notes: []};
+        }
+        if (m) {
+          var parts = m[3].split(' · '), row = {name: m[1], team: m[2], stat: parts[0], fpts: null, avg: null, avgMin: null, notes: []};
+          var mm = row.stat.match(/^(\d+) min \(avg (\d+) min\),\s*(.+)$/);
+          if (mm) { row.stat = mm[3] + ' in ' + mm[1] + ' min'; row.avgMin = mm[2]; }
           parts.slice(1).forEach(function (p) {
             var f = p.match(/([\d.]+)\s*FPTS(?:\s*\(avg ([\d.]+)\))?/);
             if (f) { row.fpts = f[1]; row.avg = f[2] || null; } else row.notes.push(p);
           });
           cur.rows.push(row);
+        } else if (inj) {
+          var what = inj[3].charAt(0).toUpperCase() + inj[3].slice(1);
+          cur.rows.push({name: inj[1], team: inj[2], stat: what + ': ' + inj[4], fpts: null, avg: null, avgMin: null, notes: []});
         } else if (/:$/.test(line)) {
           cur = {title: line.replace(/:$/, '').replace(/^[^A-Za-z]+/, ''), rows: []};
           sections.push(cur);
@@ -282,33 +332,43 @@
       });
       return sections.filter(function (s) { return s.rows.length; });
     }
-    // "40/11/3 on 15-19 FG, 9 blk" -> "40 pts, 11 reb, 3 ast on 15-19 FG, 9 blk"
+    // "40/11/3 on 15-19 FG, 9 blk, 2 3PM, 5 TO" -> "40 pts, 11 reb, 3 ast on 15-19 shooting, 9 blk, 2 threes, 5 turnovers"
+    function plural(n, one, many) { return n + ' ' + (n === '1' ? one : many); }
     function readable(stat) {
-      return stat.replace(/(^|,\s*)(\d+)\/(\d+)\/(\d+)(?=\s|$)/, '$1$2 pts, $3 reb, $4 ast');
+      return stat.replace(/(^|,\s*)(\d+)\/(\d+)\/(\d+)(?=\s|$)/, '$1$2 pts, $3 reb, $4 ast')
+        .replace(/(\d+-\d+) FG\b/g, '$1 shooting')
+        .replace(/\b(\d+) 3PM\b/g, function (x, n) { return plural(n, 'three', 'threes'); })
+        .replace(/\b(\d+) TO\b/g, function (x, n) { return plural(n, 'turnover', 'turnovers'); });
     }
     function renderSections(sections) {
       return sections.map(function (sec) {
-        return '<section class="rsec"><h2>' + esc(sec.title) + '</h2><ul class="rrows">' +
+        var hd = heading(sec.title);
+        return '<section class="rsec"><h2>' + esc(hd.h) + '</h2>' + (hd.sub ? '<p class="sub">' + esc(hd.sub) + '</p>' : '') + '<ul class="rrows">' +
           sec.rows.map(function (r) {
-            return '<li><div class="rtop"><span class="rname">' + esc(r.name) + '</span><span class="rteam">' + esc(r.team) +
+            var pills = (r.avg ? '<span class="pill">Usually ' + esc(r.avg) + ' FPTS</span>' : '') +
+              (r.avgMin ? '<span class="pill">Usually ' + esc(r.avgMin) + ' min</span>' : '') +
+              r.notes.map(function (n) { return '<span class="pill why">With ' + esc(n) + '</span>'; }).join('');
+            return '<li><a class="rlink" href="/players/' + esc(F.slug(r.name)) + '"><div class="rtop"><span class="rname">' + esc(r.name) + '</span><span class="rteam">' + esc(r.team) +
               '</span>' + (r.fpts ? '<span class="rfp">' + esc(r.fpts) + '<small> FPTS</small></span>' : '') + '</div>' +
               '<div class="rstat">' + esc(readable(r.stat)) + '</div>' +
-              ((r.avg || r.notes.length) ? '<div class="rnotes">' + (r.avg ? '<span class="pill">Usually ' + esc(r.avg) + ' FPTS</span>' : '') +
-                r.notes.map(function (n) { return '<span class="pill">' + esc(n) + '</span>'; }).join('') + '</div>' : '') +
-              '</li>';
+              (pills ? '<div class="rnotes">' + pills + '</div>' : '') +
+              '</a></li>';
           }).join('') + '</ul></section>';
       }).join('');
     }
+    var ONWARD = '<p class="state-links"><a href="/pickups.html">Today\'s best pickups</a><a href="/tonight.html">Tonight\'s games</a></p>';
 
     fetch('https://naismith-api-production.up.railway.app/public/recap')
       .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
       .then(function (d) {
         var el = document.getElementById('thread');
-        if (!d.thread || !d.thread.length) { el.innerHTML = '<p class="empty">No recap yet. It posts after each night\'s games.</p>'; return; }
+        if (!d.thread || !d.thread.length) { el.innerHTML = '<p class="empty">No recap yet. It\'s posted after the last game of the night ends.</p>' + ONWARD; return; }
         if (d.game_day && d.game_day.length === 8) {
           var dt = new Date(+d.game_day.slice(0, 4), +d.game_day.slice(4, 6) - 1, +d.game_day.slice(6, 8));
-          document.getElementById('recap-sub').textContent = dt.toLocaleDateString(undefined, {weekday: 'long', month: 'long', day: 'numeric'}) +
-            (d.games ? ' · ' + d.games + ' games' : '');
+          var de = document.getElementById('recap-date');
+          de.hidden = false;
+          de.textContent = dt.toLocaleDateString(undefined, {weekday: 'long', month: 'long', day: 'numeric'}) +
+            (d.games ? ' · ' + d.games + (d.games === 1 ? ' game' : ' games') : '');
         }
         var sections = parse(d.thread);
         el.className = '';
@@ -316,7 +376,7 @@
           : '<div class="feed">' + d.thread.map(function (t) { return F.card(t, null, ''); }).join('') + '</div>';
         if (d.first_tweet_id) { var a = document.getElementById('on-x'); a.href = F.X + d.first_tweet_id; a.style.display = 'flex'; }
       })
-      .catch(function () { document.getElementById('thread').innerHTML = '<p class="empty">Couldn\'t load the recap. Try again in a minute.</p>'; });
+      .catch(function () { document.getElementById('thread').innerHTML = '<p class="empty">Couldn\'t load the recap. Try again in a minute.</p>' + ONWARD; });
   })();
   </script>
   <script defer src="/_vercel/insights/script.js"></script>

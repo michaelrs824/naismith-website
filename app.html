@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Player lookup · Naismith AI</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='68' font-size='60' font-family='Arial' font-weight='800' text-anchor='middle' fill='white'>N</text></svg>">
-  <meta name="description" content="Look up any NBA player's status and who gains when he's out, compare two players, or simulate an injury.">
+  <meta name="description" content="Look up any NBA player's status and who gains when he's out, or compare two players.">
   <link rel="canonical" href="https://www.naismithai.com/app.html">
   <link rel="apple-touch-icon" href="/logo.png">
   <meta property="og:type" content="website">
@@ -1126,7 +1126,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     /* Match the rest of naismithai.com (site.css isn't loaded here: its generic class names collide with the dashboard's). */
-    :root { --text-muted: #848D97; --gradient: #6C3CE1; --accent: #6C3CE1; --accent-2: #A487F7; --display: 'Barlow Condensed', 'Inter', system-ui, sans-serif; }
+    :root { color-scheme: dark; --text-muted: #848D97; --gradient: #6C3CE1; --accent: #6C3CE1; --accent-2: #A487F7; --display: 'Barlow Condensed', 'Inter', system-ui, sans-serif; }
     .nav-logo-icon { background: var(--accent) !important; }
     .nav-logo-text { font-family: var(--display); font-weight: 700; font-size: 1.5rem; letter-spacing: 0.01em; }
     .feed-title, .lookup-title, .compare-title, .sim-title {
@@ -1240,7 +1240,12 @@
     @media (min-width: 760px) {
       .site-footer .foot-nav { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: none; grid-auto-flow: row; gap: 20px 28px; }
     }
-    @media (min-width: 760px) and (pointer: coarse) { .site-footer li a { min-height: 44px; } }
+    /* Touch screens, every width (device QA, Nov 26): 44px link rows; groups get a little more space between them
+       than the rows inside a group, so each heading still reads with its own links */
+    @media (pointer: coarse) {
+      .site-footer li a { min-height: 44px; }
+      .site-footer .foot-nav { row-gap: 26px; }
+    }
     @media (min-width: 1000px) { .wrap { max-width: 1180px; padding: 0 40px; } }
     /* QA: readable contrast for purple text and muted labels */
     .alert-fpts, .autocomplete-item > span { color: var(--accent-2) !important; }
@@ -1292,6 +1297,75 @@
     .ps-msg:empty { display: none; }
     #lookupForm { margin-bottom: 0; }
     #lookupHint { max-width: none; }
+    /* Compare and What-If (copy pass 2026-11-26) */
+    .tab-form { margin: 0; }
+    .compare-input, .sim-input { font-size: 16px; min-height: 48px; }   /* 16px: no zoom on iPhone */
+    .compare-btn, .sim-btn { min-height: 48px; }
+    .compare-input-group label, .sim-input-group label { text-transform: none; letter-spacing: 0; font-size: 0.9rem; color: var(--text-secondary); }
+    .compare-input-row, .sim-input-row { margin-bottom: 1rem; }
+    .form-hint.neutral { color: var(--text-secondary); }
+    .compare-player-header { gap: 10px; }
+    .compare-player-name, .sim-ripple-player { overflow-wrap: anywhere; }
+    .compare-player-status { font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
+    .compare-player-status.is-out { color: #FF7B72; font-weight: 600; }
+    .compare-winner-badge { white-space: nowrap; flex-shrink: 0; }
+    .compare-rows-h { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 2px; }
+    .compare-stat-name { font-size: 0.9rem; }
+    .compare-basis { font-size: 0.82rem; color: var(--text-muted); margin: 0.6rem 0 0; line-height: 1.4; }
+    .compare-verdict-title { font-size: 0.8rem; margin: 0 0 0.6rem; }
+    .compare-verdict-text p { margin: 0 0 0.5rem; }
+    .compare-verdict-text p:last-child { margin-bottom: 0; }
+    .pl-link { color: inherit; text-decoration: underline; text-decoration-color: rgba(164,135,247,0.55); text-underline-offset: 3px; }
+    .pl-link:hover { color: var(--accent-2); }
+    /* bigger tap area for the name links in lists and headings, same layout */
+    .sim-ripple-player .pl-link, .compare-player-name .pl-link, .sim-scenario-title .pl-link { display: inline-block; padding: 12px 0; margin: -12px 0; position: relative; }
+    .sim-scenario-title { margin: 0 0 0.5rem; line-height: 1.3; overflow-wrap: anywhere; }
+    .sim-note { font-size: 0.9rem; color: var(--text-secondary); margin: 0 0 0.75rem; line-height: 1.5; }
+    .sim-note strong { color: var(--text-primary); }
+    .sim-empty { margin-top: 0.5rem; }
+    .sim-list-h { font-size: 1rem; font-weight: 700; margin: 1.1rem 0 0.25rem; }
+    .sim-ripple-list { list-style: none; margin: 0 0 0.75rem; padding: 0; }
+    .sim-ripple { gap: 12px; align-items: flex-start; }
+    .sim-ripple > div:first-child { min-width: 0; }
+    .sim-ripple-player { font-size: 0.95rem; line-height: 1.4; }
+    .sim-ripple-reason { font-size: 0.8rem; line-height: 1.4; margin-top: 2px; }
+    .sim-ripple-change { white-space: nowrap; font-size: 0.95rem; }
+    .sim-ripple-change .u { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); }
+    .sim-tag { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 100px; font-size: 0.72rem; font-weight: 700;
+      background: rgba(63,185,80,0.14); color: var(--accent-green); vertical-align: 1px; white-space: nowrap; }
+    .tag-key { margin: 0 0 0.75rem; font-size: 0.88rem; color: var(--text-secondary); }
+    .tag-key summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; color: var(--text-primary); font-weight: 600; }
+    .tag-key ul { margin: 0 0 0.25rem; padding-left: 1.1rem; line-height: 1.5; }
+    .sim-more { margin: 0.5rem 0 0; }
+    .sim-more a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent-2); font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+    .tab-next { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 1.25rem 0 0; }
+    .tab-next a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent-2); font-weight: 600; text-decoration: none; }
+    .autocomplete-item { min-height: 44px; display: flex; flex-wrap: wrap; align-items: center; }
+
+    /* Device QA fixes (Nov 26), same as site.css */
+    @media (max-width: 340px) {
+      .site-header .topnav > a, .site-header .nav-more > summary { padding: 0 1px; }
+      .site-header .topnav > a:first-child { margin-left: -1px; }
+      .site-header .nav-more > summary { margin-right: -1px; gap: 3px; }
+    }
+    .site-header .nav-more-menu { max-width: calc(100vw - 16px); }
+    .site-header .nav-more-menu a { white-space: normal; overflow-wrap: anywhere; }
+    .site-header .brand { min-height: 44px; margin: -5px 0; }   /* the logo is 34px here */
+    /* What-If "How long he's out": drawn by the page, not the engine (Safari painted it light grey under light text) */
+    select.sim-input {
+      -webkit-appearance: none; appearance: none; cursor: pointer;
+      background-color: var(--bg-surface); color: var(--text-primary); padding-right: 2.5rem;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238B949E' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 1rem center; background-size: 12px 8px;
+    }
+    select.sim-input option { background-color: var(--bg-surface); color: var(--text-primary); }
+    /* Large text on narrow phones: the form columns shrink to the screen instead of to the longest option */
+    @media (max-width: 768px) { .compare-input-row, .sim-input-row, .compare-grid { grid-template-columns: minmax(0, 1fr); } .compare-btn, .sim-btn { white-space: normal; } }
+    select.sim-input { min-width: 0; max-width: 100%; text-overflow: ellipsis; }
+    input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus {
+      -webkit-text-fill-color: var(--text-primary); caret-color: var(--text-primary);
+      -webkit-box-shadow: 0 0 0 1000px var(--bg-surface) inset; transition: background-color 9999s ease-out 0s;
+    }
   </style>
 </head>
 <body>
@@ -1399,27 +1473,29 @@
     <!-- ═══ COMPARE PAGE ═══ -->
     <div class="page" id="page-compare">
       <div class="compare-container">
-        <h2 class="compare-title">Head-to-Head Waiver Compare</h2>
-        <p class="compare-subtitle">Compare two players side by side on fantasy points, minutes and box-score averages.</p>
+        <h1 class="compare-title">Compare two players</h1>
+        <p class="compare-subtitle">Pick two players to see their numbers side by side, with each one's injury status. FPTS/g = fantasy points per game.</p>
 
+        <form id="compareForm" class="tab-form" novalidate>
         <div class="compare-input-row">
           <div class="compare-input-group">
-            <label>Player A</label>
+            <label for="comparePlayerA">Player A</label>
             <div class="autocomplete-wrapper">
-              <input type="text" class="compare-input" id="comparePlayerA" aria-label="Player A" placeholder="e.g. Cam Thomas" autocomplete="off">
+              <input type="text" class="compare-input" id="comparePlayerA" placeholder="e.g. Cam Thomas" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="next" maxlength="40">
               <div class="autocomplete-list" id="acListA"></div>
             </div>
           </div>
-          <div class="compare-vs">VS</div>
+          <div class="compare-vs" aria-hidden="true">VS</div>
           <div class="compare-input-group">
-            <label>Player B</label>
+            <label for="comparePlayerB">Player B</label>
             <div class="autocomplete-wrapper">
-              <input type="text" class="compare-input" id="comparePlayerB" aria-label="Player B" placeholder="e.g. Jalen Green" autocomplete="off">
+              <input type="text" class="compare-input" id="comparePlayerB" placeholder="e.g. Jalen Green" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="go" maxlength="40">
               <div class="autocomplete-list" id="acListB"></div>
             </div>
           </div>
         </div>
-        <button class="compare-btn" id="compareBtn" onclick="runComparison()">Compare Players</button>
+        <button type="submit" class="compare-btn" id="compareBtn">Compare</button>
+        </form>
         <p class="form-hint" id="compareHint" role="status" aria-live="polite"></p>
 
         <div class="compare-results" id="compareResults"></div>
@@ -1429,20 +1505,21 @@
     <!-- ═══ SIMULATOR PAGE ═══ -->
     <div class="page" id="page-simulator">
       <div class="sim-container">
-        <h2 class="sim-title">What-If Injury Simulator</h2>
-        <p class="sim-subtitle">Simulate what happens to a team's fantasy landscape if a player goes down. See the ripple effects and top pickups.</p>
+        <h1 class="sim-title">What if he's out?</h1>
+        <p class="sim-subtitle">Pick a player to see which teammates gain while he is out, and by how much. FPTS/g = fantasy points per game.</p>
 
+        <form id="simForm" class="tab-form" novalidate>
         <div class="sim-input-row">
           <div class="sim-input-group">
-            <label>Player</label>
+            <label for="simPlayer">Player</label>
             <div class="autocomplete-wrapper">
-              <input type="text" class="sim-input" id="simPlayer" aria-label="Player" placeholder="e.g. LeBron James" autocomplete="off">
+              <input type="text" class="sim-input" id="simPlayer" placeholder="e.g. LeBron James" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="go" maxlength="40">
               <div class="autocomplete-list" id="acListSim"></div>
             </div>
           </div>
           <div class="sim-input-group">
-            <label>Injury Duration</label>
-            <select class="sim-input" id="simDuration" aria-label="How long he is out">
+            <label for="simDuration">How long he's out</label>
+            <select class="sim-input" id="simDuration">
               <option value="tonight">Out tonight</option>
               <option value="1-2games">1-2 games</option>
               <option value="1-2weeks" selected>1-2 weeks</option>
@@ -1450,8 +1527,10 @@
               <option value="indefinite">Out indefinitely</option>
             </select>
           </div>
-          <button class="sim-btn" id="simBtn" onclick="runSimulation()">Simulate</button>
+          <button type="submit" class="sim-btn" id="simBtn">Show who gains</button>
         </div>
+        </form>
+        <p class="form-hint" id="simHint" role="status" aria-live="polite"></p>
 
         <div class="sim-results" id="simResults"></div>
       </div>
@@ -2005,7 +2084,7 @@
               ? `<span style="color: var(--accent-red); font-size: 0.7rem; font-weight: 600; margin-left: 4px;">${escH(p.status)}</span>`
               : '';
             return `<div class="autocomplete-item" data-name="${escH(p.name)}" data-team="${escH(p.team)}">
-              ${escH(p.name)} <span class="autocomplete-item-team">${escH(p.team)}${p.position ? ' · ' + p.position : ''}</span>${statusBadge}
+              ${escH(p.name)} <span class="autocomplete-item-team">${escH(p.team)}${p.position ? ' · ' + escH(p.position) : ''}</span>${statusBadge}
             </div>`;
           }).join('');
 
@@ -2020,311 +2099,308 @@
         }, 250); // 250ms debounce like iOS app
       });
 
+      input.addEventListener('keydown', ev => { if (ev.key === 'Escape') list.classList.remove('visible'); });
       input.addEventListener('blur', () => {
         setTimeout(() => list.classList.remove('visible'), 200);
       });
     }
 
     // ═══════════════════════════════════════════
-    //  HEAD-TO-HEAD COMPARE
+    //  COMPARE AND WHAT-IF: shared helpers
     // ═══════════════════════════════════════════
+    // His page, /players/<slug> (same rule as slugify() in server/site_pages.py and search.js)
+    const pslug = n => (window.NaismithSearch && NaismithSearch.slug) ? NaismithSearch.slug(n)
+      : String(n || '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const pageUrl = n => '/players/' + pslug(n);
+    const plink = n => `<a class="pl-link" href="${escH(pageUrl(n))}">${escH(n)}</a>`;
+    const cleanName = v => String(v || '').replace(/[‘’ʼ]/g, "'").replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
+    const isSeasonOut = st => !!(st && st.status === 'out' && /season/i.test(st.timeline || ''));
+    const hasTimeline = st => !!(st && st.timeline && st.timeline !== 'none reported');
+
+    // Who is this name? /public/status matches nicknames and misspellings and gives his status.
+    // -> {st} | {notFound: true} | {error: true}
+    async function resolvePlayer(name) {
+      try {
+        const res = await fetchT(`${API_BASE}/public/status?players=${encodeURIComponent(cleanName(name))}`);
+        if (!res.ok) return {error: true};
+        const d = await res.json();
+        const st = d.players && d.players[0];
+        return st && st.player ? {st} : {notFound: true};
+      } catch (e) { return {error: true}; }
+    }
+
+    // His status in plain words, e.g. "Out: at least 2 weeks (oblique)"
+    function statusWords(st) {
+      if (!st) return '';
+      const word = {out: 'Out', doubtful: 'Doubtful', questionable: 'Questionable', probable: 'Probable'}[st.status];
+      if (!word) return 'No injury reported';
+      return word + (hasTimeline(st) ? ': ' + st.timeline : '') + (st.injury ? ` (${injCaps(st.injury)})` : '');
+    }
+    // Known knee/elbow ligament abbreviations in capitals ("mcl" -> "MCL"); other words stay as they are
+    function injCaps(s) { return String(s).replace(/\b(mcl|acl|pcl|lcl|ucl)\b/gi, m => m.toUpperCase()); }
+
+    function setBusy(btn, busy, idle, working) {
+      btn.disabled = busy;
+      if (busy) btn.innerHTML = `<span class="inline-spinner"></span>${working}`; else btn.textContent = idle;
+    }
+
+    // ═══════════════════════════════════════════
+    //  COMPARE
+    // ═══════════════════════════════════════════
+    const CMP_ROWS = [
+      {key: 'avg_fpts', label: 'Projected FPTS/g'},
+      {key: 'avg_min', label: 'Minutes'},
+      {key: 'avg_pts', label: 'Points'},
+      {key: 'avg_reb', label: 'Rebounds'},
+      {key: 'avg_ast', label: 'Assists'},
+      {key: 'stocks', label: 'Steals + blocks'},
+    ];
+
     async function runComparison() {
-      const nameA = document.getElementById('comparePlayerA').value.trim();
-      const nameB = document.getElementById('comparePlayerB').value.trim();
+      const inA = document.getElementById('comparePlayerA'), inB = document.getElementById('comparePlayerB');
+      const nameA = cleanName(inA.value), nameB = cleanName(inB.value);
       const hint = document.getElementById('compareHint');
+      const results = document.getElementById('compareResults');
+      hint.classList.remove('neutral');
       if (!nameA || !nameB) {  // L-19
         hint.textContent = 'Enter two players to compare.';
-        document.getElementById(nameA ? 'comparePlayerB' : 'comparePlayerA').focus();
+        (nameA ? inB : inA).focus();
         return;
       }
       hint.textContent = '';
-
       const btn = document.getElementById('compareBtn');
-      btn.disabled = true;
-      btn.innerHTML = '<span class="inline-spinner"></span>Comparing...';
-
-      const [dataA, dataB, stA, stB] = await Promise.all([
-        fetchPlayerData(nameA),
-        fetchPlayerData(nameB),
-        fetchStatus(nameA),
-        fetchStatus(nameB),
-      ]);
-
-      const results = document.getElementById('compareResults');
-      results.classList.add('visible');
-
-      const statA = buildPlayerStats(nameA, dataA);
-      const statB = buildPlayerStats(nameB, dataB);
-
-      const categories = [
-        { label: 'Avg FPTS', keyA: statA.avg_fpts, keyB: statB.avg_fpts, int: false },
-        { label: 'Avg Minutes', keyA: statA.avg_min, keyB: statB.avg_min, int: false },
-        { label: 'Avg Points', keyA: statA.avg_pts, keyB: statB.avg_pts, int: false },
-        { label: 'Avg Rebounds', keyA: statA.avg_reb, keyB: statB.avg_reb, int: false },
-        { label: 'Avg Assists', keyA: statA.avg_ast, keyB: statB.avg_ast, int: false },
-        { label: 'Stocks (STL+BLK)', keyA: statA.stocks, keyB: statB.stocks, int: false },
-        { label: 'Games Played', keyA: statA.games_played, keyB: statB.games_played, int: true },
-      ];
-
-      let winsA = 0, winsB = 0;
-      categories.forEach(c => {
-        if (c.keyA > c.keyB) winsA++;
-        else if (c.keyB > c.keyA) winsB++;
-      });
-
-      // Tie-break on FPTS, then default to true tie
-      const statsWinner = winsA > winsB ? 'A' : winsB > winsA ? 'B'
-        : statA.avg_fpts > statB.avg_fpts ? 'A' : statB.avg_fpts > statA.avg_fpts ? 'B' : 'TIE';
-      // Injury status decides "Recommended" before the stat rows do (L-11)
-      const outA = stA && stA.status === 'out', outB = stB && stB.status === 'out';
-      const winner = outA && outB ? 'NONE' : outA ? 'B' : outB ? 'A' : statsWinner;
-      const notes = [];
-      const tl = st => (st && st.timeline && st.timeline !== 'none reported') ? ' (' + escH(st.timeline) + ')' : '';
-      if (outA && outB) notes.push('Both players are out. This compares their stats only.');
-      else if (outA) notes.push(`${statA.name} is out${tl(stA)}, so we recommend ${statB.name} for now.`);
-      else if (outB) notes.push(`${statB.name} is out${tl(stB)}, so we recommend ${statA.name} for now.`);
-      [[stA, statA], [stB, statB]].forEach(([st, s]) => {
-        if (st && (st.status === 'doubtful' || st.status === 'questionable'))
-          notes.push(`Check ${s.name}'s status before lineups lock: he's ${st.status}.`);
-      });
-
-      results.innerHTML = `
-        <div class="compare-grid" style="margin-top: 2rem;">
-          <div class="compare-player-card ${winner === 'A' ? 'winner' : ''}">
-            <div class="compare-player-header">
-              <div>
-                <div class="compare-player-name">${statA.name}</div>
-                <div class="compare-player-team">${statA.team}${statA.position ? ' · ' + statA.position : ''}</div>
-              </div>
-              ${winner === 'A' ? '<span class="compare-winner-badge">Recommended</span>' : winner === 'TIE' ? '<span class="compare-winner-badge" style="background: rgba(139,148,158,0.15); color: var(--text-secondary);">Even</span>' : ''}
-            </div>
-            ${categories.map(c => `
-              <div class="compare-stat-row">
-                <span class="compare-stat-name">${c.label}</span>
-                <span class="compare-stat-val ${c.keyA > c.keyB ? 'better' : ''}">${formatStat(c.keyA, c.int)}</span>
-              </div>
-            `).join('')}
-          </div>
-          <div class="compare-player-card ${winner === 'B' ? 'winner' : ''}">
-            <div class="compare-player-header">
-              <div>
-                <div class="compare-player-name">${statB.name}</div>
-                <div class="compare-player-team">${statB.team}${statB.position ? ' · ' + statB.position : ''}</div>
-              </div>
-              ${winner === 'B' ? '<span class="compare-winner-badge">Recommended</span>' : winner === 'TIE' ? '<span class="compare-winner-badge" style="background: rgba(139,148,158,0.15); color: var(--text-secondary);">Even</span>' : ''}
-            </div>
-            ${categories.map(c => `
-              <div class="compare-stat-row">
-                <span class="compare-stat-name">${c.label}</span>
-                <span class="compare-stat-val ${c.keyB > c.keyA ? 'better' : ''}">${formatStat(c.keyB, c.int)}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-        <div class="compare-verdict">
-          <div class="compare-verdict-title">AI Verdict</div>
-          <div class="compare-verdict-text">
-            ${notes.map(n => `<strong>${n}</strong> `).join('')}
-            ${statsWinner === 'TIE'
-              ? `<strong>Too close to call.</strong> Both players win ${winsA} of ${categories.length} categories. ${statA.avg_fpts > 0 && statB.avg_fpts > 0 ? `${statA.name} averages ${statA.avg_fpts.toFixed(1)} FPTS/G vs ${statB.name}'s ${statB.avg_fpts.toFixed(1)} FPTS/G.` : ''} Consider schedule and matchup context to decide.`
-              : `<strong>${statsWinner === 'A' ? statA.name : statB.name}</strong> gets the edge, winning ${Math.max(winsA, winsB)} of ${categories.length} categories.
-            ${statA.avg_fpts > 0 && statB.avg_fpts > 0 ? `${statA.name} averages ${statA.avg_fpts.toFixed(1)} FPTS/G vs ${statB.name}'s ${statB.avg_fpts.toFixed(1)} FPTS/G. ` : ''}
-            ${(statsWinner === 'A' ? statA : statB).stocks >= 2 ? `${statsWinner === 'A' ? statA.name : statB.name} also provides elite stocks (${(statsWinner === 'A' ? statA : statB).stocks.toFixed(1)} STL+BLK), a scarce category on waivers.` : ''}`}
-          </div>
-        </div>
-      `;
-
-      // Scroll results into view to fix visibility bug
-      setTimeout(() => results.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-
-      btn.disabled = false;
-      btn.textContent = 'Compare Players';
-    }
-
-    function buildPlayerStats(name, apiData) {
-      const ri = (apiData && apiData.roster_index && typeof apiData.roster_index === 'object')
-        ? apiData.roster_index : {};
-
-      return {
-        name: escH(ri.name || name),
-        team: escH(ri.team || apiData?.roster_index_team || ''),
-        position: ri.position || '',
-        avg_fpts: ri.avg_fpts || 0,
-        avg_min: ri.avg_min || 0,
-        avg_pts: ri.avg_pts || 0,
-        avg_reb: ri.avg_reb || 0,
-        avg_ast: ri.avg_ast || 0,
-        avg_stl: ri.avg_stl || 0,
-        avg_blk: ri.avg_blk || 0,
-        stocks: (ri.avg_stl || 0) + (ri.avg_blk || 0),
-        games_played: ri.games_played_current ?? ri.games_played ?? 0,  // this season (L-11)
-      };
-    }
-
-    function formatStat(val, isInt) {
-      if (val == null) return '—';
-      if (typeof val === 'number') {
-        return isInt ? Math.round(val).toString() : val.toFixed(1);
-      }
-      return val;
-    }
-
-    // ═══════════════════════════════════════════
-    //  WHAT-IF SIMULATOR
-    // ═══════════════════════════════════════════
-    async function runSimulation() {
-      const name = document.getElementById('simPlayer').value.trim();
-      const duration = document.getElementById('simDuration').value;
-      if (!name) return;
-
-      const btn = document.getElementById('simBtn');
-      btn.disabled = true;
-      btn.innerHTML = '<span class="inline-spinner"></span>Simulating...';
-
-      const results = document.getElementById('simResults');
-
-      // Fetch real data from both endpoints in parallel
-      let lookupData = null;
-      let apiData = null;
+      setBusy(btn, true, 'Compare', 'Comparing...');
       try {
-        const [lookupRes, playerRes] = await Promise.all([
-          fetchT(`${API_BASE}/public/lookup/${encodeURIComponent(name)}`).then(r => r.ok ? r.json() : null).catch(() => null),
-          fetchPlayerData(name),
-        ]);
-        lookupData = lookupRes;
-        apiData = playerRes;
-      } catch (e) {
-        console.error('Simulation fetch error:', e);
-      }
+        const [rA, rB] = await Promise.all([resolvePlayer(nameA), resolvePlayer(nameB)]);
+        if (rA.error || rB.error) {
+          results.classList.remove('visible'); results.innerHTML = '';
+          hint.textContent = "Couldn't load player data right now. Try again in a minute.";
+          return;
+        }
+        const missing = [[rA, nameA, inA], [rB, nameB, inB]].filter(x => x[0].notFound);
+        if (missing.length) {
+          results.classList.remove('visible'); results.innerHTML = '';
+          hint.textContent = missing.map(x => `Couldn't find "${x[1]}".`).join(' ') + ' Check the spelling or pick a name from the list.';
+          missing[0][2].focus();
+          return;
+        }
+        const stA = rA.st, stB = rB.st;
+        if (stA.player === stB.player) {
+          results.classList.remove('visible'); results.innerHTML = '';
+          hint.textContent = `That's ${stA.player} twice. Pick two different players.`;
+          inB.focus();
+          return;
+        }
+        const typed = [[stA, nameA], [stB, nameB]].filter(([st, n]) => st.matched_from && cleanName(st.matched_from).toLowerCase() !== st.player.toLowerCase());
+        if (typed.length) { hint.textContent = typed.map(([st, n]) => `Showing ${st.player} for "${n}".`).join(' '); hint.classList.add('neutral'); }
+        const [dA, dB] = await Promise.all([fetchPlayerData(stA.player), fetchPlayerData(stB.player)]);
+        const A = buildPlayerStats(stA, dA), B = buildPlayerStats(stB, dB);
+        const both = A.hasStats && B.hasStats;
 
-      // Extract player info — prefer lookup data, fall back to debug/player
-      const ri = (apiData && apiData.roster_index && typeof apiData.roster_index === 'object')
-        ? apiData.roster_index : {};
-      const team = lookupData?.team || ri.team || apiData?.roster_index_team || '';
-      const avgFpts = lookupData?.avg_fpts || ri.avg_fpts || 0;
-      const position = ri.position || '';
-      const playerNameDisplay = escH(lookupData?.player || ri.name || name);
+        // Higher projected FPTS/g gets the badge, only when both have numbers and neither is out (L-11)
+        // No green and no badge at all when either player is out
+        const noneOut = both && stA.status !== 'out' && stB.status !== 'out';
+        let top = null;
+        if (noneOut && A.avg_fpts !== B.avg_fpts) top = A.avg_fpts > B.avg_fpts ? 'A' : 'B';
 
-      // Error state: player not found at all
-      if (!lookupData && !ri.team) {
-        results.classList.add('visible');
-        results.innerHTML = `
-          <div class="empty-state" style="padding: 2rem; margin-top: 1rem;">
-            <p>Could not find "<strong>${escH(name)}</strong>". Check the spelling or try the autocomplete suggestions.</p>
+        let aheadA = 0, aheadB = 0;
+        if (both) CMP_ROWS.forEach(r => { if (A[r.key] > B[r.key]) aheadA++; else if (B[r.key] > A[r.key]) aheadB++; });
+
+        const card = (P, O, me) => `
+          <div class="compare-player-card ${top === me ? 'winner' : ''}">
+            <div class="compare-player-header">
+              <div>
+                <div class="compare-player-name">${plink(P.name)}</div>
+                <div class="compare-player-team">${escH(P.team)}${P.position ? ' · ' + escH(P.position) : ''}</div>
+                <div class="compare-player-status ${P.st.status === 'out' ? 'is-out' : ''}">${escH(statusWords(P.st))}</div>
+              </div>
+              ${top === me ? '<span class="compare-winner-badge">Higher FPTS/g</span>' : ''}
+            </div>
+            ${P.hasStats ? `
+            <div class="compare-rows-h">Per game</div>
+            ${CMP_ROWS.map(r => `
+              <div class="compare-stat-row">
+                <span class="compare-stat-name">${r.label}</span>
+                <span class="compare-stat-val ${noneOut && P[r.key] > O[r.key] ? 'better' : ''}">${P[r.key].toFixed(1)}</span>
+              </div>`).join('')}
+            <div class="compare-stat-row">
+              <span class="compare-stat-name">Games this season</span>
+              <span class="compare-stat-val">${P.games_current}</span>
+            </div>
+            <p class="compare-basis">${escH(P.basisNote)}</p>` : `<p class="compare-basis">No stats for him yet.</p>`}
           </div>`;
-        btn.disabled = false;
-        btn.textContent = 'Simulate';
-        return;
-      }
 
-      // Use REAL beneficiary data from the lookup endpoint (graph-based)
-      const graphBeneficiaries = lookupData?.beneficiaries || [];
-      let beneficiaries = graphBeneficiaries
-        .filter(b => Math.abs(b.fpts_delta || 0) >= 2.0)
-        .slice(0, 6)
-        .map(b => {
-          const pType = (b.pickup_type || '').replace(/_/g, ' ').toLowerCase();
-          const statParts = [];
-          if (b.pts_delta > 0) statParts.push(`+${b.pts_delta.toFixed(0)} PTS`);
-          if (b.ast_delta > 0) statParts.push(`+${b.ast_delta.toFixed(0)} AST`);
-          if (b.reb_delta > 0) statParts.push(`+${b.reb_delta.toFixed(0)} REB`);
-          const statStr = statParts.length > 0 ? statParts.join(', ') : '';
-          const reason = statStr
-            ? `Projected ${statStr} with ${playerNameDisplay} out`
-            : pType ? `${pType.charAt(0).toUpperCase() + pType.slice(1)} — absorbs usage` : `Benefits from ${playerNameDisplay}'s absence`;
-          return {
-            name: b.player_name || '',
-            estimated_boost: Math.abs(b.fpts_delta || 0),
-            confidence: b.confidence || 0,
-            reason: reason,
-          };
+        const lines = [];
+        // "X is out" lines come first (out players get no "higher" styling: see top)
+        [A, B].forEach(P => {
+          const st = P.st;
+          if (isSeasonOut(st)) lines.push(`<strong>${escH(P.name)} is out for the season</strong>${/^season[- ]ending$/i.test(st.timeline) ? '' : ' (' + escH(st.timeline) + ')'}.`);
+          else if (st.status === 'out') lines.push(`<strong>${escH(P.name)} is out</strong>${hasTimeline(st) ? ' (' + escH(st.timeline) + ')' : ', with no timeline reported'}. He adds nothing until he's back.`);
+        });
+        if (!both) {
+          [A, B].filter(P => !P.hasStats).forEach(P => lines.push(`${plink(P.name)} has no stats yet, so there's nothing to compare.`));
+        } else {
+          if (A.avg_fpts === B.avg_fpts) lines.push(`Both are projected for <strong>${A.avg_fpts.toFixed(1)}</strong> FPTS/g.`);
+          else {
+            const [hi, lo] = A.avg_fpts > B.avg_fpts ? [A, B] : [B, A];
+            lines.push(`${plink(hi.name)} is projected for more FPTS/g: <strong>${hi.avg_fpts.toFixed(1)}</strong> to ${lo.avg_fpts.toFixed(1)}.`);
+          }
+          if (!aheadA || !aheadB) { const lead = aheadA ? A : aheadB ? B : null;
+            if (lead) lines.push(`${escH(lead.name)} is higher in ${Math.max(aheadA, aheadB) === CMP_ROWS.length ? 'all ' + CMP_ROWS.length : Math.max(aheadA, aheadB) + ' of ' + CMP_ROWS.length} per-game stats.`); }
+          else lines.push(`${escH(A.name)} is higher in ${aheadA} of ${CMP_ROWS.length} per-game stats and ${escH(B.name)} in ${aheadB}.`);
+        }
+        [A, B].forEach(P => {
+          const st = P.st;
+          if (st.status === 'doubtful' || st.status === 'questionable')
+            lines.push(`Check ${escH(P.name)}'s status before lineups lock: he's ${escH(st.status)}.`);
         });
 
-      // Fallback: use existing alert recommendations for this team
-      if (beneficiaries.length === 0 && team) {
-        const teamAlerts = allAlerts.filter(a => a.team === team);
-        const teamRecs = [];
-        teamAlerts.forEach(a => {
-          (a.recommendations || []).forEach(r => {
-            if (!teamRecs.find(x => x.player === r.player)) teamRecs.push(r);
-          });
-        });
-        beneficiaries = teamRecs.filter(r => r.fpts_delta).slice(0, 6).map(r => ({
-          name: r.player,
-          position: '',
-          estimated_boost: Math.abs(r.fpts_delta),  // no made-up +3 when there's no number (K-02)
-          confidence: 0,
-          reason: 'Identified from recent injury alerts',
-        }));
+        results.innerHTML = `
+          <div class="compare-grid" style="margin-top: 2rem;">${card(A, B, 'A')}${card(B, A, 'B')}</div>
+          <div class="compare-verdict">
+            <h3 class="compare-verdict-title">How they compare</h3>
+            <div class="compare-verdict-text">${lines.map(l => `<p>${l}</p>`).join('')}</div>
+          </div>
+          <nav class="tab-next" aria-label="Next">
+            <a href="/pickups.html">Best pickups →</a>
+            <a href="/alerts.html">Latest alerts →</a>
+          </nav>`;
+        results.classList.add('visible');
+        setTimeout(() => results.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      } finally {
+        setBusy(btn, false, 'Compare', 'Comparing...');
       }
+    }
 
-      // Sort by boost descending (real data should already be sorted, but ensure it)
-      beneficiaries.sort((a, b) => b.estimated_boost - a.estimated_boost);
-
-      const durationMap = {
-        'tonight': { label: 'Out Tonight', games: 1 },
-        '1-2games': { label: '1-2 Games', games: 2 },
-        '1-2weeks': { label: '1-2 Weeks', games: 5 },
-        '3-4weeks': { label: '3-4 Weeks', games: 11 },
-        'indefinite': { label: 'Out Indefinitely', games: 20 },
+    function buildPlayerStats(st, apiData) {
+      const ri = (apiData && apiData.roster_index && typeof apiData.roster_index === 'object') ? apiData.roster_index : {};
+      const n = v => (typeof v === 'number' && isFinite(v)) ? v : 0;
+      const games = n(ri.games_played_current);  // this season (L-11)
+      const basis = ri.stats_basis || '';
+      const hasStats = !!ri.name && (n(ri.avg_fpts) > 0 || n(ri.avg_min) > 0);
+      return {
+        st, hasStats, basis,
+        name: st.player || ri.name || '',
+        team: ri.team || st.team || '',
+        position: ri.position || '',
+        avg_fpts: n(ri.avg_fpts), avg_min: n(ri.avg_min), avg_pts: n(ri.avg_pts), avg_reb: n(ri.avg_reb), avg_ast: n(ri.avg_ast),
+        stocks: n(ri.avg_stl) + n(ri.avg_blk),
+        games_current: games,
+        basisNote: basis === 'current' ? `Averages from this season (${games} game${games === 1 ? '' : 's'}).`
+          : games === 0 ? 'No games this season. Averages are from earlier seasons.'
+          : `Only ${games} game${games === 1 ? '' : 's'} this season, so these averages also use earlier seasons.`,
       };
-      const dur = durationMap[duration] || durationMap['1-2weeks'];
+    }
 
-      const impactClass = avgFpts >= 35 ? 'impact-high' : avgFpts >= 20 ? 'impact-medium' : 'impact-low';
-      const impactLabel = avgFpts >= 35 ? 'High Impact' : avgFpts >= 20 ? 'Moderate Impact' : 'Low Impact';
+    // ═══════════════════════════════════════════
+    //  WHAT-IF
+    // ═══════════════════════════════════════════
+    // The gains are read from the player's own page (/players/<slug>, the server's get_injury_impact),
+    // so What-If and the page always show the same numbers. /public/lookup has different ones.
+    async function fetchGains(name) {
+      const slug = pslug(name);
+      const onSite = /(^|\.)naismithai\.com$/.test(location.hostname);
+      const url = onSite ? `/players/${encodeURIComponent(slug)}` : `${API_BASE}/public/site/players/${encodeURIComponent(slug)}`;
+      try {
+        const res = await fetchT(url);
+        if (!res.ok) return null;
+        const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+        const sec = doc.querySelector('section[aria-labelledby="fan-h"]');
+        const gains = sec ? [...sec.querySelectorAll('ul.gains li')].filter(li => li.querySelector('.g') && li.querySelector('a.pl')).map(li => ({
+          name: li.querySelector('a.pl').textContent.trim(),
+          tag: (li.querySelector('.tag') || {}).textContent || '',
+          why: (li.querySelector('.why') || {}).textContent || '',
+          gain: li.querySelector('.g').textContent.replace(/\s*FPTS\/g/i, '').trim(),
+        })) : [];
+        let proj = null;
+        doc.querySelectorAll('.facts span').forEach(s => { if (/Projected fantasy points/i.test(s.textContent) && s.querySelector('b')) proj = s.querySelector('b').textContent.trim(); });
+        return {found: !!sec || !!proj, gains, losersOnly: !!(sec && !gains.length && sec.querySelector('.l')), proj};
+      } catch (e) { return null; }
+    }
 
-      // Scale boosts by duration (longer absence = more certainty of sustained boost)
-      const durationScale = 1;  // a per-game gain doesn't depend on how long he's out (website QA L-12)
+    const TAG_KEY = {
+      'All leagues': 'All leagues: worth adding in any league',
+      '12+ team': '12+ team: worth adding in 12+ team leagues',
+      'Deep league': 'Deep league: only worth adding in 14+ team leagues',
+    };
+    const DUR = {
+      'tonight': {label: 'out tonight', line: "Out tonight is one game, so each number is his teammate's expected gain for that game."},
+      '1-2games': {label: 'out 1-2 games', line: 'These are per game: each teammate gains this much in every game he misses.'},
+      '1-2weeks': {label: 'out 1-2 weeks', line: 'These are per game. The total depends on how many games he misses.'},
+      '3-4weeks': {label: 'out 3-4 weeks', line: 'These are per game. The total depends on how many games he misses.'},
+      'indefinite': {label: 'out indefinitely', line: 'These are per game. The total depends on how many games he misses.'},
+    };
 
-      results.classList.add('visible');
-      results.innerHTML = `
-        <div class="sim-scenario" style="margin-top: 1rem;">
-          <div class="sim-scenario-header">
-            <div class="sim-scenario-title">If ${playerNameDisplay} goes out (${dur.label})</div>
-            <span class="sim-impact-badge ${impactClass}">${impactLabel}</span>
+    async function runSimulation() {
+      const inp = document.getElementById('simPlayer');
+      const name = cleanName(inp.value);
+      const duration = document.getElementById('simDuration').value;
+      const hint = document.getElementById('simHint');
+      const results = document.getElementById('simResults');
+      if (!name) { hint.textContent = "Enter a player's name."; inp.focus(); return; }
+      hint.textContent = '';
+      const btn = document.getElementById('simBtn');
+      setBusy(btn, true, 'Show who gains', 'Loading...');
+      const fail = msg => { results.classList.remove('visible'); results.innerHTML = ''; hint.textContent = msg; };
+      try {
+        const r = await resolvePlayer(name);
+        if (r.error) return fail("Couldn't load the numbers right now. Try again in a minute.");
+        if (r.notFound) { inp.focus(); return fail(`Couldn't find "${name}". Check the spelling or pick a name from the list.`); }
+        const st = r.st, full = st.player;
+        const g = await fetchGains(full);
+        if (!g) return fail("Couldn't load the numbers right now. Try again in a minute.");
+        const dur = DUR[duration] || DUR['1-2weeks'];
+        const already = st.status === 'out';
+        const typed = st.matched_from && cleanName(st.matched_from).toLowerCase() !== full.toLowerCase();
+        const tags = [...new Set(g.gains.map(x => x.tag).filter(t => TAG_KEY[t]))];
+
+        let statusLine;
+        // Already out: the heading says "X is out", so this line is just the timeline
+        if (already) statusLine = hasTimeline(st) ? `${escH(st.timeline.charAt(0).toUpperCase() + st.timeline.slice(1))}${st.injury ? ' (' + escH(injCaps(st.injury)) + ')' : ''}.` : 'No return date reported.';
+        else if (['doubtful', 'questionable', 'probable'].includes(st.status)) statusLine = `He is ${escH(st.status)}${st.injury ? ' (' + escH(injCaps(st.injury)) + ')' : ''} right now.`;
+        else statusLine = 'He has no injury reported right now.';
+
+        const list = g.gains.length ? `
+          <h4 class="sim-list-h">Who gains while he's out</h4>
+          <p class="sim-note">Extra FPTS/g each teammate is projected to add while he is out.</p>
+          <ul class="sim-ripple-list">
+            ${g.gains.map(x => `<li class="sim-ripple">
+              <div>
+                <div class="sim-ripple-player">${plink(x.name)}${x.tag ? `<span class="sim-tag">${escH(x.tag)}</span>` : ''}</div>
+                <div class="sim-ripple-reason">${escH(x.why)}</div>
+              </div>
+              <div class="sim-ripple-change change-up">${escH(x.gain)} <span class="u">FPTS/g</span></div>
+            </li>`).join('')}
+          </ul>
+          <p class="sim-note">${already ? 'These are per game. The total depends on how many games he misses.' : dur.line}</p>
+          ${tags.length ? `<details class="tag-key"><summary>What the tags mean</summary><ul>
+            ${tags.map(t => `<li>${escH(TAG_KEY[t])}</li>`).join('')}
+            <li>+5.3 (example): extra FPTS/g while the injured player is out</li>
+          </ul></details>` : ''}
+          <p class="sim-note">Category league? Read the numbers as a guide to who's getting more minutes.</p>`
+          : `<p class="sim-note sim-empty">${g.losersOnly
+              ? "He's just back from an absence, so his page lists who loses value now that he's playing."
+              : 'No teammate is projected to gain while he is out.'}</p>`;
+
+        results.innerHTML = `
+          <div class="sim-scenario" style="margin-top: 1rem;">
+            <h3 class="sim-scenario-title">${already ? `${plink(full)} is out` : `If ${plink(full)} is ${escH(dur.label)}`}</h3>
+            ${typed ? `<p class="sim-note">Showing ${escH(full)} for "${escH(name)}".</p>` : ''}
+            <p class="sim-note">${statusLine}${g.proj ? ` He averages <strong>${escH(g.proj)}</strong> projected FPTS/g${st.team ? ' for ' + escH(st.team) : ''}.` : ''}</p>
+            ${list}
+            <p class="sim-more"><a href="${escH(pageUrl(full))}">His player page: injury news and recent games →</a></p>
           </div>
-          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1rem;">
-            <strong style="color: var(--text-primary);">${playerNameDisplay}</strong>
-            ${position ? `(${position}) ` : ''}averages
-            <strong style="color: var(--text-primary);">${avgFpts.toFixed(1)} FPTS/G</strong>
-            ${team ? `for the ${team}` : ''}.
-            Missing ~${dur.games} game${dur.games > 1 ? 's' : ''} would remove approximately
-            <strong style="color: var(--accent-red);">${(avgFpts * dur.games).toFixed(0)} total FPTS</strong>
-            from the team's fantasy output.
-          </p>
-          ${beneficiaries.length > 0 ? `
-          <div style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.75rem;">Projected Beneficiaries</div>
-          <div class="sim-ripple-list">
-            ${beneficiaries.map(b => {
-              const boost = b.estimated_boost * durationScale;
-              return `<div class="sim-ripple">
-                <div>
-                  <div class="sim-ripple-player">${b.name}</div>
-                  <div class="sim-ripple-reason">${b.reason || ''}</div>
-                </div>
-                <div class="sim-ripple-change change-up">+${boost.toFixed(1)} FPTS/G</div>
-              </div>`;
-            }).join('')}
-          </div>` : `
-          <div class="empty-state" style="padding: 2rem;">
-            <p>No beneficiary data available for ${playerNameDisplay}${team ? ' (' + team + ')' : ''}. This player may not be in our graph yet.</p>
-          </div>`}
-        </div>
-        ${beneficiaries.length > 0 ? `
-        <div class="compare-verdict" style="margin-top: 1rem;">
-          <div class="compare-verdict-title">Simulation Summary</div>
-          <div class="compare-verdict-text">
-            <strong>${beneficiaries[0].name}</strong> stands to gain the most from ${playerNameDisplay}'s absence with a projected <strong>+${(beneficiaries[0].estimated_boost * durationScale).toFixed(1)} FPTS/G</strong> boost.
-            ${dur.games >= 5 ? 'With a multi-week absence, this is a strong waiver pickup target.' : 'Monitor the situation — if the absence extends, move quickly on waivers.'}
-            ${beneficiaries.length > 1 ? ` Also keep an eye on <strong>${beneficiaries[1].name}</strong> as a secondary beneficiary.` : ''}
-          </div>
-        </div>` : ''}
-      `;
-
-      setTimeout(() => results.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-
-      btn.disabled = false;
-      btn.textContent = 'Simulate';
+          <nav class="tab-next" aria-label="Next">
+            <a href="/pickups.html">Best pickups →</a>
+            <a href="/alerts.html">Latest alerts →</a>
+          </nav>`;
+        const key = results.querySelector('.tag-key');
+        if (key && window.matchMedia('(min-width: 760px)').matches) key.open = true;
+        results.classList.add('visible');
+        setTimeout(() => results.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      } finally {
+        setBusy(btn, false, 'Show who gains', 'Loading...');
+      }
     }
 
     // ═══════════════════════════════════════════
@@ -2336,12 +2412,19 @@
     // ═══════════════════════════════════════════
     //  INIT
     // ═══════════════════════════════════════════
-    fetchAlerts().then(() => {
-      buildPlayerIndexFromAlerts();
-      setupAutocomplete('comparePlayerA', 'acListA');
-      setupAutocomplete('comparePlayerB', 'acListB');
-      setupAutocomplete('simPlayer', 'acListSim');
-    });
+    fetchAlerts().then(buildPlayerIndexFromAlerts);
+    // Suggestions don't wait for the alerts feed (they use /public/search)
+    setupAutocomplete('comparePlayerA', 'acListA');
+    setupAutocomplete('comparePlayerB', 'acListB');
+    setupAutocomplete('simPlayer', 'acListSim');
+    // Enter submits both forms (L-15); the suggestion lists close first
+    const closeLists = () => {
+      document.querySelectorAll('.autocomplete-list.visible').forEach(l => l.classList.remove('visible'));
+      // a suggestion answer still on its way stays closed (it only opens for the focused box); also hides the phone keyboard
+      if (document.activeElement && document.activeElement.matches('.compare-input, .sim-input')) document.activeElement.blur();
+    };
+    document.getElementById('compareForm').addEventListener('submit', ev => { ev.preventDefault(); closeLists(); if (!document.getElementById('compareBtn').disabled) runComparison(); });
+    document.getElementById('simForm').addEventListener('submit', ev => { ev.preventDefault(); closeLists(); if (!document.getElementById('simBtn').disabled) runSimulation(); });
     // /app.html?player=Name (old links, shared links, the home search without JavaScript):
     // open that player's page. No match: stay here with the name in the box and the not-found message.
     (function () {
@@ -2368,6 +2451,8 @@
       const tab = document.querySelector('.nav-tab[data-page="compare"]');
       if (tab && !tab.classList.contains('active')) tab.click();
       const b = document.getElementById('comparePlayerB');
+      const hint = document.getElementById('compareHint');
+      if (hint) { hint.textContent = `${inp.value} is Player A. Type a second player, then Compare.`; hint.classList.add('neutral'); }
       if (b) b.focus();
     })();
 

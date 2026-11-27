@@ -69,9 +69,18 @@
   // ── My players: a watchlist kept on this device (no account) ──
   var KEY = 'naismith.watch';
   function nkey(n) { return String(n || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z ]/g, '').replace(/\s+/g, ' ').trim(); }
+  // When storage is blocked (private mode, some in-app browsers) the list lives in memory for this page view,
+  // so the star still works; nothing is shown about it (device QA, Nov 26).
+  var mem = null;
   var W = {
-    load: function () { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } },
-    save: function (l) { try { localStorage.setItem(KEY, JSON.stringify(l)); return true; } catch (e) { return false; } },
+    load: function () {
+      if (mem) return mem.slice();
+      try { var l = JSON.parse(localStorage.getItem(KEY) || '[]'); return Array.isArray(l) ? l : []; } catch (e) { return []; }
+    },
+    save: function (l) {
+      try { localStorage.setItem(KEY, JSON.stringify(l)); mem = null; return true; }
+      catch (e) { mem = l.slice(); return true; }
+    },
     key: nkey,
     has: function (n) { var k = nkey(n); return W.load().some(function (x) { return nkey(x) === k; }); },
     names: function () { return W.load(); },
@@ -79,7 +88,7 @@
       var k = nkey(n), l = W.load(), i = -1;
       l.forEach(function (x, j) { if (nkey(x) === k) i = j; });
       if (i >= 0) l.splice(i, 1); else l.push(n);
-      if (!W.save(l)) return i >= 0;  // storage blocked: the star keeps its old state (website QA L-20)
+      W.save(l);  // falls back to memory when storage is blocked
       document.dispatchEvent(new CustomEvent('watchchange', {detail: {player: n, on: i < 0}}));
       return i < 0;
     },

@@ -200,7 +200,11 @@
     .how-rank ul { margin: 8px 0 0 1.1em; color: var(--text-2); font-size: 0.88rem; display: grid; gap: 4px; }
     #by-injury, #losing-sec { scroll-margin-top: 12px; }
     .how-rank { max-width: 44rem; }
-    @media (min-width: 760px) { ul.tagkey { grid-template-rows: repeat(3, auto); grid-auto-flow: column; grid-template-columns: auto minmax(0, 1fr); column-gap: 32px; max-width: 60rem; } }
+    /* 44px tap areas (device QA, Nov 26): the summary row grows into the old padding; jump links keep their spacing */
+    .how-rank { padding: 0 0 2px; }
+    .how-rank summary { min-height: 44px; align-items: center; }
+    .onpage a { display: inline-block; padding: 11px 0; margin: -5px 0; }
+    @media (min-width: 760px) { ul.tagkey { grid-template-rows: repeat(3, auto); grid-auto-flow: column; grid-template-columns: fit-content(60%) minmax(0, 1fr); column-gap: 32px; max-width: 60rem; } }
     /* Cards: never wider than the screen; name stays whole where it fits */
     .picks > li, .losing > li { min-width: 0; }
     @media (max-width: 599px) { .picks { grid-template-columns: minmax(0, 1fr); } }

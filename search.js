@@ -147,8 +147,31 @@
         rows[i].setAttribute('aria-selected', 'true');
         rows[i].classList.add('on');
         input.setAttribute('aria-activedescendant', rows[i].id);
-        if (rows[i].scrollIntoView) rows[i].scrollIntoView({block: 'nearest'});
+        keepRowInList(rows[i]);
       } else input.removeAttribute('aria-activedescendant');
+    }
+    // The highlighted row stays visible inside the list (scrolls the list only, never the page)
+    function keepRowInList(row) {
+      var top = row.offsetTop, bottom = top + row.offsetHeight;
+      if (top < list.scrollTop) list.scrollTop = top;
+      else if (bottom > list.scrollTop + list.clientHeight) list.scrollTop = bottom - list.clientHeight;
+    }
+    // The list never runs below the visible screen (short phones, landscape, the on-screen keyboard):
+    // if there's little room under the box, bring the box up once, then cap the list to the space left.
+    var lifted = false;
+    function fit() {
+      list.style.maxHeight = '';
+      var vv = window.visualViewport;
+      var bottom = vv ? vv.offsetTop + vv.height : window.innerHeight;
+      var room = function () { return Math.floor(bottom - list.getBoundingClientRect().top - 8); };
+      var want = Math.min(list.scrollHeight, 5 * 44 + 8);   // room for five rows, or the whole list if shorter
+      if (room() < want && !lifted) {
+        lifted = true;
+        var r = form.getBoundingClientRect(), by = Math.min(r.top - 12, want - room());
+        if (by > 0) window.scrollBy(0, by);
+      }
+      var space = room(), cap = parseFloat(getComputedStyle(list).maxHeight) || Infinity;
+      if (space < cap) list.style.maxHeight = Math.max(space, 96) + 'px';
     }
     function render(res, q) {
       items = res; shownFor = q;
@@ -189,6 +212,8 @@
       list.hidden = false;
       input.setAttribute('aria-expanded', 'true');
       active = -1;
+      list.scrollTop = 0;
+      fit();
     }
     function go(p, replace) {
       close();
@@ -282,6 +307,9 @@
         if (open) { e.preventDefault(); e.stopPropagation(); close(); }
       }
     });
+    input.addEventListener('blur', function () { lifted = false; });
+    // the on-screen keyboard opening or closing changes the room under the box
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', function () { if (!list.hidden) fit(); });
     input.addEventListener('blur', function () { setTimeout(function () { if (document.activeElement !== input) close(); }, 150); });
     document.addEventListener('pointerdown', function (e) { if (!wrap.contains(e.target)) close(); });
     form.addEventListener('submit', function (e) { e.preventDefault(); submit(false); });
