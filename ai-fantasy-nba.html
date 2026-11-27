@@ -61,15 +61,16 @@
     <header class="site-header">
       <a class="brand" href="/"><div class="logo" aria-hidden="true">N</div><div class="brand-name">Naismith AI</div></a>
       <nav class="topnav" aria-label="Main">
-        <a href="/tonight.html">Tonight's games</a>
-        <a href="/alerts.html">Alerts</a>
-        <a href="/pickups.html">Pickups</a>
         <a href="/app.html#lookup">Lookup</a>
+        <a href="/tonight.html">Tonight's games</a>
+        <a href="/pickups.html">Pickups</a>
+        <a href="/strategy.html">Weekly strategy</a>
         <a class="nav-ai" href="/connector.html">Ask AI</a>
         <details class="nav-more">
           <summary>More</summary>
           <div class="nav-more-menu">
             <a href="/recap.html">Recap</a>
+            <a href="/alerts.html">Alerts</a>
             <a href="/players">Injuries by player</a>
             <a href="/help.html">Help</a>
             <a class="nav-more-x" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
@@ -77,6 +78,30 @@
         </details>
       </nav>
       <a class="nav-follow" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
+      <div class="hdr-tools">
+        <a class="hdr-btn hdr-search-btn" href="/app.html#lookup" aria-label="Search players"><svg class="hdr-ico hdr-ico-s" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 20.5 20.5"/></svg></a>
+        <details class="nav-menu">
+          <summary class="hdr-btn nav-menu-btn"><svg class="hdr-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></svg>Menu</summary>
+          <nav class="nav-menu-panel" id="nav-menu-panel" aria-label="Main">
+            <a href="/app.html#lookup">Lookup</a>
+            <a href="/tonight.html">Tonight's games</a>
+            <a href="/pickups.html">Pickups</a>
+            <a href="/strategy.html">Weekly strategy</a>
+            <a href="/connector.html">Ask AI</a>
+            <a class="nm-more" href="/recap.html">Recap</a>
+            <a href="/alerts.html">Alerts</a>
+            <a href="/players">Injuries by player</a>
+            <a href="/help.html">Help</a>
+            <a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
+          </nav>
+        </details>
+      </div>
+      <div class="hdr-search" id="hdr-search" hidden>
+        <form class="hdr-search-form" action="/app.html" method="get" role="search" aria-label="Search players" data-player-search>
+          <input type="search" name="player" placeholder="Look up a player" aria-label="Look up a player" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="search" maxlength="40">
+          <button type="submit">Search</button>
+        </form>
+      </div>
     </header>
     <main id="main">
       <div class="hero" style="padding-bottom:8px">
@@ -149,6 +174,7 @@
             <li><a href="/tonight.html">Tonight</a></li>
             <li><a href="/alerts.html">Latest alerts</a></li>
             <li><a href="/pickups.html">Best pickups</a></li>
+            <li><a href="/strategy.html">Weekly strategy</a></li>
             <li><a href="/recap.html">Recap</a></li>
           </ul>
         </div>
@@ -181,6 +207,7 @@
     </footer>
   </div>
   <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/search.js"></script>
   <script defer src="/nav.js"></script>
 </body>
 </html>

@@ -491,3 +491,80 @@ input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:foc
 .sec-head h2 { min-width: 0; overflow-wrap: anywhere; }
 .tile span { overflow-wrap: anywhere; }
 .pick-why { min-width: 0; }
+
+/* ── Phone header: search icon + Menu (draft, Nov 27; strategy/DRAFT.md) ──
+   Under 600px: the logo, a search icon and a Menu button; no row of text links. The icon opens a player search
+   row under the logo row (search.js), Menu opens a panel with every link. From 600px: the one-row text header.
+   Same markup at every width. Without JavaScript the icon is a link to the Lookup page and Menu is a <details>;
+   nav.js turns both into buttons. Mirrored in app.html's inline CSS (it doesn't load this file). */
+.site-header .hdr-tools, .site-header .hdr-search { display: none; }
+@media (max-width: 599px) {
+  /* grid: logo | tools on one row at every phone width (the logo column gives way first), search row under it */
+  .site-header { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 8px; row-gap: 10px; position: relative; }
+  .site-header .brand { justify-self: start; min-width: 0; }
+  .site-header .brand-name { min-width: 0; }
+  .site-header .topnav { display: none; }
+  .site-header .hdr-tools { display: flex; grid-column: 2; grid-row: 1; align-items: center; gap: 0; margin-right: -8px; }
+  .site-header .hdr-search:not([hidden]) { display: block; grid-column: 1 / -1; min-width: 0; }
+}
+.site-header .hdr-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-sizing: border-box;
+  min-width: 44px; min-height: 44px; padding: 0 8px; margin: 0; border: 0; border-radius: 10px;
+  background: none; color: var(--text, #E6EDF3); font: inherit; font-size: 1rem; font-weight: 600; line-height: 1.2;
+  text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: transparent; list-style: none;
+}
+.site-header .hdr-btn:hover { background: var(--surface, #161B22); }
+.site-header .hdr-btn[aria-expanded="true"], .site-header details.nav-menu[open] > summary { background: var(--accent-bg, rgba(108,60,225,0.14)); }
+.site-header .hdr-btn:focus-visible { outline: 2px solid var(--accent-2, #A487F7); outline-offset: -2px; }
+.site-header .hdr-ico { width: 22px; height: 22px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.site-header .hdr-search-btn { width: 44px; padding: 0; }
+.site-header .hdr-search-btn .hdr-ico-x, .site-header .hdr-search-btn[aria-expanded="true"] .hdr-ico-s { display: none; }
+.site-header .hdr-search-btn[aria-expanded="true"] .hdr-ico-x { display: block; }
+/* Menu (a <details> until nav.js runs): undo the pages' own details/summary rules */
+.site-header details.nav-menu { border: 0; padding: 0; margin: 0; }
+.site-header .nav-menu > summary::-webkit-details-marker { display: none; }
+.site-header .nav-menu > summary::after { content: none; display: none; }
+.site-header .nav-menu-panel {
+  position: absolute; z-index: 70; top: 100%; right: -8px; left: auto; width: min(20rem, calc(100vw - 16px));
+  display: flex; flex-direction: column; box-sizing: border-box; margin: 0; padding: 6px; border-radius: 12px;
+  background: var(--surface, #161B22); border: 1px solid var(--border, rgba(139,148,158,0.16));
+  box-shadow: 0 12px 32px rgba(0,0,0,0.45); max-height: calc(100vh - 88px); overflow-y: auto; overscroll-behavior: contain;
+}
+.site-header .nav-menu-panel[hidden] { display: none; }
+.site-header .nav-menu-panel a {
+  display: flex; align-items: center; flex: none; min-height: 44px; padding: 0 12px; border-radius: 8px;
+  color: var(--text, #E6EDF3); text-decoration: none; font-size: 1rem; font-weight: 500; line-height: 1.25; overflow-wrap: anywhere;
+}
+.site-header .nav-menu-panel a:hover { background: var(--accent-bg, rgba(108,60,225,0.14)); }
+.site-header .nav-menu-panel a[aria-current="page"] { color: var(--text, #E6EDF3); background: var(--accent-bg, rgba(108,60,225,0.14)); }
+.site-header .nav-menu-panel a:focus-visible { outline: 2px solid var(--accent-2, #A487F7); outline-offset: -2px; }
+.site-header .nav-menu-panel .nm-more { position: relative; margin-top: 9px; }   /* the "More" links under a hairline */
+.site-header .nav-menu-panel .nm-more::before { content: ""; position: absolute; left: 12px; right: 12px; top: -5px; height: 1px; background: var(--border, rgba(139,148,158,0.16)); }
+/* Header search row: same look as the home page search bar; 16px+ text so iPhone Safari doesn't zoom */
+.site-header .hdr-search-form { display: flex; gap: 8px; margin: 0; }
+.site-header .hdr-search-form input {
+  flex: 1; min-width: 0; width: 100%; box-sizing: border-box; font: inherit; font-size: max(16px, 1rem); color: var(--text, #E6EDF3);
+  background: var(--surface, #161B22); border: 1px solid var(--border, rgba(139,148,158,0.16)); border-radius: 10px; padding: 10px 12px; min-height: 44px;
+}
+.site-header .hdr-search-form input:focus { outline: none; border-color: var(--accent, #6C3CE1); }
+.site-header .hdr-search-form button {
+  font: inherit; font-size: 1rem; font-weight: 600; color: #fff; background: var(--accent, #6C3CE1); border: 0; border-radius: 10px;
+  padding: 0 16px; min-height: 44px; cursor: pointer; flex: none;
+}
+.site-header .hdr-search-form button:disabled { opacity: 0.7; cursor: progress; }
+.site-header .hdr-search .ps-msg { margin: 8px 0 0; }
+.site-header .hdr-search .ps-list { z-index: 80; }
+/* 880-1039px: logo, the six items and the Follow on X button on one row (owner, Nov 27). With "Weekly strategy" they
+   need ~916px at the normal spacing, so in this range only: item padding 12px -> 6px with no gap between items (labels
+   still 12px apart), smaller gaps around the menu, and the button's side padding 16px -> 12px. Fits with a 15px
+   scrollbar at 880px; the button stays >= 8px from More. From 1040px the normal spacing. */
+@media (min-width: 880px) and (max-width: 1039px) {
+  .site-header { column-gap: 14px; }
+  .site-header .topnav { gap: 0; margin-left: 0; }
+  .site-header .topnav > a, .site-header .nav-more > summary { padding: 0 6px; }
+  .site-header .nav-follow { padding: 0 12px; }
+}
+@media (min-width: 600px) and (max-width: 659px) {   /* six items on one row from 600px: side padding 10px -> 6px */
+  .site-header .topnav > a, .site-header .nav-more > summary { padding: 0 6px; }
+  .site-header .topnav > a:first-child { margin-left: -6px; }
+}
