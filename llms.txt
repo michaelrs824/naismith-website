@@ -28,6 +28,7 @@ The team says he'll be re-evaluated in two weeks.
 - [X account](https://x.com/NaismithAIApp)
 - [Today's best pickups](https://www.naismithai.com/pickups.html): every player projected to gain from a current injury, by league size, updated every 15 minutes
 - [Latest alerts](https://www.naismithai.com/alerts.html): everything posted on X in the last week
+- [Weekly strategy](https://www.naismithai.com/strategy.html): this fantasy week's NBA schedule (games per team, back-to-backs, light nights) and today's best pickups with their games left
 - [Last night's recap](https://www.naismithai.com/recap.html)
 - [Today's injury report](https://www.naismithai.com/injuries): every NBA player with current injury news and the best pickups, as plain HTML
 - [Injured players](https://www.naismithai.com/players): one page per player at /players/<name>, e.g. /players/stephen-curry: status, timeline, latest report, who gains

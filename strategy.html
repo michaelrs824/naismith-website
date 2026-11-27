@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NBA fantasy weekly strategy: games per team, back-to-backs and pickups · Naismith AI</title>
+  <meta name="description" content="This fantasy week's NBA schedule: which teams play the most and fewest games, back-to-backs, light nights, and today's best pickups with their games left.">
+  <link rel="canonical" href="https://www.naismithai.com/strategy.html">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='68' font-size='60' font-family='Arial' font-weight='800' text-anchor='middle' fill='white'>N</text></svg>">
+  <link rel="apple-touch-icon" href="/logo.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.naismithai.com/strategy.html">
+  <meta property="og:title" content="NBA fantasy weekly strategy">
+  <meta property="og:description" content="Games per team this fantasy week, back-to-backs and light nights, with today's best pickups and their games left.">
+  <meta property="og:image" content="https://www.naismithai.com/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@NaismithAIApp">
+  <meta name="twitter:image" content="https://www.naismithai.com/og.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0D1117;
+      --surface: #161B22;
+      --card: #1C2129;
+      --border: rgba(139, 148, 158, 0.16);
+      --text: #E6EDF3;
+      --text-2: #8B949E;
+      --text-3: #6E7681;
+      --purple: #6C3CE1;
+      --blue: #2E75B6;
+      --green: #3FB950;
+      --gradient: linear-gradient(135deg, #6C3CE1 0%, #2E75B6 100%);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    .wrap { max-width: 640px; margin: 0 auto; padding: 0 16px; }
+
+    /* Header */
+    header { padding: 20px 0 8px; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo {
+      width: 34px; height: 34px; border-radius: 9px; background: var(--gradient);
+      display: grid; place-items: center; font-weight: 800; color: #fff; font-size: 1.1rem;
+    }
+    .brand-name { font-weight: 700; font-size: 1.1rem; }
+    .brand-handle { color: var(--text-2); font-size: 0.9rem; margin-left: auto; text-decoration: none; }
+
+    /* Hero */
+    .hero { padding: 36px 0 28px; }
+    h1 {
+      font-size: clamp(1.9rem, 7vw, 2.6rem); line-height: 1.12; font-weight: 800;
+      letter-spacing: -0.02em; text-wrap: balance;
+    }
+    h1 .grad { background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lede { color: var(--text-2); font-size: 1.05rem; margin-top: 14px; max-width: 34em; }
+    .ctas { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      min-height: 52px; padding: 0 20px; border-radius: 12px; text-decoration: none;
+      font-weight: 600; font-size: 1rem; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); transition: border-color .15s, transform .15s;
+    }
+    .btn:hover { border-color: rgba(139,148,158,.4); }
+    .btn:active { transform: scale(.99); }
+    .btn-primary { background: #fff; color: #0D1117; border-color: #fff; }
+    .btn-primary:hover { border-color: #fff; opacity: .92; }
+    .btn svg { width: 18px; height: 18px; flex: none; }
+    .btn-note { color: var(--text-2); font-size: 0.85rem; text-align: center; margin-top: 6px; }
+    .live {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;
+      color: var(--text-2); font-size: 0.85rem;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); }
+    .dot.on { background: var(--green); box-shadow: 0 0 0 4px rgba(63,185,80,.15); }
+
+    /* Sections */
+    section { padding: 28px 0; border-top: 1px solid var(--border); }
+    h2 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+    .sub { color: var(--text-2); font-size: 0.95rem; margin-top: 4px; }
+
+    /* Tweet cards */
+    .feed { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+    .tweet {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px;
+    }
+    .tweet-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .tweet-head .logo { width: 28px; height: 28px; font-size: .9rem; border-radius: 7px; }
+    .tweet-who { font-size: 0.9rem; line-height: 1.25; }
+    .tweet-who b { display: block; }
+    .tweet-who span { color: var(--text-2); }
+    .tag {
+      margin-left: auto; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--text-2); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px;
+    }
+    .tweet-body { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.95rem; }
+    .tweet-body .ht { color: var(--accent-2); }
+    .tweet-foot { margin-top: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-2); }
+    .tweet-foot a { color: var(--accent-2); text-decoration: none; font-weight: 500; }
+    .more { margin-top: 14px; font-size: 0.95rem; }
+    .more a { color: var(--accent-2); text-decoration: none; font-weight: 500; }
+
+    /* Feature list */
+    .features { list-style: none; display: grid; gap: 12px; margin-top: 16px; }
+    .features li {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+    }
+    .features b { display: block; font-size: 0.98rem; }
+    .features span { color: var(--text-2); font-size: 0.92rem; }
+    @media (min-width: 560px) { .features { grid-template-columns: 1fr 1fr; } }
+
+    /* Tags legend */
+    .legend { display: grid; gap: 8px; margin-top: 16px; }
+    .legend div {
+      display: grid; grid-template-columns: 2rem 1fr; gap: 4px 8px; align-items: baseline;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px;
+    }
+    .legend .ico { font-size: 1.2rem; grid-column: 1; grid-row: 1 / span 2; }
+    .legend b { font-size: 0.98rem; grid-column: 2; grid-row: 1; }
+    .legend span:not(.ico) { color: var(--text-2); font-size: 0.9rem; grid-column: 2; grid-row: 2; }
+
+    /* FAQ */
+    details { border-bottom: 1px solid var(--border); padding: 14px 0; }
+    details:first-of-type { margin-top: 8px; }
+    summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--text-2); font-weight: 400; font-size: 1.2rem; line-height: 1; }
+    details[open] summary::after { content: "−"; }
+    details p { color: var(--text-2); margin-top: 8px; font-size: 0.95rem; }
+
+    .h3 { font-size: 1rem; font-weight: 700; margin-top: 24px; }
+    .note { color: var(--text-2); font-size: 0.9rem; margin-top: 10px; }
+    .cta-end { text-align: center; }
+    .cta-end .btn { margin-top: 16px; }
+    #alerts { border-top: 0; padding-top: 4px; }
+    .how p { color: var(--text-2); font-size: 0.95rem; margin-top: 12px; }
+    .how b { color: var(--text); font-weight: 600; }
+    footer { border-top: 1px solid var(--border); padding: 24px 0 40px; color: var(--text-3); font-size: 0.85rem; }
+    footer nav { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 10px; }
+    footer a { color: var(--text-2); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    .chip { font: inherit; font-size: 0.9rem; font-weight: 600; padding: 8px 14px; border-radius: 999px; cursor: pointer;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text-2); }
+    .chip[aria-pressed="true"] { background: #fff; color: #0D1117; border-color: #fff; }
+    .picks { list-style: none; display: grid; gap: 10px; margin-top: 16px; }
+    .pick { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
+    .pick-top { display: flex; align-items: baseline; gap: 10px; }
+    .pick-name { font-weight: 700; font-size: 1.02rem; }
+    .pick-meta { color: var(--text-2); font-size: 0.85rem; }
+    .pick-gain { margin-left: auto; font-weight: 800; color: var(--green); white-space: nowrap; }
+    .pick-gain small { font-weight: 500; font-size: 0.75rem; color: var(--text-2); }
+    .pick-why { color: var(--text-2); font-size: 0.9rem; margin-top: 6px; }
+    .pick-why b { color: var(--text); font-weight: 600; }
+    .pill { display: inline-block; font-size: 0.75rem; font-weight: 600; border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; margin-top: 6px; color: var(--text-2); }
+    .empty { color: var(--text-2); margin-top: 16px; }
+    .inj summary { padding: 2px 0; min-height: 44px; align-items: center; }
+    .inj .inj-meta { color: var(--text-2); font-weight: 400; font-size: 0.9rem; }
+    .inj ul { list-style: none; margin-top: 8px; }
+    .inj li { display: flex; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border); font-size: 0.93rem; }
+    .inj li span:last-child { margin-left: auto; color: var(--green); font-weight: 700; white-space: nowrap; }
+    .stat { font-size: 1.05rem; margin-top: 14px; }
+    .stat b { font-size: 1.6rem; display: block; line-height: 1.2; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem; }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border); }
+    th { color: var(--text-2); font-weight: 600; font-size: 0.8rem; }
+    td.num, th.num { text-align: right; white-space: nowrap; }
+    .pos { color: var(--green); } .neg { color: #F85149; }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/site.css">
+  <style>
+  <style>
+    /* Weekly strategy page (draft, Nov 27). After site.css so it wins at equal specificity. */
+    @media (max-width: 599px) { .hero { padding-top: 24px; } .lede { margin-top: 10px; } }
+    .hero .chips { margin-top: 14px; }
+    .chip { min-height: 44px; }
+    .wk-note { color: var(--text-2); font-size: 0.92rem; margin-top: 8px; max-width: 40rem; }
+    .wk-note b { color: var(--text); font-weight: 600; }
+    .blocks { list-style: none; display: grid; gap: 10px; margin-top: 16px; }
+    @media (min-width: 600px) { .blocks { grid-template-columns: 1fr 1fr; } }
+    .blk { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; min-width: 0; }
+    .blk h3 { font-size: 1rem; font-weight: 700; }
+    .blk .why { color: var(--text-2); font-size: 0.88rem; margin-top: 2px; }
+    .blk ul { list-style: none; margin-top: 8px; display: grid; gap: 4px; }
+    .blk li { font-size: 0.95rem; overflow-wrap: anywhere; }
+    .blk li b { font-weight: 600; margin-right: 4px; }
+    .blk .teams { color: var(--text); letter-spacing: 0.02em; }
+    /* Every team, day by day: 7 narrow day columns, no sideways scroll at 320px */
+    details.grid-d { margin-top: 14px; border-bottom: 0; padding: 0; }
+    .grid-d summary { min-height: 44px; align-items: center; font-size: 0.95rem; }
+    .grid-key { color: var(--text-2); font-size: 0.85rem; margin-top: 4px; }
+    .grid-key .dot-g, .grid-key .dot-p { margin: 0 4px 0 0; vertical-align: middle; }
+    table.grid { width: 100%; max-width: 36rem; table-layout: fixed; border-collapse: collapse; margin-top: 8px; font-size: 0.9rem; }
+    .grid th, .grid td { padding: 0; height: 30px; text-align: center; border-bottom: 1px solid var(--border); }
+    .grid thead th { height: auto; padding: 4px 0 6px; color: var(--text-2); font-weight: 600; font-size: 0.78rem; line-height: 1.15; vertical-align: bottom; }
+    .grid thead th small { display: block; font-weight: 400; color: var(--text-3); }
+    .grid thead th.past { color: var(--text-3); }
+    .grid .t { width: 3.2em; text-align: left; font-weight: 600; }
+    .grid .n { width: 2.7em; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .grid thead .t, .grid thead .n { font-size: 0.72rem; }
+    .dot-g, .dot-p { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+    .dot-g { background: var(--accent-2); }
+    .dot-p { border: 1.5px solid var(--text-3); }
+    .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .grid tr.split td, .grid tr.split th { border-top: 1px solid rgba(139,148,158,.4); }
+    /* Pickups with games */
+    .picks { list-style: none; display: grid; gap: 10px; margin-top: 16px; }
+    .picks > li { min-width: 0; }
+    @media (min-width: 760px) { .picks { grid-template-columns: 1fr 1fr; } }
+    .pick-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 0 8px; }
+    .pick-who { min-width: 0; overflow-wrap: break-word; }
+    .pick-name { margin-right: 6px; color: var(--text); text-decoration: none; display: inline-block; padding: 10px 0; margin-top: -10px; margin-bottom: -10px; }
+    .pick-name:hover { text-decoration: underline; }
+    .pick-meta { white-space: nowrap; display: inline-block; }
+    .pick-why { overflow-wrap: break-word; }
+    .pick-games { margin-top: 8px; font-size: 0.92rem; }
+    .pick-games b { font-weight: 700; color: var(--text); }
+    .pick-games span { color: var(--text-2); }
+    .pick-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+    .sec-more { margin-top: 12px; }
+    .sec-more a { color: var(--accent-2); text-decoration: none; font-weight: 600; display: inline-block; padding: 12px 0; margin: -12px 0; }
+    details.key-d { margin-top: 10px; }
+    /* Trending */
+    .trend { list-style: none; margin-top: 12px; }
+    .trend li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; border-bottom: 1px solid var(--border); padding: 0; }
+    .trend a { color: var(--text); font-weight: 600; text-decoration: none; padding: 12px 0; display: inline-block; }
+    .trend .pick-meta { color: var(--text-2); }
+    .trend .yo { margin-left: auto; color: var(--text-2); font-size: 0.9rem; }
+    /* Track record */
+    .rec p { color: var(--text-2); font-size: 0.95rem; margin-top: 10px; max-width: 40rem; }
+    .rec .stat { color: var(--text); }
+    .empty a, .wk-msg a { color: var(--accent-2); }
+    .wk-msg { color: var(--text-2); margin-top: 16px; max-width: 40rem; }
+    .next-links { list-style: none; display: grid; gap: 10px; margin-top: 14px; }
+    .next-links a { display: block; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; text-decoration: none; }
+    .next-links a:hover { border-color: var(--accent); }
+    .next-links b { display: block; color: var(--accent-2); }
+    .next-links span { display: block; color: var(--text-2); font-size: 0.9rem; margin-top: 2px; }
+    @media (min-width: 600px) { .next-links { grid-template-columns: 1fr 1fr; } }
+    section[hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="/"><div class="logo" aria-hidden="true">N</div><div class="brand-name">Naismith AI</div></a>
+      <nav class="topnav" aria-label="Main">
+        <a href="/app.html#lookup">Lookup</a>
+        <a href="/tonight.html">Tonight's games</a>
+        <a href="/pickups.html">Pickups</a>
+        <a href="/strategy.html" aria-current="page">Weekly strategy</a>
+        <a class="nav-ai" href="/connector.html">Ask AI</a>
+        <details class="nav-more">
+          <summary>More</summary>
+          <div class="nav-more-menu">
+            <a href="/recap.html">Recap</a>
+            <a href="/alerts.html">Alerts</a>
+            <a href="/players">Injuries by player</a>
+            <a href="/help.html">Help</a>
+            <a class="nav-more-x" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
+          </div>
+        </details>
+      </nav>
+      <a class="nav-follow" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">Follow on X</a>
+    </header>
+
+    <main id="main">
+      <div class="hero" style="padding-bottom:8px">
+        <h1>Weekly strategy</h1>
+        <p class="lede">Which teams play the most games this fantasy week (Monday to Sunday), and today's best pickups with the games each has left.</p>
+        <div class="live"><span class="dot" id="dot"></span><span id="updated">Loading…</span></div>
+        <div class="chips" role="group" aria-label="Week" id="wk-pick" hidden></div>
+      </div>
+
+      <section id="sched" aria-labelledby="sched-h" style="border-top:0;padding-top:20px">
+        <h2 id="sched-h">The week's schedule</h2>
+        <div id="sched-body"><p class="wk-msg">Loading the week's schedule…</p></div>
+      </section>
+
+      <section id="pk" aria-labelledby="pk-h" hidden>
+        <h2 id="pk-h">Pickups and their games</h2>
+        <p class="sub" id="pk-sub">Today's best pickups, ranked by the extra fantasy points per game (FPTS/g) we project while the injured player is out, with how many games each has left. More games means more chances to use the gain.</p>
+        <details class="key-d" id="pk-key">
+          <summary>What the tags mean</summary>
+          <ul class="tagkey" aria-label="What the tags mean">
+            <li>🔥 <b>All leagues:</b> worth adding in any league</li>
+            <li>🎯 <b>12+ team:</b> worth adding in 12+ team leagues</li>
+            <li>👀 <b>Deep league:</b> only worth adding in 14+ team leagues</li>
+            <li><b>+5.3</b> (example): extra FPTS/g while the injured player is out</li>
+            <li class="key-cat">Category league? Read the numbers as a guide to who's getting more minutes.</li>
+          </ul>
+        </details>
+        <ul class="picks" id="pk-list"></ul>
+        <p class="sec-more"><a href="/pickups.html">All pickups, by league size →</a></p>
+      </section>
+
+      <section id="tr" aria-labelledby="tr-h" hidden>
+        <h2 id="tr-h">Most added on Yahoo</h2>
+        <p class="sub">Players Yahoo managers are adding most this week.</p>
+        <ul class="trend" id="tr-list"></ul>
+      </section>
+
+      <section id="rec" class="rec" aria-labelledby="rec-h" hidden>
+        <h2 id="rec-h">How our picks did</h2>
+        <div id="rec-body"></div>
+      </section>
+
+      <section class="next" aria-labelledby="next-h">
+        <h2 id="next-h">Next</h2>
+        <ul class="next-links">
+          <li><a href="/pickups.html"><b>Today's best pickups</b><span>Ranked across every injury, by league size</span></a></li>
+          <li><a href="/tonight.html"><b>Tonight</b><span>Every game on tonight's slate, with each team's injury news and who to pick up if a player sits.</span></a></li>
+        </ul>
+      </section>
+
+      <section class="cta-end" aria-label="Follow on X">
+        <h2>Get each new injury as it breaks.</h2>
+        <a class="btn btn-primary" href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Follow Naismith AI on X
+        </a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <nav class="foot-nav" aria-label="Site">
+        <div class="foot-group">
+          <h2 class="foot-h">Today</h2>
+          <ul>
+            <li><a href="/tonight.html">Tonight</a></li>
+            <li><a href="/alerts.html">Latest alerts</a></li>
+            <li><a href="/pickups.html">Best pickups</a></li>
+            <li><a href="/strategy.html" aria-current="page">Weekly strategy</a></li>
+            <li><a href="/recap.html">Recap</a></li>
+          </ul>
+        </div>
+        <div class="foot-group">
+          <h2 class="foot-h">Players</h2>
+          <ul>
+            <li><a href="/app.html#lookup">Player lookup</a></li>
+            <li><a href="/injuries">Injury report</a></li>
+            <li><a href="/players">Injuries by player</a></li>
+          </ul>
+        </div>
+        <div class="foot-group">
+          <h2 class="foot-h">Help &amp; more</h2>
+          <ul>
+            <li><a href="/connector.html">Ask AI</a></li>
+            <li><a href="/help.html">Help</a></li>
+            <li><a href="mailto:naismithai@gmail.com?subject=Naismith%20AI%20feedback">Feedback</a></li>
+            <li><a href="https://x.com/NaismithAIApp" target="_blank" rel="noopener">@NaismithAIApp on X</a></li>
+          </ul>
+        </div>
+        <div class="foot-group">
+          <h2 class="foot-h">Legal</h2>
+          <ul>
+            <li><a href="/privacy.html">Privacy</a></li>
+            <li><a href="/terms.html">Terms</a></li>
+          </ul>
+        </div>
+      </nav>
+      <p class="foot-note">Not affiliated with the NBA.</p>
+    </footer>
+  </div>
+
+  <script src="/feed.js"></script>
+  <script>
+  (function () {
+    var API = 'https://naismith-api-production.up.railway.app';
+    var F = window.NaismithFeed;
+    var data = null, sel = null, tries = 0;
+    var ONWARD = 'See <a href="/pickups.html">today\'s best pickups</a> or <a href="/tonight.html">tonight\'s games</a>.';
+    var DAYS = {Mon: 'Monday', Tue: 'Tuesday', Wed: 'Wednesday', Thu: 'Thursday', Fri: 'Friday', Sat: 'Saturday', Sun: 'Sunday'};
+
+    function esc(s) { return F.esc(s == null ? '' : s); }
+    function day(iso) { return new Date(iso + 'T12:00:00Z'); }
+    function md(iso) { return day(iso).toLocaleDateString('en-US', {month: 'short', day: 'numeric', timeZone: 'UTC'}); }
+    function range(w) {
+      var a = day(w.start), b = day(w.end);
+      return md(w.start) + ' – ' + (a.getUTCMonth() === b.getUTCMonth() ? b.getUTCDate() : md(w.end));
+    }
+    function and(xs) { return xs.length < 3 ? xs.join(' and ') : xs.slice(0, -1).join(', ') + ' and ' + xs[xs.length - 1]; }
+    function games(n) { return n + (n === 1 ? ' game' : ' games'); }
+    function dow(iso, w) { for (var i = 0; i < w.nights.length; i++) if (w.nights[i].date === iso) return w.nights[i].dow; return ''; }
+    function playerLink(name, cls) { return '<a class="' + cls + '" href="/players/' + esc(F.slug(name)) + '">' + esc(name) + '</a>'; }
+    function label(w) { return w.key === 'next' ? 'Next week' : (data.weeks.length > 1 ? 'Rest of this week' : 'This week'); }
+    function wide() { return window.matchMedia && window.matchMedia('(min-width: 760px)').matches; }
+
+    // Teams grouped by their count: "<b>4 games</b> LAC, PHX"
+    function byCount(by, left) {
+      var groups = {};
+      Object.keys(by).forEach(function (t) { (groups[by[t]] = groups[by[t]] || []).push(t); });
+      return Object.keys(groups).sort(function (a, b) { return b - a; }).map(function (n) {
+        n = +n;
+        return '<li><b>' + (left ? (n === 0 ? 'None left' : n + ' left') : games(n)) + '</b> <span class="teams">' +
+          esc(groups[n].sort().join(', ')) + '</span></li>';
+      }).join('');
+    }
+    function block(title, why, items) {
+      return '<li class="blk"><h3>' + title + '</h3><p class="why">' + why + '</p><ul>' + items + '</ul></li>';
+    }
+
+    function renderWeek(w) {
+      var left = w.started, out = [];
+      document.getElementById('sched-h').textContent = label(w) + ': ' + range(w);
+      if (!w.games_total && !w.tbd_total) {
+        document.getElementById('sched-body').innerHTML = '<p class="wk-msg">No games are scheduled ' +
+          (w.key === 'next' ? 'next week' : 'this week') + '. ' + ONWARD + '</p>';
+        return;
+      }
+      var togo = w.nights.reduce(function (s, n) { return s + n.left; }, 0);
+      var lead = left ? '<b>' + games(togo) + '</b> still to play (' + w.games_total + ' this week).'
+                      : '<b>' + games(w.games_total) + '</b> on the schedule.';
+      var notes = [];
+      var tbdN = w.nights.filter(function (n) { return n.tbd && !n.past; });
+      if (tbdN.length) {
+        var tn = tbdN.reduce(function (s, n) { return s + n.tbd; }, 0);
+        var note = tbdN.map(function (n) { return n.tbd_note; }).filter(function (x, i, a) { return x && a.indexOf(x) === i; });
+        notes.push('Teams aren\'t set yet for ' + games(tn) + ' on ' + and(tbdN.map(function (n) { return n.dow; })) +
+          (note.length ? ' (' + esc(note.join('; ')) + ')' : '') + '.');
+      }
+      var empty = (w.empty_nights || []).map(function (d) { return dow(d, w); });
+      if (empty.length) notes.push((tbdN.length ? 'No other games are scheduled for ' + and(empty) + ' yet.' : 'No games on ' + and(empty) + '.'));
+      out.push('<p class="wk-note">' + lead + (notes.length ? ' ' + notes.join(' ') : '') + '</p>');
+
+      var bl = [];
+      if (w.most) bl.push(block(left ? 'Most games left' : 'Most games',
+        left ? 'More games left means more chances to score before Sunday.' : 'More games means more chances to score.',
+        byCount(w.most.by_team, left)));
+      if (w.fewest) bl.push(block(left ? 'Fewest games left' : 'Fewest games',
+        'Fewer games means fewer chances to score. A good week to bench or drop a fringe player from these teams.',
+        byCount(w.fewest.by_team, left)));
+      if (w.b2b && w.b2b.length) {
+        var pairs = {}, order = [];
+        w.b2b.forEach(function (b) {
+          var k = dow(b.d1, w) + '–' + dow(b.d2, w);
+          if (!pairs[k]) { pairs[k] = []; order.push(k); }
+          pairs[k].push(b.team);
+        });
+        bl.push(block('Back-to-backs', 'Two games on back-to-back nights. Check the injury report before the second one.',
+          order.map(function (k) { return '<li><b>' + k + '</b> <span class="teams">' + esc(pairs[k].sort().join(', ')) + '</span></li>'; }).join('')));
+      }
+      if (w.light && w.light.length) bl.push(block('Light nights',
+        'Few teams play, so a player who does is easier to fit into your lineup.',
+        w.light.map(function (n) { return '<li><b>' + n.dow + ' ' + md(n.date) + ' · ' + games(n.games) + '</b> <span class="teams">' +
+          esc(n.teams.join(', ')) + '</span></li>'; }).join('')));
+      if (w.heavy && w.heavy.length) bl.push(block('Busy nights',
+        'Most teams play, so you may have more players than lineup spots.',
+        w.heavy.map(function (n) { return '<li><b>' + n.dow + ' ' + md(n.date) + '</b> ' + games(n.games) + '</li>'; }).join('')));
+      if (bl.length) out.push('<ul class="blocks">' + bl.join('') + '</ul>');
+
+      // Every team, day by day
+      var col = left ? 'Left' : 'Games';
+      var head = '<tr><th scope="col" class="t">Team</th>' + w.nights.map(function (n) {
+        return '<th scope="col"' + (n.past ? ' class="past"' : '') + '><abbr title="' + DAYS[n.dow] + ', ' + md(n.date) +
+          '" style="text-decoration:none">' + n.dow.charAt(0) + '</abbr><small>' + day(n.date).getUTCDate() + '</small></th>';
+      }).join('') + '<th scope="col" class="n">' + col + '</th></tr>';
+      var prev = null;
+      var rows = w.teams.map(function (r) {
+        var n = left ? r.left : r.games, split = prev !== null && n !== prev;
+        prev = n;
+        return '<tr' + (split ? ' class="split"' : '') + '><th scope="row" class="t">' + esc(r.team) + '</th>' +
+          r.slots.split('').map(function (s) {
+            return '<td>' + (s === '1' ? '<span class="dot-g"></span><span class="vh">game</span>' :
+                             s === '2' ? '<span class="dot-p"></span><span class="vh">played</span>' : '') + '</td>';
+          }).join('') + '<td class="n">' + n + '</td></tr>';
+      }).join('');
+      out.push('<details class="grid-d" id="grid-d"' + (wide() ? ' open' : '') + '><summary>Every team, day by day</summary>' +
+        '<p class="grid-key"><span class="dot-g"></span>game' + (left ? ' to play <span class="dot-p" style="margin-left:10px"></span>already played' : '') +
+        '. Sorted by ' + (left ? 'games left' : 'games') + '.</p>' +
+        '<table class="grid"><caption class="vh">Games per team, ' + esc(label(w)) + '</caption><thead>' + head + '</thead><tbody>' + rows + '</tbody></table></details>');
+      document.getElementById('sched-body').innerHTML = out.join('');
+    }
+
+    function why(because) {
+      var names = function (list) { return and(list.map(function (b) { return '<b>' + esc(b.player) + '</b>' + (b.duration ? ' (' + esc(b.duration) + ')' : ''); })); };
+      var out = because.filter(function (b) { return b.status !== 'DOUBTFUL'; });
+      var doubt = because.filter(function (b) { return b.status === 'DOUBTFUL'; });
+      var parts = [];
+      if (out.length) parts.push(names(out) + ' out');
+      if (doubt.length) parts.push(names(doubt) + ' doubtful');
+      return parts.length ? 'With ' + parts.join(', and ') + '. ' : '';
+    }
+    function fmtOwned(x) { return x < 1 ? 'under 1%' : Math.round(x) + '%'; }
+    function gamesLine(p) {
+      var bits = [];
+      if (p.left_this_week != null) bits.push(p.left_this_week ? '<b>' + games(p.left_this_week) + ' left</b> <span>this week</span>' : '<b>No games left</b> <span>this week</span>');
+      if (p.next_week != null && (data.weeks.length > 1 || p.next_week)) bits.push('<b>' + p.next_week + '</b> <span>next week</span>');
+      return bits.length ? '<span class="pick-games">' + bits.join(' <span>·</span> ') + '</span>' : '';
+    }
+    function renderPicks() {
+      var sec = document.getElementById('pk'), P = data.pickups || [];
+      if (!P.length) { sec.hidden = true; return; }
+      sec.hidden = false;
+      document.getElementById('pk-key').open = wide();
+      document.getElementById('pk-list').innerHTML = P.map(function (p) {
+        return '<li class="pick"><div class="pick-top"><span class="pick-who">' + playerLink(p.player, 'pick-name') +
+          ' <span class="pick-meta">' + esc([p.team, p.position].filter(Boolean).join(' · ')) + '</span></span>' +
+          '<span class="pick-gain">+' + p.fpts_delta.toFixed(1) + '<small> FPTS/g</small></span></div>' +
+          '<div class="pick-why">' + why(p.because || []) + (p.owned != null ? 'Owned in ' + fmtOwned(p.owned) + ' of ESPN leagues.' : '') + '</div>' +
+          '<div class="pick-foot">' + (p.tag ? '<span class="pill">' + esc((p.icon ? p.icon + ' ' : '') + p.tag) + '</span>' : '') + gamesLine(p) + '</div></li>';
+      }).join('');
+    }
+    function renderTrending() {
+      var sec = document.getElementById('tr'), T = data.trending || [];
+      sec.hidden = !T.length;
+      if (!T.length) return;
+      document.getElementById('tr-list').innerHTML = T.map(function (t) {
+        return '<li>' + playerLink(t.player, '') + (t.team ? ' <span class="pick-meta">' + esc(t.team) + '</span>' : '') +
+          '<span class="yo">Rostered in ' + t.yahoo_owned + '% of Yahoo leagues</span></li>';
+      }).join('');
+    }
+    function renderRecord() {
+      var sec = document.getElementById('rec'), r = data.record;
+      sec.hidden = !r;
+      if (!r) return;
+      var when = r.first && r.last ? (r.first === r.last ? ' on ' + md(r.first) : ' between ' + md(r.first) + ' and ' + md(r.last)) : '';
+      var sign = function (x) { return (x >= 0 ? '+' : '−') + Math.abs(x).toFixed(1); };
+      var g = r.games_min != null ? (r.games_min === r.games_max ? games(r.games_min) : r.games_min + ' or ' + games(r.games_max)) : '';
+      document.getElementById('rec-body').innerHTML =
+        '<p>We graded ' + r.count + ' pickups we posted on X' + when + '. For each, we compared his fantasy points per game while the ' +
+        'injured player was out (up to ' + r.eval_days + ' days, at least ' + games(r.min_games) + ') with his games alongside that player in the ' +
+        r.baseline_days + ' days before.</p>' +
+        '<p class="stat"><b>' + sign(r.avg_actual) + ' FPTS/g</b>average gain (we projected ' + sign(r.avg_projected) + '). ' +
+        r.gained + ' of ' + r.count + ' scored more than before.</p>' +
+        (g ? '<p>Each was graded on ' + g + '.</p>' : '');
+    }
+    function renderChips() {
+      var el = document.getElementById('wk-pick');
+      if (data.weeks.length < 2) { el.hidden = true; return; }
+      el.hidden = false;
+      el.innerHTML = data.weeks.map(function (w) {
+        return '<button class="chip" type="button" data-k="' + w.key + '" aria-pressed="' + (w.key === sel) + '">' + label(w) + '</button>';
+      }).join('');
+      Array.prototype.forEach.call(el.querySelectorAll('button'), function (b) {
+        b.addEventListener('click', function () {
+          sel = b.getAttribute('data-k');
+          Array.prototype.forEach.call(el.querySelectorAll('button'), function (c) { c.setAttribute('aria-pressed', String(c === b)); });
+          show();
+        });
+      });
+    }
+    function show() {
+      var w = data.weeks.filter(function (x) { return x.key === sel; })[0] || data.weeks[0];
+      if (w) renderWeek(w);
+    }
+    function fail(msg) {
+      document.getElementById('sched-h').textContent = 'The week\'s schedule';
+      document.getElementById('sched-body').innerHTML = '<p class="wk-msg">' + msg + ' ' + ONWARD + '</p>';
+    }
+    function load() {
+      fetch(API + '/public/week').then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+        .then(function (d) {
+          data = d; data.weeks = d.weeks || [];
+          if (d.building && !data.weeks.length) {
+            document.getElementById('updated').textContent = 'Getting the week\'s schedule…';
+            if (++tries <= 3) { fail('Getting the week\'s schedule. This page will fill in shortly.'); setTimeout(load, 20000); }
+            else fail('The schedule isn\'t ready yet. Try again in a few minutes.');
+            return;
+          }
+          if (d.generated_at) {
+            document.getElementById('dot').className = 'dot on';
+            document.getElementById('updated').textContent = 'Updated ' + F.ago(d.generated_at);
+          }
+          sel = sel || d.default_week;
+          renderChips();
+          if (data.weeks.length) show();
+          else fail('The schedule isn\'t available right now. Try again later.');
+          renderPicks(); renderTrending(); renderRecord();
+        })
+        .catch(function () {
+          document.getElementById('dot').className = 'dot';
+          document.getElementById('updated').textContent = 'Couldn\'t get the latest update';
+          document.getElementById('wk-pick').hidden = true;
+          ['pk', 'tr', 'rec'].forEach(function (id) { document.getElementById(id).hidden = true; });
+          fail('Couldn\'t load the week\'s schedule. Try again in a minute.');
+        });
+    }
+    load();
+  })();
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/nav.js"></script>
+</body>
+</html>

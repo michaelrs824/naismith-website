@@ -52,12 +52,12 @@
       "permanent": true
     },
     {
-      "source": "/:page(ai-fantasy-nba|alerts|app|connector|help|pickups|privacy|recap|terms|tonight)",
+      "source": "/:page(ai-fantasy-nba|alerts|app|connector|help|pickups|privacy|recap|strategy|terms|tonight)",
       "destination": "/:page.html",
       "permanent": true
     },
     {
-      "source": "/:page(ai-fantasy-nba|alerts|app|connector|help|pickups|privacy|recap|terms|tonight)/",
+      "source": "/:page(ai-fantasy-nba|alerts|app|connector|help|pickups|privacy|recap|strategy|terms|tonight)/",
       "destination": "/:page.html",
       "permanent": true
     },
