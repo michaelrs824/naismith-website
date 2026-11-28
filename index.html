@@ -426,7 +426,16 @@ He went to the locker room with an ankle injury in the second quarter.
           var c = F.alertCard(a);
           if (c) html.push(c);
         });
-        if (html.length) document.getElementById('feed').innerHTML = html.join('');
+        if (html.length) {
+          var feed = document.getElementById('feed');
+          feed.innerHTML = html.join('');
+          // one small explainer above the cards when any shows a category line; phones show 5 cards (site.css),
+          // so a line only on the 6th card gets a note that phones hide too
+          if (F.hasCat(html) && !document.getElementById('feed-cat')) {
+            feed.insertAdjacentHTML('beforebegin', F.catNote().replace('<p class="cat-note"',
+              '<p class="cat-note' + (F.hasCat(html.slice(0, 5)) ? '' : ' cat-6') + '" id="feed-cat"'));
+          }
+        }
       })
       .catch(function () { /* keep the examples */ });
 

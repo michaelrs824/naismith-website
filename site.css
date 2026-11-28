@@ -581,3 +581,11 @@ input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:foc
 /* Pages that load their data with JavaScript: the line shown without it (H-03) */
 .noscript-msg { color: var(--text-2); margin-top: 16px; max-width: 40rem; }
 .noscript-msg a { color: var(--accent-2); font-weight: 600; }
+
+/* Category line under a pickup (alert cards, Pickups page by injury): a small second line that wraps inside
+   the row, never widens the card or moves the + number. .cat-note: the one explainer above such a list. */
+.ac-picks li > .ac-cat { flex: 0 0 100%; margin-top: -4px; }
+.ac-cat, .inj li .cat-line { display: block; margin-left: 0; color: var(--text-3); font: 400 0.85rem/1.35 'Inter', sans-serif;
+  letter-spacing: normal; white-space: normal; overflow-wrap: anywhere; }
+.cat-note { color: var(--text-3); font-size: 0.85rem; margin: 10px 0 0; }
+@media (max-width: 599px) { .cat-note.cat-6 { display: none; } }

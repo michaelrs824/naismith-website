@@ -190,7 +190,8 @@
       (a.news.length ? '<p class="ac-news">' + esc(a.news.join(' ')) + '</p>' : '') +
       (a.picks.length ? '<ul class="ac-picks">' + a.picks.map(function (p) {
         return '<li>' + W.star(p.name) + '<span class="ac-pn">' + esc(p.name) + '</span><span class="pill">' + esc(p.icon + ' ' + p.tag) +
-          '</span><span class="ac-pd">+' + esc(p.delta) + '</span></li>';
+          '</span><span class="ac-pd">+' + esc(p.delta) + '</span>' +
+          (p.cat ? '<span class="ac-cat">' + esc(p.cat) + '</span>' : '') + '</li>';  // category line, own row (site.css)
       }).join('') + '</ul>' : '') +
       // he's back from this injury (feed injury_over, C-07): no pickups now; the green dot of a back card
       (a.over ? '<p class="ac-over"><i></i>No longer out. No pickups now.</p>' : '') +
@@ -202,7 +203,26 @@
       '</article>';
   }
 
+  // Category lines (server category_line on each of the feed's recommendations[], built with today's
+  // pickups): matched to the pickup lines read back from the tweet text by name, normalised as the
+  // watchlist does (nkey). Only a non-empty string shows; null, missing or old cached JSON show nothing.
+  var CAT_NOTE = 'Categories: our projected extra stats per game while the injured player is out.';
+  function addCats(parts, recs) {
+    var by = {};
+    (recs || []).forEach(function (r) {
+      var c = r && r.category_line;
+      if (r && r.player && typeof c === 'string' && c.trim()) by[nkey(r.player)] = c.trim();
+    });
+    parts.picks.forEach(function (p) { p.cat = by[nkey(p.name)] || ''; });
+  }
+  function hasCat(cards) {
+    return (cards || []).some(function (h) { return String(h || '').indexOf('<span class="ac-cat">') >= 0; });
+  }
+
   window.NaismithFeed = {
+    // The one explainer above a list of cards when at least one shows a category line
+    CAT_NOTE: CAT_NOTE, hasCat: hasCat,
+    catNote: function () { return '<p class="cat-note">' + esc(CAT_NOTE) + '</p>'; },
     esc: esc, ago: ago, card: card, X: X, parse: parse, cleanSource: cleanSource, slug: slug, plainDuration: plainDuration,
     // The parsed parts behind a card (also for alerts posted before tweet text was saved)
     info: function (a) { return parse(a.tweet_text || headline(a) || ''); },
@@ -219,6 +239,7 @@
       var look = opts.lookup && who ? lookupLink(who) : '';
       if (parts && !parts.source) parts.source = cleanSource((a.event || {}).source);  // the tweet had no room for it, or predates saved text
       if (parts && a.injury_over === true && !parts.picks.length) parts.over = true;
+      if (parts && parts.picks.length && !parts.over) addCats(parts, a.recommendations);
       return parts ? structured(parts, link, when, label, look) : card(text, link, when, label, look);
     }
   };

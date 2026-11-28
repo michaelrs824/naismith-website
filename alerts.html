@@ -366,8 +366,9 @@
         }
         html.push(state.sort === 'new' ? c.html : c.dated);
       });
+      // one small explainer above the list when a card shown has a category line
       document.getElementById('list').innerHTML = view.length
-        ? '<div class="feed" style="margin-top:0">' + html.join('') + '</div>'
+        ? (F.hasCat(html) ? F.catNote() : '') + '<div class="feed" style="margin-top:0">' + html.join('') + '</div>'
         : emptyText();
       var more = document.getElementById('more');
       more.style.display = shown < view.length ? 'flex' : 'none';

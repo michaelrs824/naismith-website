@@ -443,16 +443,23 @@
       var more = document.getElementById('more');
       if (more) more.addEventListener('click', function () { showAll = true; renderBoard(); });
     }
+    // Category line (server category_line, per injury only): a non-empty string, else nothing
+    function catLine(p) { return typeof p.category_line === 'string' && p.category_line.trim() ? p.category_line.trim() : ''; }
     function renderInjuries() {
       var el = document.getElementById('injuries');
       if (!board.injuries.length) { el.innerHTML = '<p class="empty">No injuries with pickups right now.</p>'; return; }
-      el.innerHTML = board.injuries.map(function (i) {
+      var anyCat = board.injuries.some(function (i) { return (i.pickups || []).some(catLine); });
+      // one explainer above the list when any pickup has a line; the line sits inside .inj-meta, so the
+      // row's spans keep their :last-child styles (the + number, the tag)
+      el.innerHTML = (anyCat ? window.NaismithFeed.catNote() : '') + board.injuries.map(function (i) {
         return '<details class="inj"><summary><span>' + esc(i.player) + ' <span class="inj-meta">' +
           esc(i.team) + ' · ' + (i.status === 'DOUBTFUL' ? 'Doubtful' : 'Out') + (window.NaismithFeed.plainDuration(i.duration) ? ' ' + esc(window.NaismithFeed.plainDuration(i.duration)) : '') +
           ' · ' + i.avg_fpts.toFixed(1) + ' FPTS/g</span></span></summary><ul>' +
           i.pickups.map(function (p) {
             return '<li><span>' + esc(p.icon) + '</span><span>' + esc(p.player) + ' <span class="inj-meta">' +
-              esc(p.tag) + (p.owned != null ? ' · ' + fmtOwned(p.owned) + ' owned' : '') + '</span></span><span>+' + p.fpts_delta.toFixed(1) + '</span></li>';
+              esc(p.tag) + (p.owned != null ? ' · ' + fmtOwned(p.owned) + ' owned' : '') +
+              (catLine(p) ? '<small class="cat-line">' + esc(catLine(p)) + '</small>' : '') +
+              '</span></span><span>+' + p.fpts_delta.toFixed(1) + '</span></li>';
           }).join('') + '</ul></details>';
       }).join('');
     }
