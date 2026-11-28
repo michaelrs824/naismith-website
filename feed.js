@@ -52,8 +52,26 @@
     d = d.replace(/\b(most|all|rest|part) of season\b/gi, '$1 of the season');
     return d.replace(/\b(\d+)\s*-\s*(\d+)\b/g, '$1 to $2');
   }
-  function lookupLink(name) {
-    return '<a class="ac-look" href="/players/' + esc(slug(name)) + '">Look up ' + esc(name) + '</a>';
+  // His page for a name a feed sent: the feed's own path when it has the field ("url" beside "player",
+  // "player_url" beside an alert event's "player_name"; null means the site has no page for that spelling,
+  // so the name stays plain text); for JSON from before the field, the slug rule above.
+  function pageUrl(o, name, key) {
+    key = key || 'url';
+    if (o && Object.prototype.hasOwnProperty.call(o, key)) {
+      var u = o[key];
+      return typeof u === 'string' && /^\/players\/[a-z0-9-]+$/.test(u) ? u : null;
+    }
+    var s = slug(name);
+    return s ? '/players/' + s : null;
+  }
+  // A player's name as a link to his page (class "pn", site.css), keeping the element's own class;
+  // without a page, the same element as plain text.
+  function nameLink(name, url, cls) {
+    if (url) return '<a class="' + (cls ? cls + ' ' : '') + 'pn" href="' + esc(url) + '">' + esc(name) + '</a>';
+    return cls ? '<span class="' + cls + '">' + esc(name) + '</span>' : esc(name);
+  }
+  function lookupLink(name, url) {
+    return '<a class="ac-look" href="' + esc(url || '/players/' + slug(name)) + '">Look up ' + esc(name) + '</a>';
   }
   function card(text, link, when, linkLabel, look) {
     return '<article class="tweet">' +
@@ -185,11 +203,11 @@
   function structured(a, link, when, linkLabel, look) {
     return '<article class="acard k-' + a.kind + '">' +
       '<div class="ac-top"><span class="ac-status"><i></i>' + esc(a.status) + '</span><span class="ac-time">' + esc(when) + '</span></div>' +
-      '<div class="ac-player">' + W.star(a.player) + '<span class="ac-name">' + esc(a.player) + '</span><span class="ac-team">' + esc(a.team) + '</span>' +
+      '<div class="ac-player">' + W.star(a.player) + nameLink(a.player, a.url, 'ac-name') + '<span class="ac-team">' + esc(a.team) + '</span>' +
         (a.fpts ? '<span class="ac-fp">' + esc(a.fpts) + '<small> FPTS/g</small></span>' : '') + '</div>' +
       (a.news.length ? '<p class="ac-news">' + esc(a.news.join(' ')) + '</p>' : '') +
       (a.picks.length ? '<ul class="ac-picks">' + a.picks.map(function (p) {
-        return '<li>' + W.star(p.name) + '<span class="ac-pn">' + esc(p.name) + '</span><span class="pill">' + esc(p.icon + ' ' + p.tag) +
+        return '<li>' + W.star(p.name) + nameLink(p.name, p.url, 'ac-pn') + '<span class="pill">' + esc(p.icon + ' ' + p.tag) +
           '</span><span class="ac-pd">+' + esc(p.delta) + '</span>' +
           (p.cat ? '<span class="ac-cat">' + esc(p.cat) + '</span>' : '') + '</li>';  // category line, own row (site.css)
       }).join('') + '</ul>' : '') +
@@ -215,6 +233,21 @@
     });
     parts.picks.forEach(function (p) { p.cat = by[nkey(p.name)] || ''; });
   }
+  // Each name on a card gets its page: the alert's player from event.player_url, each pickup from the
+  // url of the recommendation with his name (nkey). A name the feed doesn't list: no link once the feed
+  // has the fields; the slug rule for older JSON.
+  function addUrls(parts, a) {
+    var ev = a.event || {}, recs = a.recommendations || [];
+    var fresh = Object.prototype.hasOwnProperty.call(ev, 'player_url');
+    function find(name, list, key, nameKey) {
+      for (var i = 0; i < list.length; i++) {
+        if (list[i] && nkey(list[i][nameKey]) === nkey(name)) return pageUrl(list[i], name, key);
+      }
+      return fresh ? null : pageUrl(null, name);
+    }
+    parts.url = find(parts.player, [ev], 'player_url', 'player_name');
+    parts.picks.forEach(function (p) { p.url = find(p.name, recs, 'url', 'player'); });
+  }
   function hasCat(cards) {
     return (cards || []).some(function (h) { return String(h || '').indexOf('<span class="ac-cat">') >= 0; });
   }
@@ -224,6 +257,7 @@
     CAT_NOTE: CAT_NOTE, hasCat: hasCat,
     catNote: function () { return '<p class="cat-note">' + esc(CAT_NOTE) + '</p>'; },
     esc: esc, ago: ago, card: card, X: X, parse: parse, cleanSource: cleanSource, slug: slug, plainDuration: plainDuration,
+    pageUrl: pageUrl, nameLink: nameLink,
     // The parsed parts behind a card (also for alerts posted before tweet text was saved)
     info: function (a) { return parse(a.tweet_text || headline(a) || ''); },
     // One posted alert as a card; null when there's nothing to show.
@@ -236,7 +270,9 @@
       var link = a.tweet_id ? X + a.tweet_id : null, label = 'Original post';  // its numbers are as posted (C-07)
       var parts = parse(text), when = opts.when || ago(a.timestamp);
       var who = (parts && parts.player) || (a.event || {}).player_name;
-      var look = opts.lookup && who ? lookupLink(who) : '';
+      if (parts) addUrls(parts, a);
+      var lookUrl = parts ? parts.url : pageUrl(a.event, who, 'player_url');
+      var look = opts.lookup && who && lookUrl ? lookupLink(who, lookUrl) : '';  // never a link to a page that 404s
       if (parts && !parts.source) parts.source = cleanSource((a.event || {}).source);  // the tweet had no room for it, or predates saved text
       if (parts && a.injury_over === true && !parts.picks.length) parts.over = true;
       if (parts && parts.picks.length && !parts.over) addCats(parts, a.recommendations);

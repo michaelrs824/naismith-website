@@ -359,7 +359,9 @@
       return t.replace(/ /g, '\u00a0');
     }
     function owned(x) { return x == null ? '' : (x < 1 ? 'under 1%' : Math.round(x) + '%') + ' owned'; }
-    function link(n) { return '/players/' + encodeURIComponent(F.slug(n)); }
+    // his page: the feed's "url" (null: no page, so no link), else the slug rule (feed.js pageUrl)
+    function link(o) { return F.pageUrl(o, o.player); }
+    function wrap(cls, u) { return u ? '<a class="' + cls + '" href="' + esc(u) + '">' : '<span class="' + cls + '">'; }
     // Same words as the player pages: "Out (at least 4 weeks)", "Probable" (server/site_pages.py _status_text)
     function label(p) {
       var l = p.status === 'OUT' ? 'Out' : p.status === 'DOUBTFUL' ? 'Doubtful' : p.probable ? 'Probable' : 'Questionable';
@@ -405,16 +407,16 @@
           (x.ps.length ? '<ul class="game-players">' + x.ps.map(function (p) {
             var mine = W.has(p.player);
             return '<li class="' + (mine ? 'mine-row' : '') + '"><div class="gp-top">' + W.star(p.player) +
-              '<a class="gp-who" href="' + link(p.player) + '"><span class="gp-name">' + esc(p.player) + '</span><span class="gp-team">' + esc(p.team) + '</span>' +
-              '<span class="gp-status ' + p.status + (p.probable ? ' probable' : '') + '">' + esc(label(p)) + '</span></a>' +
+              wrap('gp-who', link(p)) + '<span class="gp-name">' + esc(p.player) + '</span><span class="gp-team">' + esc(p.team) + '</span>' +
+              '<span class="gp-status ' + p.status + (p.probable ? ' probable' : '') + '">' + esc(label(p)) + '</span>' + (link(p) ? '</a>' : '</span>') +
               '<span class="gp-fp"><small><abbr title="Projected">Proj.</abbr> </small>' + p.avg_fpts.toFixed(0) + '<small> FPTS/g</small></span></div>' +
               (p.pickups.length ? '<div class="gp-picks">' + (p.status === 'OUT' ? 'Pick up:' : 'If he sits:') + '<ul class="gp-plist">' + p.pickups.map(function (k) {
                 // "+9.4 · 🔥 All leagues · under 1% owned": each "·" stays with the part before it, so no line starts with one
                 var bits = ['<span class="d">+' + k.fpts_delta.toFixed(1) + '</span>'];
                 if (k.tag) bits.push('<span class="pill">' + esc((k.icon ? k.icon + ' ' : '') + k.tag) + '</span>');
                 if (k.owned != null) bits.push('<span class="owned">' + owned(k.owned) + '</span>');
-                return '<li><a class="gp-pk" href="' + link(k.player) + '"><b>' + esc(k.player) + '</b><span class="gp-pn">' +
-                  bits.map(function (b, i) { return '<span>' + b + (i < bits.length - 1 ? '\u00a0·' : '') + '</span>'; }).join(' ') + '</span></a></li>';
+                return '<li>' + wrap('gp-pk', link(k)) + '<b>' + esc(k.player) + '</b><span class="gp-pn">' +
+                  bits.map(function (b, i) { return '<span>' + b + (i < bits.length - 1 ? '\u00a0·' : '') + '</span>'; }).join(' ') + '</span>' + (link(k) ? '</a>' : '</span>') + '</li>';
               }).join('') + '</ul></div>' : '') + '</li>';
           }).join('') + '</ul>' : '<p class="game-quiet">No injury news for either team.</p>') + '</article>';
       }).join('');

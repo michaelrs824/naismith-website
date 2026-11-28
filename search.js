@@ -80,7 +80,9 @@
       .then(function (d) {
         clearTimeout(timer);
         var out = ((d && d.results) || []).filter(function (p) { return p && p.name; }).map(function (p) {
-          return {name: String(p.name), team: String(p.team || ''), status: String(p.status || '')};
+          // url: his page from the server (the same path pageFor makes; older responses have none)
+          return {name: String(p.name), team: String(p.team || ''), status: String(p.status || ''),
+                  url: typeof p.url === 'string' && /^\/players\/[a-z0-9-]+$/.test(p.url) ? p.url : null};
         });
         cache[k] = out;
         return out;
@@ -219,8 +221,9 @@
       close();
       input.value = p.name;
       busy = true;
-      try { (replace ? location.replace : location.assign).call(location, pageFor(p.name)); }
-      catch (e) { location.href = pageFor(p.name); }
+      var to = p.url || pageFor(p.name);
+      try { (replace ? location.replace : location.assign).call(location, to); }
+      catch (e) { location.href = to; }
     }
     function reset() {
       busy = false;

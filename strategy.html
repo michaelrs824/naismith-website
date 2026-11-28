@@ -421,7 +421,11 @@
     function and(xs) { return xs.length < 3 ? xs.join(' and ') : xs.slice(0, -1).join(', ') + ' and ' + xs[xs.length - 1]; }
     function games(n) { return n + (n === 1 ? ' game' : ' games'); }
     function dow(iso, w) { for (var i = 0; i < w.nights.length; i++) if (w.nights[i].date === iso) return w.nights[i].dow; return ''; }
-    function playerLink(name, cls) { return '<a class="' + cls + '" href="/players/' + esc(F.slug(name)) + '">' + esc(name) + '</a>'; }
+    // his page: the feed's "url" (null: no page, plain text), else the slug rule (feed.js pageUrl)
+    function playerLink(o, cls) {
+      var u = F.pageUrl(o, o.player);
+      return u ? '<a class="' + cls + '" href="' + esc(u) + '">' + esc(o.player) + '</a>' : '<span class="' + cls + '">' + esc(o.player) + '</span>';
+    }
     function label(w) { return w.key === 'next' ? 'Next week' : (data.weeks.length > 1 ? 'Rest of this week' : 'This week'); }
     function wide() { return window.matchMedia && window.matchMedia('(min-width: 760px)').matches; }
 
@@ -516,7 +520,7 @@
     }
 
     function why(because) {
-      var names = function (list) { return and(list.map(function (b) { var d = F.plainDuration(b.duration); return '<b>' + esc(b.player) + '</b>' + (d ? ' (' + esc(d) + ')' : ''); })); };
+      var names = function (list) { return and(list.map(function (b) { var d = F.plainDuration(b.duration); return '<b>' + F.nameLink(b.player, F.pageUrl(b, b.player)) + '</b>' + (d ? ' (' + esc(d) + ')' : ''); })); };
       var out = because.filter(function (b) { return b.status !== 'DOUBTFUL' && b.status !== 'QUESTIONABLE'; });
       var doubt = because.filter(function (b) { return b.status === 'DOUBTFUL'; });
       var q = because.filter(function (b) { return b.status === 'QUESTIONABLE'; });
@@ -544,7 +548,7 @@
       sec.hidden = false;
       document.getElementById('pk-key').open = wide();
       document.getElementById('pk-list').innerHTML = P.map(function (p) {
-        return '<li class="pick"><div class="pick-top"><span class="pick-who">' + playerLink(p.player, 'pick-name') +
+        return '<li class="pick"><div class="pick-top"><span class="pick-who">' + playerLink(p, 'pick-name') +
           ' <span class="pick-meta">' + esc([p.team, p.position].filter(Boolean).join(' · ')) + '</span></span>' +
           '<span class="pick-gain">+' + p.fpts_delta.toFixed(1) + '<small> FPTS/g</small></span></div>' +
           '<div class="pick-why">' + why(p.because || []) + (p.owned != null ? 'Owned in ' + fmtOwned(p.owned) + ' of ESPN leagues.' : '') + '</div>' +
@@ -556,7 +560,7 @@
       sec.hidden = !T.length;
       if (!T.length) return;
       document.getElementById('tr-list').innerHTML = T.map(function (t) {
-        return '<li>' + playerLink(t.player, '') + (t.team ? ' <span class="pick-meta">' + esc(t.team) + '</span>' : '') +
+        return '<li>' + playerLink(t, '') + (t.team ? ' <span class="pick-meta">' + esc(t.team) + '</span>' : '') +
           '<span class="yo">Rostered in ' + t.yahoo_owned + '% of Yahoo leagues</span></li>';
       }).join('');
     }

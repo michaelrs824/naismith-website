@@ -398,8 +398,10 @@
       });
     }
     function ago(iso) { return window.NaismithFeed.ago(iso); }
+    // A name as a link to his page: the feed's "url" (null: plain text), else the slug rule (feed.js)
+    function pn(o, cls) { var F = window.NaismithFeed; return F.nameLink(o.player, F.pageUrl(o, o.player), cls); }
     function names(list) {
-      var n = list.map(function (b) { var d = window.NaismithFeed.plainDuration(b.duration); return '<b>' + esc(b.player) + '</b>' + (d ? ' (' + esc(d) + ')' : ''); });
+      var n = list.map(function (b) { var d = window.NaismithFeed.plainDuration(b.duration); return '<b>' + pn(b) + '</b>' + (d ? ' (' + esc(d) + ')' : ''); });
       return n.length < 3 ? n.join(' and ') : n.slice(0, -1).join(', ') + ' and ' + n[n.length - 1];
     }
     function why(because) {
@@ -433,7 +435,7 @@
       var total = picks.length;
       if (!showAll) picks = picks.slice(0, LIMIT);
       list.innerHTML = picks.map(function (p) {
-        return '<li class="pick"><div class="pick-top">' + W.star(p.player) + '<span class="pick-who"><span class="pick-name">' + esc(p.player) + '</span> ' +
+        return '<li class="pick"><div class="pick-top">' + W.star(p.player) + '<span class="pick-who">' + pn(p, 'pick-name') + ' ' +
           '<span class="pick-meta">' + esc([p.team, p.position].filter(Boolean).join(' · ')) + '</span></span>' +
           '<span class="pick-gain">+' + p.fpts_delta.toFixed(1) + '<small> FPTS/g</small></span></div>' +
           '<div class="pick-why">' + why(p.because) + ' Projected for ' + p.avg_fpts.toFixed(1) + ' FPTS/g.' +
@@ -452,11 +454,12 @@
       // one explainer above the list when any pickup has a line; the line sits inside .inj-meta, so the
       // row's spans keep their :last-child styles (the + number, the tag)
       el.innerHTML = (anyCat ? window.NaismithFeed.catNote() : '') + board.injuries.map(function (i) {
-        return '<details class="inj"><summary><span>' + esc(i.player) + ' <span class="inj-meta">' +
+        // the name is a link inside the summary: a tap on it opens his page, a tap elsewhere on the row toggles
+        return '<details class="inj"><summary><span>' + pn(i) + ' <span class="inj-meta">' +
           esc(i.team) + ' · ' + (i.status === 'DOUBTFUL' ? 'Doubtful' : 'Out') + (window.NaismithFeed.plainDuration(i.duration) ? ' ' + esc(window.NaismithFeed.plainDuration(i.duration)) : '') +
           ' · ' + i.avg_fpts.toFixed(1) + ' FPTS/g</span></span></summary><ul>' +
           i.pickups.map(function (p) {
-            return '<li><span>' + esc(p.icon) + '</span><span>' + esc(p.player) + ' <span class="inj-meta">' +
+            return '<li><span>' + esc(p.icon) + '</span><span>' + pn(p) + ' <span class="inj-meta">' +
               esc(p.tag) + (p.owned != null ? ' · ' + fmtOwned(p.owned) + ' owned' : '') +
               (catLine(p) ? '<small class="cat-line">' + esc(catLine(p)) + '</small>' : '') +
               '</span></span><span>+' + p.fpts_delta.toFixed(1) + '</span></li>';
@@ -470,10 +473,10 @@
       if (!L.length) { sec.hidden = true; return; }
       sec.hidden = false;
       document.getElementById('losing').innerHTML = L.map(function (r) {
-        return '<li><div class="back-who">' + esc(r.player) + ' <span class="pick-meta">' + esc(r.team) + '</span></div>' +
+        return '<li><div class="back-who">' + pn(r) + ' <span class="pick-meta">' + esc(r.team) + '</span></div>' +
           '<div class="back-when">Back ' + ago(r.back_since) + ' · ' + r.avg_fpts.toFixed(1) + ' FPTS/g</div><ul>' +
           r.fill_ins.map(function (f) {
-            return '<li>' + W.star(f.player) + '<span>' + esc(f.player) + ' <span class="owned">' + esc(f.team) +
+            return '<li>' + W.star(f.player) + '<span>' + pn(f) + ' <span class="owned">' + esc(f.team) +
               (f.owned != null ? ' · ' + fmtOwned(f.owned) + ' owned' : '') + '</span></span><span class="minus">−' + f.fpts_delta.toFixed(1) + '</span></li>';
           }).join('') + '</ul></li>';
       }).join('');

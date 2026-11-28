@@ -401,7 +401,9 @@ He went to the locker room with an ankle injury in the second quarter.
             when = ago(latest.timestamp);
           } else what = 'No injury news this week';
           var extra = pick ? ' · Pickup: +' + pick.fpts_delta.toFixed(1) + ' FPTS/g' : '';
-          return '<li>' + W.star(n) + '<div><div class="who">' + esc(n) + '</div><div class="what"><span class="' + cls + '">' + what + '</span>' + extra + '</div></div>' +
+          // his page when the status feed gives one (no page, or an older feed: the name stays plain text)
+          var who = st && st.url ? F.nameLink(n, F.pageUrl(st, n)) : esc(n);
+          return '<li>' + W.star(n) + '<div><div class="who">' + who + '</div><div class="what"><span class="' + cls + '">' + what + '</span>' + extra + '</div></div>' +
             (when ? '<span class="when">' + esc(when) + '</span>' : '') + '</li>';
         }).join('');
       }).catch(function () { list.innerHTML = '<li class="what">Couldn\'t load your players. Try again in a minute.</li>'; });
