@@ -230,6 +230,8 @@ section { border-top: 0; }
 .k-out .ac-status i { background: #F85149; }
 .k-gtd .ac-status i { background: #D29922; }
 .k-back .ac-status i { background: #3FB950; }
+.ac-over { display: flex; align-items: center; gap: 7px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); color: var(--text-2); font-size: 0.93rem; }
+.ac-over i { width: 8px; height: 8px; border-radius: 50%; background: #3FB950; flex: none; }  /* back from this injury (C-07) */
 .ac-time { margin-left: auto; color: var(--text-3); white-space: nowrap; }
 .ac-player { display: flex; align-items: baseline; gap: 8px; margin-top: 10px; }
 .ac-name { font-family: var(--display); font-weight: 800; font-size: 1.55rem; line-height: 1.05; }

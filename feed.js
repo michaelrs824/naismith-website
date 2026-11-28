@@ -192,6 +192,8 @@
         return '<li>' + W.star(p.name) + '<span class="ac-pn">' + esc(p.name) + '</span><span class="pill">' + esc(p.icon + ' ' + p.tag) +
           '</span><span class="ac-pd">+' + esc(p.delta) + '</span></li>';
       }).join('') + '</ul>' : '') +
+      // he's back from this injury (feed injury_over, C-07): no pickups now; the green dot of a back card
+      (a.over ? '<p class="ac-over"><i></i>No longer out. No pickups now.</p>' : '') +
       (look
         ? '<div class="ac-foot has-links">' + (a.source ? '<span>' + esc(a.source) + '</span>' : '') + '<span class="ac-links">' + look +
             (link ? '<a href="' + link + '" target="_blank" rel="noopener">' + esc(linkLabel) + ' →</a>' : '') + '</span></div>'
@@ -211,11 +213,12 @@
       opts = opts || {};
       var text = a.tweet_text || headline(a);
       if (!text) return null;
-      var link = a.tweet_id ? X + a.tweet_id : null, label = a.tweet_text ? 'View on X' : 'Pickups on X';
+      var link = a.tweet_id ? X + a.tweet_id : null, label = 'Original post';  // its numbers are as posted (C-07)
       var parts = parse(text), when = opts.when || ago(a.timestamp);
       var who = (parts && parts.player) || (a.event || {}).player_name;
       var look = opts.lookup && who ? lookupLink(who) : '';
       if (parts && !parts.source) parts.source = cleanSource((a.event || {}).source);  // the tweet had no room for it, or predates saved text
+      if (parts && a.injury_over === true && !parts.picks.length) parts.over = true;
       return parts ? structured(parts, link, when, label, look) : card(text, link, when, label, look);
     }
   };
