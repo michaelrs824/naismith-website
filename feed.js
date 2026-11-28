@@ -209,7 +209,7 @@
   var CAT_NOTE = 'Categories: our projected extra stats per game while the injured player is out.';
   function addCats(parts, recs) {
     var by = {};
-    (recs || []).forEach(function (r) {
+    (Array.isArray(recs) ? recs : []).forEach(function (r) {
       var c = r && r.category_line;
       if (r && r.player && typeof c === 'string' && c.trim()) by[nkey(r.player)] = c.trim();
     });
