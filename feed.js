@@ -249,7 +249,7 @@
     parts.picks.forEach(function (p) { p.url = find(p.name, recs, 'url', 'player'); });
   }
   function hasCat(cards) {
-    return (cards || []).some(function (h) { return String(h || '').indexOf('<span class="ac-cat">') >= 0; });
+    return (cards || []).some(function (h) { return String(h || '').indexOf('<span class="ac-cat">Categories:') >= 0; });
   }
 
   window.NaismithFeed = {

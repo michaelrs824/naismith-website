@@ -450,7 +450,7 @@
     function renderInjuries() {
       var el = document.getElementById('injuries');
       if (!board.injuries.length) { el.innerHTML = '<p class="empty">No injuries with pickups right now.</p>'; return; }
-      var anyCat = board.injuries.some(function (i) { return (i.pickups || []).some(catLine); });
+      var anyCat = board.injuries.some(function (i) { return (i.pickups || []).some(function (p) { return catLine(p).indexOf('Categories:') === 0; }); });
       // one explainer above the list when any pickup has a line; the line sits inside .inj-meta, so the
       // row's spans keep their :last-child styles (the + number, the tag)
       el.innerHTML = (anyCat ? window.NaismithFeed.catNote() : '') + board.injuries.map(function (i) {
